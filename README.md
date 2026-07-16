@@ -12,7 +12,7 @@ docker compose up -d
 cat internal/db/migrations/001_initial.sql | docker compose exec -T postgres psql -U polaris
 
 # 3. Start backend
-DATABASE_URL="postgres://polaris:polaris@localhost:5432/polaris?sslmode=disable" go run ./cmd/polaris
+DATABASE_URL="postgres://polaris:polaris@localhost:5433/polaris?sslmode=disable" go run ./cmd/polaris
 
 # 4. Start frontend (another terminal)
 cd web && npm run dev
@@ -44,7 +44,7 @@ Visit **http://localhost:5173**
 | Layer | Technology |
 |-------|-----------|
 | Backend | Go 1.26, Gin, pgx v5, go-redis, gorilla/websocket |
-| Frontend | Svelte 4 + Vite (SPA) |
+| Frontend | Svelte 5 + Vite (SPA) |
 | Database | PostgreSQL 17 |
 | Cache | Redis 7 |
 | Auth | JWT (HS256) + bcrypt |
@@ -77,7 +77,7 @@ polaris/
 
 ```bash
 # Backend integration tests (requires running PostgreSQL)
-DATABASE_URL="postgres://polaris:polaris@localhost:5432/polaris?sslmode=disable" go test ./... -count=1
+DATABASE_URL="postgres://polaris:polaris@localhost:5433/polaris?sslmode=disable" go test ./... -count=1
 
 # Frontend build check
 cd web && npm run build

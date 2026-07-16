@@ -1,16 +1,16 @@
 # Polaris — AI Agent Guide
 
 ## Overview
-Social platform backend in Go (Gin/pgx/Redis), frontend in Svelte 4 + Vite (SPA). Go 1.26, PostgreSQL 17, Redis 7. Single binary monolith + background workers.
+Social platform backend in Go (Gin/pgx/Redis), frontend in Svelte 5 + Vite (SPA). Go 1.26, PostgreSQL 17, Redis 7. Single binary monolith + background workers.
 
 ## How to Run
 
 | Component | Command | URL |
 |-----------|---------|-----|
-| Infra | `docker compose up -d` | Postgres :5432, Redis :6379 |
+| Infra | `docker compose up -d` | Postgres :5433 (host) → :5432, Redis :6379 |
 | Backend | `go run ./cmd/polaris` | `http://localhost:8080` |
 | Frontend | `cd web && npm run dev` | `http://localhost:5173` |
-| Tests | `DATABASE_URL="postgres://polaris:polaris@localhost:5432/polaris?sslmode=disable" go test ./... -count=1` | — |
+| Tests | `DATABASE_URL="postgres://polaris:polaris@localhost:5433/polaris?sslmode=disable" go test ./... -count=1` | — |
 
 **Important**: The `.gitignore` is bare (only 3 swap-file entries). The first AI agent should add: `bin/`, `*.exe`, `*.test`, `.env`, `node_modules/`, `dist/`, `tmp/`, `*.log`, `.DS_Store`.
 

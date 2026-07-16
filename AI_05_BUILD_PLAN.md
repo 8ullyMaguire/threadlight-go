@@ -39,7 +39,7 @@
 docker compose up -d
 
 # Run backend tests (must connect to test DB)
-DATABASE_URL="postgres://polaris:polaris@localhost:5432/polaris?sslmode=disable" go test ./... -count=1
+DATABASE_URL="postgres://polaris:polaris@localhost:5433/polaris?sslmode=disable" go test ./... -count=1
 
 # Start backend
 go run ./cmd/polaris

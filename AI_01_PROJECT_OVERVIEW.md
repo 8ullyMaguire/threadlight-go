@@ -5,7 +5,7 @@ A social media platform built for positive connection: trust-based moderation, c
 
 ## Stack
 - **Backend**: Go 1.26, Gin framework, pgx v5 (PostgreSQL), go-redis, gorilla/websocket, golang-jwt, bcrypt, zerolog
-- **Frontend**: Svelte 4 + Vite (SPA, no SvelteKit), vanilla CSS
+- **Frontend**: Svelte 5 + Vite (SPA, no SvelteKit), vanilla CSS
 - **Infra**: Single binary deploy, Docker Compose for dev (PostgreSQL 17, Redis 7), Prometheus metrics at /metrics
 
 ## Directories
@@ -57,7 +57,7 @@ polaris/
 docker compose up -d
 
 # Terminal 2: Start backend
-DATABASE_URL="postgres://polaris:polaris@localhost:5432/polaris?sslmode=disable" go run ./cmd/polaris
+DATABASE_URL="postgres://polaris:polaris@localhost:5433/polaris?sslmode=disable" go run ./cmd/polaris
 
 # Terminal 3: Start frontend
 cd web && npm run dev
@@ -67,5 +67,5 @@ cd web && npm run dev
 
 ## Testing
 ```bash
-DATABASE_URL="postgres://polaris:polaris@localhost:5432/polaris?sslmode=disable" go test ./... -count=1
+DATABASE_URL="postgres://polaris:polaris@localhost:5433/polaris?sslmode=disable" go test ./... -count=1
 ```

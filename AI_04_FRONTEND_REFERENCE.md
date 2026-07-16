@@ -1,7 +1,7 @@
 # Polaris — Frontend Reference
 
 ## Tech
-- Svelte 4 + Vite (SPA, no SvelteKit)
+- Svelte 5 + Vite (SPA, no SvelteKit)
 - Vanilla CSS (no Tailwind/Bootstrap)
 - Fetch-based API client (no Axios/ky)
 
