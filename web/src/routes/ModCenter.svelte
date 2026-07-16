@@ -9,9 +9,17 @@
   let modLog = [];
   let loading = false;
   let error = '';
+  let reports = [];
+  let noteUserId = '';
+  let noteBody = '';
+  let modNotes = [];
+  let resolving = {};
+  let reportsLoaded = false;
 
   const tabs = [
     { id: 'modlog', label: 'Mod Log' },
+    { id: 'reports', label: 'Reports' },
+    { id: 'notes', label: 'Mod Notes' },
     { id: 'jury', label: 'Jury Duty' },
     { id: 'flagqueue', label: 'Flag Queue' },
   ];
@@ -43,6 +51,58 @@
       loading = false;
     }
   }
+
+  async function loadReports() {
+    loading = true;
+    error = '';
+    try {
+      const data = await api.getReports();
+      reports = data.reports || data || [];
+    } catch (e) {
+      error = e.message || 'Failed to load reports';
+      reports = [];
+    } finally {
+      loading = false;
+    }
+  }
+
+  async function resolveReport(id, action) {
+    resolving[id] = true;
+    try {
+      await api.resolveReport(id, action);
+      reports = reports.filter(r => r.id !== id);
+    } catch (e) {
+      error = e.message || 'Failed to resolve report';
+    } finally {
+      resolving[id] = false;
+    }
+  }
+
+  async function loadModNotes() {
+    if (!noteUserId) return;
+    loading = true;
+    try {
+      const data = await api.getModNotes(noteUserId);
+      modNotes = data.notes || data || [];
+    } catch (e) {
+      modNotes = [];
+    } finally {
+      loading = false;
+    }
+  }
+
+  async function addModNote() {
+    if (!noteUserId || !noteBody.trim()) return;
+    try {
+      await api.createModNote(noteUserId, noteBody);
+      noteBody = '';
+      await loadModNotes();
+    } catch (e) {
+      error = e.message || 'Failed to add note';
+    }
+  }
+
+  $: if (activeTab === 'reports' && !reportsLoaded) { reportsLoaded = true; loadReports(); }
 
   function relativeTime(iso) {
     const diff = Date.now() - new Date(iso).getTime();
@@ -138,6 +198,68 @@
         </div>
       {/if}
     </div>
+  {:else if activeTab === 'reports'}
+    <div class="tab-content">
+      <h2>Reports</h2>
+      {#if loading}
+        <p class="loading">Loading reports...</p>
+      {:else if error}
+        <div class="error">{error}</div>
+      {:else if reports.length === 0}
+        <p class="placeholder">No pending reports.</p>
+      {:else}
+        <div class="reports-list">
+          {#each reports as report (report.id)}
+            <div class="mod-action-card">
+              <div class="card-top">
+                <span class="badge badge-warning">Report #{report.id}</span>
+                <span class="timestamp">{relativeTime(report.created_at)}</span>
+              </div>
+              <p class="reason">Reported by <strong>@{report.reporter_username}</strong> against <strong>@{report.target_username}</strong></p>
+              <p class="reason"><em>"{report.reason}"</em></p>
+              {#if report.post_body}
+                <div class="reported-post">
+                  <p>{report.post_body}</p>
+                </div>
+              {/if}
+              <div class="card-meta">
+                <button class="btn btn-sm" on:click={() => resolveReport(report.id, 'dismiss')} disabled={resolving[report.id]}>
+                  Dismiss
+                </button>
+                <button class="btn btn-sm btn-warning" on:click={() => resolveReport(report.id, 'warn')} disabled={resolving[report.id]}>
+                  Warn user
+                </button>
+                <button class="btn btn-sm btn-danger" on:click={() => resolveReport(report.id, 'remove')} disabled={resolving[report.id]}>
+                  Remove content
+                </button>
+              </div>
+            </div>
+          {/each}
+        </div>
+      {/if}
+    </div>
+
+  {:else if activeTab === 'notes'}
+    <div class="tab-content">
+      <h2>Mod Notes</h2>
+      <div class="note-form">
+        <input type="text" bind:value={noteUserId} placeholder="Username or user ID" />
+        <textarea bind:value={noteBody} placeholder="Note body"></textarea>
+        <button class="btn btn-primary" on:click={addModNote} disabled={!noteUserId || !noteBody.trim()}>Add note</button>
+        <button class="btn" on:click={loadModNotes}>Load notes for user</button>
+      </div>
+      {#if modNotes.length > 0}
+        <div class="notes-list">
+          {#each modNotes as note}
+            <div class="mod-action-card">
+              <p class="reason">{note.body}</p>
+              <span class="timestamp">Added by @{note.moderator_username} — {relativeTime(note.created_at)}</span>
+            </div>
+          {/each}
+        </div>
+      {/if}
+    </div>
+
   {:else if activeTab === 'jury'}
     <div class="tab-content placeholder">
       <p>Jury Duty — coming soon.</p>
@@ -315,5 +437,93 @@
     text-align: center;
     color: var(--text);
     padding: 2rem;
+  }
+
+  .placeholder {
+    text-align: center;
+    color: var(--text);
+    padding: 2rem;
+  }
+
+  .reports-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .reported-post {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.5rem 0.75rem;
+    margin: 0.5rem 0;
+    font-size: 0.875rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  .btn-sm {
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8125rem;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .btn-warning {
+    background: #f59e0b;
+    color: white;
+    border-color: #d97706;
+  }
+
+  .btn-danger {
+    background: #ef4444;
+    color: white;
+    border-color: #dc2626;
+  }
+
+  .note-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .note-form input,
+  .note-form textarea {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.875rem;
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .note-form textarea {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  .notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .error-msg {
+    color: #ef4444;
+    text-align: center;
+    padding: 1rem;
   }
 </style>

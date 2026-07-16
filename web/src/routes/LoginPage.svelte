@@ -1,15 +1,18 @@
 <script>
   import { createEventDispatcher } from 'svelte';
   import { login } from '../lib/stores/auth';
+  import api from '../lib/api/client';
 
   const dispatch = createEventDispatcher();
 
+  let mode = 'login';
   let email = '';
   let password = '';
   let error = '';
   let submitting = false;
+  let message = '';
 
-  async function handleSubmit() {
+  async function handleLogin() {
     error = '';
     submitting = true;
     try {
@@ -21,31 +24,109 @@
       submitting = false;
     }
   }
+
+  async function handleForgotPassword() {
+    error = '';
+    message = '';
+    submitting = true;
+    try {
+      await api.forgotPassword(email);
+      message = 'If that email is registered, a reset link has been sent.';
+    } catch (e) {
+      error = e.message || 'Something went wrong';
+    } finally {
+      submitting = false;
+    }
+  }
+
+  async function handleResendVerification() {
+    error = '';
+    message = '';
+    submitting = true;
+    try {
+      await api.resendVerification();
+      message = 'Verification email sent. Check your inbox.';
+    } catch (e) {
+      error = e.message || 'Something went wrong';
+    } finally {
+      submitting = false;
+    }
+  }
 </script>
 
 <div class="auth-page">
-  <form class="auth-card" on:submit|preventDefault={handleSubmit}>
-    <h1>Welcome back</h1>
-    <p class="subtitle">Sign in to Polaris</p>
-    {#if error}
-      <div class="error">{error}</div>
-    {/if}
-    <label>
-      Email
-      <input type="email" bind:value={email} required placeholder="you@example.com" />
-    </label>
-    <label>
-      Password
-      <input type="password" bind:value={password} required placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" />
-    </label>
-    <button type="submit" disabled={submitting}>
-      {submitting ? 'Signing in...' : 'Sign in'}
-    </button>
-    <p class="switch">
-      Don't have an account?
-      <button type="button" class="link" on:click={() => dispatch('nav', { page: 'register' })}>Sign up</button>
-    </p>
-  </form>
+  {#if mode === 'login'}
+    <form class="auth-card" on:submit|preventDefault={handleLogin}>
+      <h1>Welcome back</h1>
+      <p class="subtitle">Sign in to Polaris</p>
+      {#if error}
+        <div class="error">{error}</div>
+      {/if}
+      <label>
+        Email
+        <input type="email" bind:value={email} required placeholder="you@example.com" />
+      </label>
+      <label>
+        Password
+        <input type="password" bind:value={password} required placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" />
+      </label>
+      <button type="submit" disabled={submitting}>
+        {submitting ? 'Signing in...' : 'Sign in'}
+      </button>
+      <p class="switch">
+        Don't have an account?
+        <button type="button" class="link" on:click={() => dispatch('nav', { page: 'register' })}>Sign up</button>
+      </p>
+      <p class="switch">
+        <button type="button" class="link" on:click={() => { mode = 'forgot'; error = ''; message = ''; }}>Forgot password?</button>
+      </p>
+      <p class="switch">
+        <button type="button" class="link" on:click={() => { mode = 'resend'; error = ''; message = ''; }}>Resend verification email</button>
+      </p>
+    </form>
+  {:else if mode === 'forgot'}
+    <form class="auth-card" on:submit|preventDefault={handleForgotPassword}>
+      <h1>Reset password</h1>
+      <p class="subtitle">Enter your email to receive a reset link</p>
+      {#if error}
+        <div class="error">{error}</div>
+      {/if}
+      {#if message}
+        <div class="success">{message}</div>
+      {/if}
+      <label>
+        Email
+        <input type="email" bind:value={email} required placeholder="you@example.com" />
+      </label>
+      <button type="submit" disabled={submitting}>
+        {submitting ? 'Sending...' : 'Send reset link'}
+      </button>
+      <p class="switch">
+        <button type="button" class="link" on:click={() => { mode = 'login'; error = ''; message = ''; }}>Back to sign in</button>
+      </p>
+    </form>
+  {:else if mode === 'resend'}
+    <form class="auth-card" on:submit|preventDefault={handleResendVerification}>
+      <h1>Resend verification</h1>
+      <p class="subtitle">Enter your email to receive a new verification link</p>
+      {#if error}
+        <div class="error">{error}</div>
+      {/if}
+      {#if message}
+        <div class="success">{message}</div>
+      {/if}
+      <label>
+        Email
+        <input type="email" bind:value={email} required placeholder="you@example.com" />
+      </label>
+      <button type="submit" disabled={submitting}>
+        {submitting ? 'Sending...' : 'Resend'}
+      </button>
+      <p class="switch">
+        <button type="button" class="link" on:click={() => { mode = 'login'; error = ''; message = ''; }}>Back to sign in</button>
+      </p>
+    </form>
+  {/if}
 </div>
 
 <style>
@@ -74,6 +155,13 @@
     padding: 0.5rem;
     background: #fef2f2;
     color: #dc2626;
+    border-radius: 6px;
+    font-size: 0.875rem;
+  }
+  .success {
+    padding: 0.5rem;
+    background: #f0fdf4;
+    color: #16a34a;
     border-radius: 6px;
     font-size: 0.875rem;
   }

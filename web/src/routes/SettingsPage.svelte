@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import api from '../lib/api/client';
-  import { currentUser } from '../lib/stores/auth';
+  import { currentUser, logout } from '../lib/stores/auth';
 
   export let goTo;
 
@@ -22,6 +22,12 @@
   let claimMessage = '';
   let privacyShowFollowers = true;
   let privacyShowOnline = true;
+  let theme = 'light';
+  let hideReadPosts = false;
+  let deleting = false;
+  $: emailVerified = $currentUser?.email_verified || false;
+  let verifying = false;
+  let verifyMessage = '';
 
   const tabs = [
     { id: 'profile', label: 'Profile' },
@@ -46,6 +52,13 @@
       balance = b.balance || 0;
     } catch (_) {
       balance = 0;
+    }
+    try {
+      const pref = await api.get('/api/v1/users/me/preferences');
+      theme = pref.theme || 'light';
+      hideReadPosts = pref.hide_read_posts || false;
+    } catch (_) {
+      // ignore
     }
   }
 
@@ -111,6 +124,53 @@
     } catch (e) {
       message = e.message || 'Failed to remove filter.';
       messageType = 'error';
+    }
+  }
+
+  async function toggleTheme() {
+    try {
+      theme = theme === 'light' ? 'dark' : 'light';
+      await api.patch('/api/v1/users/me/preferences', { theme });
+      document.documentElement.setAttribute('data-theme', theme);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function toggleHideRead() {
+    try {
+      hideReadPosts = !hideReadPosts;
+      await api.patch('/api/v1/users/me/preferences', { hide_read_posts: hideReadPosts });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function deleteAccount() {
+    if (!confirm('Are you sure? This action cannot be undone.')) return;
+    deleting = true;
+    try {
+      await api.del('/api/v1/users/me');
+      logout();
+      goTo && goTo('auth');
+    } catch (e) {
+      message = e.message || 'Failed to delete account';
+      messageType = 'error';
+    } finally {
+      deleting = false;
+    }
+  }
+
+  async function resendVerification() {
+    verifying = true;
+    verifyMessage = '';
+    try {
+      await api.resendVerification();
+      verifyMessage = 'Verification email sent!';
+    } catch (e) {
+      verifyMessage = e.message || 'Failed to send';
+    } finally {
+      verifying = false;
     }
   }
 
@@ -237,6 +297,14 @@
 
   {:else if activeTab === 'account'}
     <div class="tab-content">
+      <h3>Appearance</h3>
+      <label class="toggle-row">
+        <span>Dark theme</span>
+        <input type="checkbox" checked={theme === 'dark'} on:change={toggleTheme} />
+      </label>
+
+      <hr />
+
       <h3>Privacy</h3>
       <label class="toggle-row">
         <span>Show followers to others</span>
@@ -249,8 +317,34 @@
 
       <hr />
 
+      <h3>Feed</h3>
+      <label class="toggle-row">
+        <span>Hide read posts</span>
+        <input type="checkbox" checked={hideReadPosts} on:change={toggleHideRead} />
+      </label>
+
+      <hr />
+
+      <h3>Email</h3>
+      {#if emailVerified}
+        <p class="verified">Email verified</p>
+      {:else}
+        <p class="unverified">Email not verified</p>
+        <button class="btn btn-primary" on:click={resendVerification} disabled={verifying}>
+          {verifying ? 'Sending...' : 'Resend verification email'}
+        </button>
+        {#if verifyMessage}
+          <p class="message">{verifyMessage}</p>
+        {/if}
+      {/if}
+
+      <hr />
+
       <h3 class="danger-heading">Danger Zone</h3>
       <button class="btn btn-danger" on:click={() => { logout(); goTo && goTo('auth'); }}>Log Out</button>
+      <button class="btn btn-danger" on:click={deleteAccount} disabled={deleting}>
+        {deleting ? 'Deleting...' : 'Delete Account'}
+      </button>
     </div>
   {/if}
 </div>
@@ -528,5 +622,51 @@
 
   .danger-heading {
     color: #ef4444;
+  }
+
+  .verified {
+    color: #16a34a;
+    font-size: 0.875rem;
+  }
+
+  .unverified {
+    color: #dc2626;
+    font-size: 0.875rem;
+  }
+
+  .message {
+    font-size: 0.875rem;
+    color: var(--text);
+    margin: 0.5rem 0 0 0;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .btn-danger {
+    background: #ef4444;
+    color: white;
+    border-color: #dc2626;
   }
 </style>

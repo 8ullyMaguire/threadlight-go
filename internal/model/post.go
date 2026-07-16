@@ -20,6 +20,15 @@ type Post struct {
 	CreatedAt               *time.Time `json:"created_at,omitempty"`
 	UpdatedAt               *time.Time `json:"updated_at,omitempty"`
 	ArchivedAt              *time.Time `json:"archived_at,omitempty"`
+	EditedAt                *time.Time `json:"edited_at,omitempty"`
+	Locked                  bool       `json:"locked"`
+	Sticky                  bool       `json:"sticky"`
+	StickyAt                *time.Time `json:"sticky_at,omitempty"`
+	Language                string     `json:"language"`
+	IsAiGenerated           bool       `json:"is_ai_generated"`
+	License                 string     `json:"license"`
+	CrossPostRootID         *int64     `json:"cross_post_root_id,omitempty"`
+	MovedFromCommunityID    *int64     `json:"moved_from_community_id,omitempty"`
 	IsDeleted               bool       `json:"is_deleted"`
 }
 

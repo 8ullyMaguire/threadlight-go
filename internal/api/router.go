@@ -12,7 +12,7 @@ import (
 func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-	r.Use(gin.Logger(), gin.Recovery())
+	r.Use(gin.Logger(), gin.Recovery(), middleware.CORS("*"))
 
 	authSvc := services.NewAuthService(pg, rdb, jwtSecret)
 	postSvc := services.NewPostService(pg)
@@ -31,6 +31,10 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	moderationSvc := services.NewModerationService(pg)
 	noteSvc := services.NewNoteService(pg)
 	searchSvc := services.NewSearchService(pg)
+	userSvc := services.NewUserService(pg)
+	blockSvc := services.NewBlockService(pg)
+	reportSvc := services.NewReportService(pg)
+	notifSvc := services.NewNotificationService(pg)
 
 	authMw := middleware.NewAuthMiddleware(authSvc)
 
@@ -52,6 +56,10 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	moderationHandler := handlers.NewModerationHandler(moderationSvc)
 	noteHandler := handlers.NewNoteHandler(noteSvc)
 	searchHandler := handlers.NewSearchHandler(searchSvc)
+	userHandler := handlers.NewUserHandler(userSvc)
+	blockHandler := handlers.NewBlockHandler(blockSvc)
+	reportHandler := handlers.NewReportHandler(reportSvc)
+	notifHandler := handlers.NewNotificationHandler(notifSvc)
 
 	r.GET("/health", healthHandler.Health)
 
@@ -232,11 +240,57 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			notes.POST("/:id/vote", noteHandler.VoteOnNote)
 		}
 
+		users := apiV1.Group("/users")
+		{
+			users.GET("/:username", userHandler.GetProfileByUsername)
+
+			authed := users.Group("")
+			authed.Use(authMw.RequireAuth())
+			{
+				authed.GET("/@me", userHandler.GetProfile)
+				authed.PUT("/@me", userHandler.UpdateProfile)
+				authed.POST("/@me/avatar", userHandler.UploadAvatar)
+				authed.POST("/@me/banner", userHandler.UploadBanner)
+				authed.GET("/@me/notifications", userHandler.GetNotifications)
+				authed.PUT("/notifications/:id/read", userHandler.MarkNotificationRead)
+				authed.POST("/:id/block", userHandler.BlockUser)
+				authed.DELETE("/:id/block", userHandler.UnblockUser)
+				authed.GET("/@me/blocks", userHandler.ListBlockedUsers)
+			}
+		}
+
 		search := apiV1.Group("/search")
 		search.Use(authMw.RequireAuth())
 		{
 			search.GET("", searchHandler.Search)
 			search.POST("/advanced", searchHandler.AdvancedSearch)
+		}
+
+		blocks := apiV1.Group("/blocks")
+		blocks.Use(authMw.RequireAuth())
+		{
+			blocks.POST("", blockHandler.Create)
+			blocks.DELETE("/:id", blockHandler.Delete)
+			blocks.GET("", blockHandler.List)
+			blocks.GET("/check/:user_id", blockHandler.Check)
+		}
+
+		reports := apiV1.Group("/reports")
+		reports.Use(authMw.RequireAuth())
+		{
+			reports.POST("", reportHandler.Create)
+			reports.GET("", reportHandler.List)
+			reports.GET("/:id", reportHandler.Get)
+			reports.PUT("/:id/resolve", reportHandler.Resolve)
+		}
+
+		notifications := apiV1.Group("/notifications")
+		notifications.Use(authMw.RequireAuth())
+		{
+			notifications.GET("", notifHandler.List)
+			notifications.PUT("/:id/read", notifHandler.MarkRead)
+			notifications.PUT("/read-all", notifHandler.MarkAllRead)
+			notifications.GET("/unread-count", notifHandler.UnreadCount)
 		}
 	}
 

@@ -407,4 +407,131 @@ CREATE INDEX IF NOT EXISTS idx_blocklist_type ON blocklist_entries(entry_type);
 CREATE INDEX IF NOT EXISTS idx_active_stats_scope ON active_stats(scope_type, scope_id);
 CREATE INDEX IF NOT EXISTS idx_active_stats_7d ON active_stats(active_7d);
 
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS edited_at TIMESTAMPTZ;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS locked BOOLEAN DEFAULT FALSE;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS sticky BOOLEAN DEFAULT FALSE;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS sticky_at TIMESTAMPTZ;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT 'en';
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS is_ai_generated BOOLEAN DEFAULT FALSE;
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS license VARCHAR(20) DEFAULT 'CC0';
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS cross_post_root_id BIGINT REFERENCES posts(id);
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS moved_from_community_id BIGINT REFERENCES communities(id);
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(500);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS banner_url VARCHAR(500);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS bio_html VARCHAR(2000);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verified BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verify_token VARCHAR(64);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS email_verify_sent_at TIMESTAMPTZ;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_token VARCHAR(64);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password_reset_sent_at TIMESTAMPTZ;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS theme VARCHAR(20) DEFAULT 'light';
+ALTER TABLE users ADD COLUMN IF NOT EXISTS hide_read_posts BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_deleted BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS deleted_at TIMESTAMPTZ;
+
+CREATE TABLE IF NOT EXISTS blocked_users (
+    id BIGSERIAL PRIMARY KEY,
+    blocker_id BIGINT NOT NULL REFERENCES users(id),
+    blocked_id BIGINT NOT NULL REFERENCES users(id),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (blocker_id, blocked_id)
+);
+
+CREATE TABLE IF NOT EXISTS hidden_posts (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id),
+    post_id BIGINT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (user_id, post_id)
+);
+
+CREATE TABLE IF NOT EXISTS mod_notes (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id),
+    noted_by BIGINT NOT NULL REFERENCES users(id),
+    note TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS post_reports (
+    id BIGSERIAL PRIMARY KEY,
+    post_id BIGINT NOT NULL REFERENCES posts(id) ON DELETE CASCADE,
+    reporter_id BIGINT NOT NULL REFERENCES users(id),
+    category SMALLINT NOT NULL DEFAULT 0,
+    reason TEXT NOT NULL,
+    status SMALLINT DEFAULT 0,
+    resolved_by BIGINT REFERENCES users(id),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    resolved_at TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS user_notifications (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES users(id),
+    notification_type SMALLINT NOT NULL,
+    actor_id BIGINT REFERENCES users(id),
+    post_id BIGINT REFERENCES posts(id) ON DELETE CASCADE,
+    body TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS oauth_states (
+    id BIGSERIAL PRIMARY KEY,
+    provider VARCHAR(50) NOT NULL,
+    state VARCHAR(64) UNIQUE NOT NULL,
+    user_id BIGINT REFERENCES users(id),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    expires_at TIMESTAMPTZ NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS registration_queue (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(30) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    invite_code VARCHAR(32),
+    reason TEXT,
+    status SMALLINT DEFAULT 0,
+    reviewed_by BIGINT REFERENCES users(id),
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    reviewed_at TIMESTAMPTZ
+);
+
+CREATE TABLE IF NOT EXISTS custom_pages (
+    id SERIAL PRIMARY KEY,
+    slug VARCHAR(100) UNIQUE NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    body TEXT NOT NULL,
+    is_published BOOLEAN DEFAULT FALSE,
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS custom_emoji (
+    id SERIAL PRIMARY KEY,
+    shortcode VARCHAR(100) UNIQUE NOT NULL,
+    image_url VARCHAR(500) NOT NULL,
+    alt_text VARCHAR(200),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS email_queue (
+    id BIGSERIAL PRIMARY KEY,
+    to_email VARCHAR(255) NOT NULL,
+    subject VARCHAR(200) NOT NULL,
+    body TEXT NOT NULL,
+    status SMALLINT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    sent_at TIMESTAMPTZ
+);
+
+CREATE INDEX IF NOT EXISTS idx_blocked_blocker ON blocked_users(blocker_id);
+CREATE INDEX IF NOT EXISTS idx_blocked_blocked ON blocked_users(blocked_id);
+CREATE INDEX IF NOT EXISTS idx_hidden_posts_user ON hidden_posts(user_id);
+CREATE INDEX IF NOT EXISTS idx_mod_notes_user ON mod_notes(user_id);
+CREATE INDEX IF NOT EXISTS idx_reports_status ON post_reports(status);
+CREATE INDEX IF NOT EXISTS idx_notifications_user ON user_notifications(user_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_notifications_created ON user_notifications(user_id, created_at DESC);
+
 COMMIT;

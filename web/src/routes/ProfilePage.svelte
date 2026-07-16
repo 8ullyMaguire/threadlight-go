@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { currentUser } from '../lib/stores/auth';
+  import { currentUser, logout } from '../lib/stores/auth';
   import api from '../lib/api/client';
 
   export let goTo;
@@ -11,8 +11,14 @@
   let userAchievements = [];
   let loading = false;
   let tab = 'posts';
+  let editing = false;
+  let editDisplayName = '';
+  let editBio = '';
+  let isFollowing = false;
+  let isBlocked = false;
 
   $: username = user?.username || '';
+  $: isOwnProfile = $currentUser && profile && $currentUser.username === profile.username;
 
   onMount(async () => {
     if (!username) return;
@@ -24,6 +30,10 @@
       userPosts = posts.posts || posts || [];
       const ach = await api.listAchievements();
       userAchievements = ach.achievements || ach || [];
+      isFollowing = profile.is_following || false;
+      isBlocked = profile.is_blocked || false;
+      editDisplayName = profile.display_name || '';
+      editBio = profile.bio || '';
     } catch (e) {
       // ignore
     } finally {
@@ -33,6 +43,68 @@
 
   async function handleMessage() {
     goTo('messages', { username });
+  }
+
+  async function toggleFollow() {
+    try {
+      if (isFollowing) {
+        await api.unfollowUser(profile.username);
+        isFollowing = false;
+        profile.follower_count = (profile.follower_count || 1) - 1;
+      } else {
+        await api.followUser(profile.username);
+        isFollowing = true;
+        profile.follower_count = (profile.follower_count || 0) + 1;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function toggleBlock() {
+    try {
+      if (isBlocked) {
+        await api.unblockUser(profile.username);
+        isBlocked = false;
+      } else {
+        await api.blockUser(profile.username);
+        isBlocked = true;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function saveProfile() {
+    try {
+      const updated = await api.updateProfile({ display_name: editDisplayName, bio: editBio });
+      profile = { ...profile, ...updated };
+      editing = false;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  async function handleAvatarUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const res = await api.uploadAvatar(file);
+      profile = { ...profile, avatar_url: res.url };
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function handleBannerUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const res = await api.uploadBanner(file);
+      profile = { ...profile, banner_url: res.url };
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   function formatTime(dateStr) {
@@ -45,13 +117,42 @@
   {#if loading}
     <p class="placeholder">Loading profile...</p>
   {:else if profile}
+    <div class="profile-banner" style={profile.banner_url ? `background-image: url(${profile.banner_url})` : ''}>
+      {#if isOwnProfile}
+        <label class="banner-upload">
+          <input type="file" accept="image/*" on:change={handleBannerUpload} />
+          Change banner
+        </label>
+      {/if}
+    </div>
     <div class="profile-header">
-      <div class="profile-avatar">{profile.username?.charAt(0).toUpperCase() || '?'}</div>
+      <div class="avatar-section">
+        {#if profile.avatar_url}
+          <img src={profile.avatar_url} alt="" class="avatar" />
+        {:else}
+          <div class="profile-avatar">{profile.username?.charAt(0).toUpperCase() || '?'}</div>
+        {/if}
+        {#if isOwnProfile}
+          <label class="avatar-upload">
+            <input type="file" accept="image/*" on:change={handleAvatarUpload} />
+            Change
+          </label>
+        {/if}
+      </div>
       <div class="profile-info">
-        <h2>{profile.display_name || profile.username}</h2>
-        <p class="username">@{profile.username}</p>
-        {#if profile.bio}
-          <p class="bio">{profile.bio}</p>
+        {#if editing}
+          <input bind:value={editDisplayName} placeholder="Display name" class="edit-input" />
+          <textarea bind:value={editBio} placeholder="Bio" class="edit-textarea"></textarea>
+          <div class="edit-actions">
+            <button class="btn" on:click={saveProfile}>Save</button>
+            <button class="btn" on:click={() => { editing = false; }}>Cancel</button>
+          </div>
+        {:else}
+          <h2>{profile.display_name || profile.username}</h2>
+          <p class="username">@{profile.username}</p>
+          {#if profile.bio}
+            <div class="bio">{@html profile.bio}</div>
+          {/if}
         {/if}
         <div class="stats">
           <span><strong>{profile.post_count || 0}</strong> posts</span>
@@ -65,7 +166,18 @@
         </div>
       </div>
       <div class="profile-actions">
-        <button class="msg-btn" on:click={handleMessage}>Message</button>
+        {#if isOwnProfile}
+          <button class="btn" on:click={() => { editing = !editing; }}>Edit profile</button>
+          <button class="btn" on:click={() => { logout(); goTo('login'); }}>Log out</button>
+        {:else}
+          <button class="msg-btn" on:click={handleMessage}>Message</button>
+          <button class="btn" class:active={isFollowing} on:click={toggleFollow}>
+            {isFollowing ? 'Following' : 'Follow'}
+          </button>
+          <button class="btn btn-danger" class:active={isBlocked} on:click={toggleBlock}>
+            {isBlocked ? 'Blocked' : 'Block'}
+          </button>
+        {/if}
       </div>
     </div>
 
@@ -260,6 +372,123 @@
     font-size: 0.75rem;
     color: var(--text);
   }
+  .profile-banner {
+    height: 200px;
+    background: var(--code-bg);
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    margin-bottom: -3rem;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    padding: 0.5rem;
+  }
+
+  .banner-upload {
+    font-size: 0.75rem;
+    background: rgba(0,0,0,0.5);
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .banner-upload input {
+    display: none;
+  }
+
+  .avatar-section {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--bg);
+  }
+
+  .avatar-upload {
+    font-size: 0.75rem;
+    color: var(--accent);
+    cursor: pointer;
+    margin-top: 0.25rem;
+  }
+
+  .avatar-upload input {
+    display: none;
+  }
+
+  .edit-input {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: var(--bg);
+    color: var(--text);
+    box-sizing: border-box;
+  }
+
+  .edit-textarea {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 80px;
+    resize: vertical;
+    box-sizing: border-box;
+  }
+
+  .edit-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .bio {
+    line-height: 1.5;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+
+  .btn.active {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  .btn-danger {
+    color: #ef4444;
+    border-color: #ef4444;
+  }
+
+  .btn-danger.active {
+    background: #ef4444;
+    color: white;
+  }
+
   .placeholder, .empty {
     text-align: center;
     padding: 2rem;

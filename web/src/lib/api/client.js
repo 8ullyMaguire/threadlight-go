@@ -48,12 +48,22 @@ class ApiClient {
   login(email, password) { return this.post('/api/v1/auth/login', { email, password }); }
   logout() { return this.post('/api/v1/auth/logout'); }
   session() { return this.get('/api/v1/auth/session'); }
+  forgotPassword(email) { return this.post('/api/v1/auth/forgot-password', { email }); }
+  resetPassword(token, password) { return this.post('/api/v1/auth/reset-password', { token, password }); }
+  resendVerification() { return this.post('/api/v1/auth/resend-verification'); }
+  verifyEmail(token) { return this.post('/api/v1/auth/verify-email', { token }); }
 
   // Posts
   createPost(data) { return this.post('/api/v1/posts', data); }
   getPost(id) { return this.get(`/api/v1/posts/${id}`); }
   listPosts(limit = 20, offset = 0) { return this.get(`/api/v1/posts?limit=${limit}&offset=${offset}`); }
   interact(postId, type, metadata) { return this.post(`/api/v1/posts/${postId}/interact`, { interaction_type: type, metadata }); }
+  deletePost(id) { return this.del(`/api/v1/posts/${id}`); }
+  hidePost(id) { return this.post(`/api/v1/posts/${id}/hide`); }
+  unhidePost(id) { return this.post(`/api/v1/posts/${id}/unhide`); }
+  savePost(id) { return this.post(`/api/v1/posts/${id}/save`); }
+  unsavePost(id) { return this.post(`/api/v1/posts/${id}/unsave`); }
+  reportPost(id, reason) { return this.post(`/api/v1/posts/${id}/report`, { reason }); }
 
   // Tags
   createTag(name, category) { return this.post('/api/v1/tags', { name, category }); }
@@ -99,10 +109,15 @@ class ApiClient {
   // Moderation
   flagContent(postId, reason) { return this.post('/api/v1/mod/flag', { post_id: postId, reason }); }
   getModLog() { return this.get('/api/v1/mod/log'); }
+  getReports() { return this.get('/api/v1/mod/reports'); }
+  resolveReport(id, action) { return this.post(`/api/v1/mod/reports/${id}/resolve`, { action }); }
+  createModNote(userId, body) { return this.post('/api/v1/mod/notes', { user_id: userId, body }); }
+  getModNotes(userId) { return this.get(`/api/v1/mod/notes/${userId}`); }
 
   // Credits
   claimDaily() { return this.post('/api/v1/credits/claim-daily'); }
   getBalance() { return this.get('/api/v1/credits/balance'); }
+  getTransactionHistory() { return this.get('/api/v1/credits/transactions'); }
 
   // Leaderboard
   getLeaderboard(type, period = 'weekly') {
@@ -123,8 +138,52 @@ class ApiClient {
   // Achievements
   listAchievements() { return this.get('/api/v1/achievements'); }
 
+  // Users / Social
+  getUser(username) { return this.get(`/api/v1/users/${encodeURIComponent(username)}`); }
+  getUserPosts(username, limit = 20, offset = 0) { return this.get(`/api/v1/users/${encodeURIComponent(username)}/posts?limit=${limit}&offset=${offset}`); }
+  getFollowers(username) { return this.get(`/api/v1/users/${encodeURIComponent(username)}/followers`); }
+  getFollowing(username) { return this.get(`/api/v1/users/${encodeURIComponent(username)}/following`); }
+  followUser(username) { return this.post(`/api/v1/users/${encodeURIComponent(username)}/follow`); }
+  unfollowUser(username) { return this.post(`/api/v1/users/${encodeURIComponent(username)}/unfollow`); }
+  blockUser(username) { return this.post(`/api/v1/users/${encodeURIComponent(username)}/block`); }
+  unblockUser(username) { return this.post(`/api/v1/users/${encodeURIComponent(username)}/unblock`); }
+  getBlockedUsers() { return this.get('/api/v1/users/blocked'); }
+  updateProfile(data) { return this.patch('/api/v1/users/me', data); }
+
+  // Notifications
+  listNotifications() { return this.get('/api/v1/notifications'); }
+  markNotificationRead(id) { return this.post(`/api/v1/notifications/${id}/read`); }
+  markAllNotificationsRead() { return this.post('/api/v1/notifications/read-all'); }
+
+  // Admin
+  adminListUsers() { return this.get('/api/v1/admin/users'); }
+  adminSuspendUser(id, reason) { return this.post(`/api/v1/admin/users/${id}/suspend`, { reason }); }
+  adminBanUser(id, reason) { return this.post(`/api/v1/admin/users/${id}/ban`, { reason }); }
+  adminWarnUser(id, reason) { return this.post(`/api/v1/admin/users/${id}/warn`, { reason }); }
+  adminDeletePost(id) { return this.del(`/api/v1/admin/posts/${id}`); }
+
+  // Referrals
+  getReferralCode() { return this.get('/api/v1/referrals/code'); }
+  getReferrals() { return this.get('/api/v1/referrals'); }
+
   // Health
   health() { return this.get('/health'); }
+
+  // File uploads
+  uploadAvatar(file) { return this.upload('/api/v1/users/me/avatar', file); }
+  uploadBanner(file) { return this.upload('/api/v1/users/me/banner', file); }
+
+  async upload(path, file) {
+    const form = new FormData();
+    form.append('file', file);
+    const headers = {};
+    if (this.token) headers['Authorization'] = `Bearer ${this.token}`;
+    const url = `${API_BASE}${path}`;
+    const res = await fetch(url, { method: 'POST', headers, body: form });
+    const data = await res.json();
+    if (!res.ok) throw new ApiError(res.status, data.error || 'Upload failed');
+    return data;
+  }
 }
 
 class ApiError extends Error {

@@ -12,6 +12,8 @@
   import CommunitiesPage from './routes/CommunitiesPage.svelte';
   import CollectionsPage from './routes/CollectionsPage.svelte';
   import SettingsPage from './routes/SettingsPage.svelte';
+  import NotificationsPage from './routes/NotificationsPage.svelte';
+  import BlockedUsersPage from './routes/BlockedUsersPage.svelte';
   import LeaderboardPage from './routes/LeaderboardPage.svelte';
   import AdminPage from './routes/AdminPage.svelte';
   import TrendingSidebar from './lib/components/TrendingSidebar.svelte';
@@ -65,6 +67,10 @@
         <ModCenter {goTo} />
       {:else if page === 'settings'}
         <SettingsPage />
+      {:else if page === 'notifications'}
+        <NotificationsPage {goTo} />
+      {:else if page === 'blocked'}
+        <BlockedUsersPage {goTo} />
       {:else if page === 'leaderboard'}
         <LeaderboardPage />
       {:else if page === 'admin'}
