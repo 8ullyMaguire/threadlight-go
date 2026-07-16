@@ -15,11 +15,43 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	r.Use(gin.Logger(), gin.Recovery())
 
 	authSvc := services.NewAuthService(pg, rdb, jwtSecret)
+	postSvc := services.NewPostService(pg)
+	tagSvc := services.NewTagService(pg)
+	feedSvc := services.NewFeedService(pg)
+	trendingSvc := services.NewTrendingService(pg)
+	interactionSvc := services.NewInteractionService(pg)
+	trustSvc := services.NewTrustService(pg)
+	achievementSvc := services.NewAchievementService(pg)
+	blocklistSvc := services.NewBlocklistService(pg)
+	circleSvc := services.NewCircleService(pg)
+	collectionSvc := services.NewCollectionService(pg)
+	communitySvc := services.NewCommunityService(pg)
+	creditSvc := services.NewCreditService(pg)
+	filterSvc := services.NewFilterService(pg)
+	moderationSvc := services.NewModerationService(pg)
+	noteSvc := services.NewNoteService(pg)
+	searchSvc := services.NewSearchService(pg)
 
 	authMw := middleware.NewAuthMiddleware(authSvc)
 
 	authHandler := handlers.NewAuthHandler(authSvc)
 	healthHandler := handlers.NewHealthHandler(pg, rdb)
+	postHandler := handlers.NewPostHandler(postSvc)
+	tagHandler := handlers.NewTagHandler(tagSvc)
+	feedHandler := handlers.NewFeedHandler(feedSvc)
+	trendingHandler := handlers.NewTrendingHandler(trendingSvc)
+	interactionHandler := handlers.NewInteractionHandler(interactionSvc)
+	trustHandler := handlers.NewTrustHandler(trustSvc)
+	achievementHandler := handlers.NewAchievementHandler(achievementSvc)
+	blocklistHandler := handlers.NewBlocklistHandler(blocklistSvc)
+	circleHandler := handlers.NewCircleHandler(circleSvc)
+	collectionHandler := handlers.NewCollectionHandler(collectionSvc)
+	communityHandler := handlers.NewCommunityHandler(communitySvc)
+	creditHandler := handlers.NewCreditHandler(creditSvc)
+	filterHandler := handlers.NewFilterHandler(filterSvc)
+	moderationHandler := handlers.NewModerationHandler(moderationSvc)
+	noteHandler := handlers.NewNoteHandler(noteSvc)
+	searchHandler := handlers.NewSearchHandler(searchSvc)
 
 	r.GET("/health", healthHandler.Health)
 
@@ -29,10 +61,183 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 		{
 			auth.POST("/register", authHandler.Register)
 			auth.POST("/login", authHandler.Login)
+			auth.POST("/logout", authMw.RequireAuth(), authHandler.Logout)
+			auth.GET("/session", authMw.RequireAuth(), authHandler.Session)
 		}
 
-		auth.POST("/auth/logout", authMw.RequireAuth(), authHandler.Logout)
-		auth.GET("/auth/session", authMw.RequireAuth(), authHandler.Session)
+		posts := apiV1.Group("/posts")
+		posts.Use(authMw.RequireAuth())
+		{
+			posts.POST("", postHandler.Create)
+			posts.GET("", postHandler.List)
+			posts.GET("/count", postHandler.GetCount)
+			posts.GET("/author/:author_id", postHandler.ListByAuthor)
+			posts.GET("/:id", postHandler.GetByID)
+			posts.PUT("/:id", postHandler.Update)
+			posts.DELETE("/:id", postHandler.Delete)
+			posts.POST("/:id/archive", postHandler.Archive)
+		}
+
+		tags := apiV1.Group("/tags")
+		tags.Use(authMw.RequireAuth())
+		{
+			tags.POST("", tagHandler.Create)
+			tags.GET("", tagHandler.List)
+			tags.GET("/:id", tagHandler.GetByID)
+			tags.PUT("/:id", tagHandler.Update)
+			tags.DELETE("/:id", tagHandler.Delete)
+			tags.POST("/posts/:post_id/tags/:tag_id", tagHandler.TagPost)
+			tags.DELETE("/posts/:post_id/tags/:tag_id", tagHandler.UntagPost)
+			tags.GET("/posts/:post_id/tags", tagHandler.GetPostTags)
+		}
+
+		feeds := apiV1.Group("/feeds")
+		feeds.Use(authMw.RequireAuth())
+		{
+			feeds.POST("", feedHandler.Create)
+			feeds.GET("", feedHandler.ListByUser)
+			feeds.GET("/:id", feedHandler.GetByID)
+			feeds.PUT("/:id", feedHandler.Update)
+			feeds.DELETE("/:id", feedHandler.Delete)
+			feeds.POST("/:id/sources", feedHandler.AddSource)
+			feeds.GET("/:id/sources", feedHandler.ListSources)
+			feeds.DELETE("/sources/:source_id", feedHandler.RemoveSource)
+		}
+
+		trending := apiV1.Group("/trending")
+		trending.Use(authMw.RequireAuth())
+		{
+			trending.GET("", trendingHandler.ListTrending)
+			trending.POST("/increment", trendingHandler.IncrementTopic)
+			trending.POST("/topics", trendingHandler.AddTopic)
+		}
+
+		interactions := apiV1.Group("/interactions")
+		interactions.Use(authMw.RequireAuth())
+		{
+			interactions.POST("", interactionHandler.CreateInteraction)
+			interactions.GET("/post/:postID", interactionHandler.GetPostInteractions)
+			interactions.DELETE("/:id", interactionHandler.RemoveInteraction)
+			interactions.GET("/check", interactionHandler.HasUserInteracted)
+		}
+
+		trust := apiV1.Group("/trust")
+		trust.Use(authMw.RequireAuth())
+		{
+			trust.POST("/connections", trustHandler.CreateConnection)
+			trust.GET("/connections/outgoing", trustHandler.GetOutgoingConnections)
+			trust.GET("/connections/incoming", trustHandler.GetIncomingConnections)
+			trust.GET("/connections/:id", trustHandler.GetConnection)
+			trust.PUT("/connections/:id", trustHandler.UpdateConnection)
+			trust.DELETE("/connections/:id", trustHandler.DeleteConnection)
+		}
+
+		achievements := apiV1.Group("/achievements")
+		achievements.Use(authMw.RequireAuth())
+		{
+			achievements.GET("", achievementHandler.List)
+			achievements.GET("/user/:user_id", achievementHandler.GetUserAchievements)
+			achievements.POST("/unlock", achievementHandler.Unlock)
+		}
+
+		blocklist := apiV1.Group("/blocklist")
+		blocklist.Use(authMw.RequireAuth())
+		{
+			blocklist.POST("/entries", blocklistHandler.Create)
+			blocklist.GET("/entries", blocklistHandler.List)
+			blocklist.DELETE("/entries/:id", blocklistHandler.Delete)
+			blocklist.POST("/check", blocklistHandler.Check)
+		}
+
+		circles := apiV1.Group("/circles")
+		circles.Use(authMw.RequireAuth())
+		{
+			circles.POST("", circleHandler.CreateCircle)
+			circles.GET("", circleHandler.ListCircles)
+			circles.GET("/:id", circleHandler.GetCircle)
+			circles.PUT("/:id", circleHandler.UpdateCircle)
+			circles.POST("/:id/join", circleHandler.JoinCircle)
+			circles.POST("/:id/leave", circleHandler.LeaveCircle)
+			circles.POST("/:id/suggest", circleHandler.SuggestMember)
+			circles.GET("/:id/members", circleHandler.GetMembers)
+		}
+
+		collections := apiV1.Group("/collections")
+		collections.Use(authMw.RequireAuth())
+		{
+			collections.POST("", collectionHandler.Create)
+			collections.GET("", collectionHandler.ListByUser)
+			collections.GET("/:id", collectionHandler.GetByID)
+			collections.PUT("/:id", collectionHandler.Update)
+			collections.DELETE("/:id", collectionHandler.Delete)
+			collections.POST("/:id/posts", collectionHandler.AddPost)
+			collections.GET("/:id/posts", collectionHandler.ListPosts)
+			collections.DELETE("/:id/posts/:post_id", collectionHandler.RemovePost)
+		}
+
+		communities := apiV1.Group("/communities")
+		communities.Use(authMw.RequireAuth())
+		{
+	communities.POST("", communityHandler.Create)
+	communities.GET("", communityHandler.List)
+	communities.GET("/:slug", communityHandler.GetByID)
+	communities.POST("/:slug/join", communityHandler.Join)
+	communities.POST("/:slug/leave", communityHandler.Leave)
+	communities.GET("/:slug/members", communityHandler.Members)
+	communities.POST("/:slug/curators", communityHandler.AddCurator)
+	communities.DELETE("/:slug/curators/:user_id", communityHandler.RemoveCurator)
+	communities.POST("/:slug/fork", communityHandler.Fork)
+		}
+
+		credits := apiV1.Group("/credits")
+		credits.Use(authMw.RequireAuth())
+		{
+			credits.POST("/transfer", creditHandler.TransferCredits)
+			credits.GET("/transactions", creditHandler.GetTransactions)
+			credits.POST("/daily-reward", creditHandler.ClaimDailyReward)
+			credits.GET("/daily-reward", creditHandler.GetDailyRewardStatus)
+			credits.POST("/bounties", creditHandler.CreateBounty)
+			credits.GET("/bounties/:id", creditHandler.GetBounty)
+			credits.POST("/bounties/:id/award", creditHandler.AwardBounty)
+		}
+
+		filters := apiV1.Group("/filters")
+		filters.Use(authMw.RequireAuth())
+		{
+			filters.POST("", filterHandler.Create)
+			filters.GET("", filterHandler.List)
+			filters.PUT("/:id", filterHandler.Update)
+			filters.DELETE("/:id", filterHandler.Delete)
+			filters.GET("/check", filterHandler.Check)
+		}
+
+		moderation := apiV1.Group("/moderation")
+		moderation.Use(authMw.RequireAuth())
+		{
+			moderation.POST("/actions", moderationHandler.CreateAction)
+			moderation.GET("/actions", moderationHandler.ListActions)
+			moderation.GET("/actions/:id", moderationHandler.GetAction)
+			moderation.POST("/actions/:id/jurors", moderationHandler.AddJuror)
+			moderation.POST("/actions/:id/resolve", moderationHandler.ResolveJury)
+			moderation.POST("/jurors/:panel_id/vote", moderationHandler.VoteJury)
+		}
+
+		notes := apiV1.Group("/notes")
+		notes.Use(authMw.RequireAuth())
+		{
+			notes.POST("", noteHandler.CreateNote)
+			notes.GET("/:id", noteHandler.GetNote)
+			notes.PUT("/:id", noteHandler.UpdateNote)
+			notes.GET("/post/:postID", noteHandler.ListPostNotes)
+			notes.POST("/:id/vote", noteHandler.VoteOnNote)
+		}
+
+		search := apiV1.Group("/search")
+		search.Use(authMw.RequireAuth())
+		{
+			search.GET("", searchHandler.Search)
+			search.POST("/advanced", searchHandler.AdvancedSearch)
+		}
 	}
 
 	return r

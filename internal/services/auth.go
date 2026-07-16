@@ -40,15 +40,14 @@ func (s *AuthService) Register(ctx context.Context, req model.RegisterRequest) (
 	}
 
 	inviteCode := generateInviteCode()
-	actorID := ""
 
 	user := &model.User{}
 	err = s.pg.QueryRow(ctx,
-		`INSERT INTO users (username, email, password_hash, invite_code, actor_id)
-		 VALUES ($1, $2, $3, $4, $5)
+		`INSERT INTO users (username, email, password_hash, invite_code)
+		 VALUES ($1, $2, $3, $4)
 		 RETURNING id, username, display_name, bio, email, trust_level, trust_score,
 		           reputation, credits, is_active, onboarding_stage, proximity_opt_out, created_at`,
-		req.Username, req.Email, string(hash), inviteCode, actorID,
+		req.Username, req.Email, string(hash), inviteCode,
 	).Scan(&user.ID, &user.Username, &user.DisplayName, &user.Bio, &user.Email,
 		&user.TrustLevel, &user.TrustScore, &user.Reputation, &user.Credits,
 		&user.IsActive, &user.OnboardingStage, &user.ProximityOptOut, &user.CreatedAt)
