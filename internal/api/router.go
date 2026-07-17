@@ -12,7 +12,7 @@ import (
 func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-	r.Use(gin.Logger(), gin.Recovery(), middleware.CORS("*"))
+	r.Use(gin.Recovery(), middleware.CORS("*"))
 
 	authSvc := services.NewAuthService(pg, rdb, jwtSecret)
 	postSvc := services.NewPostService(pg)
