@@ -96,10 +96,10 @@ internal/
 ### Key Design Documents
 | File | Purpose |
 |------|---------|
-| `design.md` | Full 27-section platform design |
-| `AI_01_PROJECT_OVERVIEW.md` | Directory structure, run commands, test status |
-| `AI_02_DATABASE_SCHEMA.md` | All 31+ tables with columns and indexes |
-| `AI_03_API_REFERENCE.md` | All API endpoints with descriptions |
-| `AI_04_FRONTEND_REFERENCE.md` | Component tree, stores, routing |
-| `AI_05_BUILD_PLAN.md` | Build roadmap and current completion status |
+| `design/DESIGN.md` | Condensed platform design |
+| `design/AI_01_ARCH.md` | Architecture patterns (Go service/handler/test conventions) |
+| `design/AI_02_MODELS.md` | All 26 model structs with JSON tags |
+| `design/AI_03_API.md` | All ~95 API endpoints |
+| `design/AI_04_DB.md` | Database schema (41 tables, all CREATE TABLE) |
+| `design/AI_05_FRONTEND.md` | Frontend API client, stores, routing |
 | `TODO.md` | Feature backlog: Tier 1–4 + incomplete items |

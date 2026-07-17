@@ -76,12 +76,11 @@ polaris/
 │   │   ├── lib/components/   # Navbar, TrendingSidebar
 │   │   └── routes/           # 14 page components
 │   └── package.json
+├── design/                    # Design docs (DESIGN.md + 5 AI reference files)
 ├── docker-compose.yml         # PostgreSQL 17 + Redis 7
 ├── Makefile
-├── design.md                  # Full platform design (27 sections)
 ├── TODO.md                    # Feature backlog (Tiers 1–4, ~60 items)
-├── AGENTS.md                  # AI agent guide with architecture gaps
-└── AI_*.md                    # Context files (5 files)
+└── AGENTS.md                  # AI agent guide with architecture gaps
 ```
 
 ## Testing
@@ -96,9 +95,11 @@ cd web && npm run build
 
 ## Design Docs
 
-- [design.md](design.md) — full platform design document (27 sections)
-- [AI_01_PROJECT_OVERVIEW.md](AI_01_PROJECT_OVERVIEW.md) — condensed overview
-- [AI_02_DATABASE_SCHEMA.md](AI_02_DATABASE_SCHEMA.md) — schema reference
-- [AI_03_API_REFERENCE.md](AI_03_API_REFERENCE.md) — endpoint reference
-- [AI_04_FRONTEND_REFERENCE.md](AI_04_FRONTEND_REFERENCE.md) — frontend guide
-- [AI_05_BUILD_PLAN.md](AI_05_BUILD_PLAN.md) — build status and roadmap
+All in the `design/` directory:
+
+- [DESIGN.md](design/DESIGN.md) — condensed design overview
+- [AI_01_ARCH.md](design/AI_01_ARCH.md) — architecture patterns
+- [AI_02_MODELS.md](design/AI_02_MODELS.md) — data model reference
+- [AI_03_API.md](design/AI_03_API.md) — API endpoint reference
+- [AI_04_DB.md](design/AI_04_DB.md) — database schema reference
+- [AI_05_FRONTEND.md](design/AI_05_FRONTEND.md) — frontend patterns
