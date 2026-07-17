@@ -28,6 +28,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	communitySvc := services.NewCommunityService(pg)
 	creditSvc := services.NewCreditService(pg)
 	filterSvc := services.NewFilterService(pg)
+	configSvc := services.NewConfigService(pg)
 	moderationSvc := services.NewModerationService(pg)
 	noteSvc := services.NewNoteService(pg)
 	searchSvc := services.NewSearchService(pg)
@@ -53,6 +54,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	communityHandler := handlers.NewCommunityHandler(communitySvc)
 	creditHandler := handlers.NewCreditHandler(creditSvc)
 	filterHandler := handlers.NewFilterHandler(filterSvc)
+	configHandler := handlers.NewConfigHandler(configSvc)
 	moderationHandler := handlers.NewModerationHandler(moderationSvc)
 	noteHandler := handlers.NewNoteHandler(noteSvc)
 	searchHandler := handlers.NewSearchHandler(searchSvc)
@@ -291,6 +293,24 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			notifications.PUT("/:id/read", notifHandler.MarkRead)
 			notifications.PUT("/read-all", notifHandler.MarkAllRead)
 			notifications.GET("/unread-count", notifHandler.UnreadCount)
+		}
+
+		config := apiV1.Group("/admin")
+		config.Use(authMw.RequireAuth())
+		{
+			config.GET("/config", configHandler.GetConfig)
+			config.PUT("/config", configHandler.UpdateConfig)
+			config.POST("/invites", configHandler.GenerateInvite)
+			config.GET("/invites", configHandler.ListInvites)
+			config.GET("/invites/limit", configHandler.GetInviteLimit)
+		}
+
+		invites := apiV1.Group("/invites")
+		invites.Use(authMw.RequireAuth())
+		{
+			invites.POST("", configHandler.GenerateInvite)
+			invites.GET("", configHandler.ListInvites)
+			invites.GET("/limit", configHandler.GetInviteLimit)
 		}
 	}
 

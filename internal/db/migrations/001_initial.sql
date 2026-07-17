@@ -534,4 +534,32 @@ CREATE INDEX IF NOT EXISTS idx_reports_status ON post_reports(status);
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON user_notifications(user_id, is_read);
 CREATE INDEX IF NOT EXISTS idx_notifications_created ON user_notifications(user_id, created_at DESC);
 
+-- Invite system
+CREATE TABLE IF NOT EXISTS site_config (
+    id INTEGER PRIMARY KEY DEFAULT 1,
+    registration_mode VARCHAR(20) NOT NULL DEFAULT 'invite_only',
+    invite_limit_threshold_0 INTEGER DEFAULT 0,
+    invite_limit_threshold_1 INTEGER DEFAULT 0,
+    invite_limit_threshold_2 INTEGER DEFAULT 2,
+    invite_limit_threshold_3 INTEGER DEFAULT 5,
+    invite_limit_threshold_4 INTEGER DEFAULT 10,
+    invite_limit_threshold_5 INTEGER DEFAULT -1,
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+    CONSTRAINT single_row CHECK (id = 1)
+);
+
+INSERT INTO site_config (id) VALUES (1) ON CONFLICT (id) DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS user_invites (
+    id BIGSERIAL PRIMARY KEY,
+    inviter_id BIGINT NOT NULL REFERENCES users(id),
+    code VARCHAR(32) UNIQUE NOT NULL,
+    used_by BIGINT REFERENCES users(id),
+    used_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_invites_inviter ON user_invites(inviter_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_user_invites_code ON user_invites(code);
+
 COMMIT;

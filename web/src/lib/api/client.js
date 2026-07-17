@@ -138,6 +138,13 @@ class ApiClient {
   // Achievements
   listAchievements() { return this.get('/api/v1/achievements'); }
 
+  // Config + Invites
+  getConfig() { return this.get('/api/v1/admin/config'); }
+  updateConfig(data) { return this.put('/api/v1/admin/config', data); }
+  generateInvite() { return this.post('/api/v1/invites', {}); }
+  listInvites() { return this.get('/api/v1/invites'); }
+  getInviteLimit() { return this.get('/api/v1/invites/limit'); }
+
   // Users / Social
   getUser(username) { return this.get(`/api/v1/users/${encodeURIComponent(username)}`); }
   getUserPosts(username, limit = 20, offset = 0) { return this.get(`/api/v1/users/${encodeURIComponent(username)}/posts?limit=${limit}&offset=${offset}`); }

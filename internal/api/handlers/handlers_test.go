@@ -52,6 +52,9 @@ func TestMain(m *testing.M) {
 
 	testRouter = api.NewRouter(testPG, testRDB, testJWT)
 
+	// Ensure registration is open for tests
+	testPG.Exec(context.Background(), `UPDATE site_config SET registration_mode = 'open' WHERE id = 1`)
+
 	code := m.Run()
 	testPG.Close()
 	testRDB.Close()

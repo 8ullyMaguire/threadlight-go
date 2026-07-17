@@ -34,25 +34,53 @@ func (s *AuthService) Register(ctx context.Context, req model.RegisterRequest) (
 		return nil, errors.New("username already taken")
 	}
 
+	// Check registration mode
+	var regMode string
+	s.pg.QueryRow(ctx, `SELECT registration_mode FROM site_config WHERE id = 1`).Scan(&regMode)
+	if regMode == "" {
+		regMode = "open"
+	}
+
+	var invitedBy *int64
+	if regMode == "invite_only" {
+		if req.InviteCode == "" {
+			return nil, errors.New("invite code required — registration is currently invite-only")
+		}
+		inviterID, err := s.validateInviteCode(ctx, req.InviteCode)
+		if err != nil {
+			return nil, err
+		}
+		invitedBy = &inviterID
+	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
 	}
 
-	inviteCode := generateInviteCode()
+	personalInviteCode := generatePersonalInviteCode()
 
 	user := &model.User{}
+	var invitedByArg interface{}
+	if invitedBy != nil {
+		invitedByArg = *invitedBy
+	}
 	err = s.pg.QueryRow(ctx,
-		`INSERT INTO users (username, email, password_hash, invite_code)
-		 VALUES ($1, $2, $3, $4)
+		`INSERT INTO users (username, email, password_hash, invite_code, invited_by)
+		 VALUES ($1, $2, $3, $4, $5)
 		 RETURNING id, username, display_name, bio, email, trust_level, trust_score,
 		           reputation, credits, is_active, onboarding_stage, proximity_opt_out, created_at`,
-		req.Username, req.Email, string(hash), inviteCode,
+		req.Username, req.Email, string(hash), personalInviteCode, invitedByArg,
 	).Scan(&user.ID, &user.Username, &user.DisplayName, &user.Bio, &user.Email,
 		&user.TrustLevel, &user.TrustScore, &user.Reputation, &user.Credits,
 		&user.IsActive, &user.OnboardingStage, &user.ProximityOptOut, &user.CreatedAt)
 	if err != nil {
 		return nil, err
+	}
+
+	// Mark invite as used if invite-only
+	if regMode == "invite_only" {
+		s.pg.Exec(ctx, `UPDATE user_invites SET used_by = $1, used_at = NOW() WHERE code = $2`, user.ID, req.InviteCode)
 	}
 
 	token, err := s.generateToken(user.ID)
@@ -146,8 +174,23 @@ func (s *AuthService) generateToken(userID int64) (string, error) {
 	return token.SignedString([]byte(s.jwtSecret))
 }
 
-func generateInviteCode() string {
+func generatePersonalInviteCode() string {
 	b := make([]byte, 16)
 	rand.Read(b)
 	return hex.EncodeToString(b)
+}
+
+func (s *AuthService) validateInviteCode(ctx context.Context, code string) (int64, error) {
+	var inviterID int64
+	var usedBy *int64
+	err := s.pg.QueryRow(ctx,
+		`SELECT inviter_id, used_by FROM user_invites WHERE code = $1`, code,
+	).Scan(&inviterID, &usedBy)
+	if err != nil {
+		return 0, errors.New("invalid invite code")
+	}
+	if usedBy != nil {
+		return 0, errors.New("invite code already used")
+	}
+	return inviterID, nil
 }
