@@ -562,4 +562,9 @@ CREATE TABLE IF NOT EXISTS user_invites (
 CREATE INDEX IF NOT EXISTS idx_user_invites_inviter ON user_invites(inviter_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_user_invites_code ON user_invites(code);
 
+-- Community trust + invite-only
+ALTER TABLE communities ADD COLUMN IF NOT EXISTS invite_only BOOLEAN NOT NULL DEFAULT false;
+ALTER TABLE communities ADD COLUMN IF NOT EXISTS min_trust_score REAL DEFAULT 0.5;
+ALTER TABLE communities ADD COLUMN IF NOT EXISTS member_count INTEGER DEFAULT 0;
+
 COMMIT;

@@ -190,13 +190,19 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 		{
 	communities.POST("", communityHandler.Create)
 	communities.GET("", communityHandler.List)
-	communities.GET("/:slug", communityHandler.GetByID)
+	communities.GET("/:slug", communityHandler.GetBySlug)
+	communities.PUT("/:slug", communityHandler.Update)
+	communities.DELETE("/:slug", communityHandler.Archive)
 	communities.POST("/:slug/join", communityHandler.Join)
 	communities.POST("/:slug/leave", communityHandler.Leave)
 	communities.GET("/:slug/members", communityHandler.Members)
 	communities.POST("/:slug/curators", communityHandler.AddCurator)
 	communities.DELETE("/:slug/curators/:user_id", communityHandler.RemoveCurator)
 	communities.POST("/:slug/fork", communityHandler.Fork)
+	communities.GET("/:slug/trust", communityHandler.GetTrustGraph)
+	communities.POST("/:slug/trust", communityHandler.CreateTrustConnection)
+	communities.GET("/:slug/trust/score", communityHandler.GetCommunityTrustScore)
+	communities.GET("/:slug/join/check", communityHandler.CheckInviteStatus)
 		}
 
 		credits := apiV1.Group("/credits")
