@@ -20,7 +20,7 @@ func (s *TrustService) CreateConnection(ctx context.Context, trusterID, trusteeI
 	err := s.pg.QueryRow(ctx,
 		`INSERT INTO trust_connections (truster_id, trustee_id, weight)
 		 VALUES ($1, $2, $3)
-		 RETURNING id, truster_id, trustee_id, weight, created_at, updated_at`,
+		 RETURNING id, truster_id, trustee_id, weight, created_at, expires_at`,
 		trusterID, trusteeID, weight,
 	).Scan(&conn.ID, &conn.TrusterID, &conn.TrusteeID, &conn.Weight, &conn.CreatedAt, &conn.ExpiresAt)
 	if err != nil {

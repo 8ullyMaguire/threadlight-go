@@ -5,7 +5,7 @@ import "time"
 type User struct {
 	ID               int64      `json:"id"`
 	Username         string     `json:"username"`
-	DisplayName      string     `json:"display_name,omitempty"`
+	DisplayName      *string    `json:"display_name,omitempty"`
 	Bio              string     `json:"bio,omitempty"`
 	Email            string     `json:"email,omitempty"`
 	PasswordHash     string     `json:"-"`
@@ -23,15 +23,15 @@ type User struct {
 	OnboardingStage  int16      `json:"onboarding_stage"`
 	ProximityOptOut  bool       `json:"proximity_opt_out"`
 	LocationHash     string     `json:"location_hash,omitempty"`
-	AvatarURL        string     `json:"avatar_url,omitempty"`
-	BannerURL        string     `json:"banner_url,omitempty"`
-	BioHTML          string     `json:"bio_html,omitempty"`
+	AvatarURL        *string    `json:"avatar_url,omitempty"`
+	BannerURL        *string    `json:"banner_url,omitempty"`
+	BioHTML          *string    `json:"bio_html,omitempty"`
 	EmailVerified    bool       `json:"email_verified"`
 	EmailVerifyToken string     `json:"-"`
 	EmailVerifySentAt *time.Time `json:"-"`
 	PasswordResetToken string   `json:"-"`
 	PasswordResetSentAt *time.Time `json:"-"`
-	Theme            string     `json:"theme"`
+	Theme            *string    `json:"theme,omitempty"`
 	HideReadPosts    bool       `json:"hide_read_posts"`
 	IsDeleted        bool       `json:"is_deleted"`
 	DeletedAt        *time.Time `json:"deleted_at,omitempty"`

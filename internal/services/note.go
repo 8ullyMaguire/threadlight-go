@@ -20,7 +20,7 @@ func (s *NoteService) CreateNote(ctx context.Context, req model.CommunityNote) (
 	err := s.pg.QueryRow(ctx,
 		`INSERT INTO community_notes (post_id, author_id, body, status)
 		 VALUES ($1, $2, $3, $4)
-		 RETURNING id, post_id, author_id, body, status, helpful_yes, helpful_no, consensus_score, created_at, updated_at`,
+		 RETURNING id, post_id, author_id, body, status, helpful_yes, helpful_no, consensus_score, created_at, COALESCE(updated_at, NOW())`,
 		req.PostID, req.AuthorID, req.Body, req.Status,
 	).Scan(&note.ID, &note.PostID, &note.AuthorID, &note.Body, &note.Status,
 		&note.HelpfulYes, &note.HelpfulNo, &note.ConsensusScore, &note.CreatedAt, &note.UpdatedAt)
@@ -33,7 +33,7 @@ func (s *NoteService) CreateNote(ctx context.Context, req model.CommunityNote) (
 func (s *NoteService) GetNote(ctx context.Context, noteID int64) (*model.CommunityNote, error) {
 	note := &model.CommunityNote{}
 	err := s.pg.QueryRow(ctx,
-		`SELECT id, post_id, author_id, body, status, helpful_yes, helpful_no, consensus_score, created_at, updated_at
+		`SELECT id, post_id, author_id, body, status, helpful_yes, helpful_no, consensus_score, created_at, COALESCE(updated_at, NOW())
 		 FROM community_notes WHERE id = $1`, noteID,
 	).Scan(&note.ID, &note.PostID, &note.AuthorID, &note.Body, &note.Status,
 		&note.HelpfulYes, &note.HelpfulNo, &note.ConsensusScore, &note.CreatedAt, &note.UpdatedAt)
@@ -62,7 +62,7 @@ func (s *NoteService) UpdateNote(ctx context.Context, noteID int64, req model.Co
 
 func (s *NoteService) ListPostNotes(ctx context.Context, postID int64) ([]model.CommunityNote, error) {
 	rows, err := s.pg.Query(ctx,
-		`SELECT id, post_id, author_id, body, status, helpful_yes, helpful_no, consensus_score, created_at, updated_at
+		`SELECT id, post_id, author_id, body, status, helpful_yes, helpful_no, consensus_score, created_at, COALESCE(updated_at, NOW())
 		 FROM community_notes WHERE post_id = $1 ORDER BY consensus_score DESC`, postID)
 	if err != nil {
 		return nil, err

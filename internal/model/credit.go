@@ -16,7 +16,7 @@ type CreditTransaction struct {
 type DailyReward struct {
 	ID        int64     `json:"id"`
 	UserID    int64     `json:"user_id"`
-	Date      string    `json:"date"`
+	Date      time.Time `json:"date"`
 	Amount    int64     `json:"amount"`
 	Claimed   bool      `json:"claimed"`
 	CreatedAt time.Time `json:"created_at"`

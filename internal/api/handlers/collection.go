@@ -109,7 +109,8 @@ func (h *CollectionHandler) AddPost(c *gin.Context) {
 		return
 	}
 
-	if err := h.collectionSvc.AddPostToCollection(c.Request.Context(), collectionID, req.PostID); err != nil {
+	userID, _ := c.Get("user_id")
+	if err := h.collectionSvc.AddPostToCollection(c.Request.Context(), collectionID, req.PostID, userID.(int64)); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

@@ -20,7 +20,7 @@ func (s *FeedService) CreateFeed(ctx context.Context, ownerID int64, req model.C
 	err := s.pg.QueryRow(ctx,
 		`INSERT INTO custom_feeds (owner_id, name, description, slug, is_public, sort_order)
 		 VALUES ($1, $2, $3, $4, $5, $6)
-		 RETURNING id, owner_id, name, description, slug, is_public, sort_order, created_at, updated_at`,
+		 RETURNING id, owner_id, name, description, slug, is_public, sort_order, created_at, COALESCE(updated_at, NOW())`,
 		ownerID, req.Name, req.Description, req.Slug, req.IsPublic, req.SortOrder,
 	).Scan(&feed.ID, &feed.OwnerID, &feed.Name, &feed.Description, &feed.Slug, &feed.IsPublic, &feed.SortOrder, &feed.CreatedAt, &feed.UpdatedAt)
 	if err != nil {
@@ -32,7 +32,7 @@ func (s *FeedService) CreateFeed(ctx context.Context, ownerID int64, req model.C
 func (s *FeedService) GetFeed(ctx context.Context, feedID int64) (*model.CustomFeed, error) {
 	feed := &model.CustomFeed{}
 	err := s.pg.QueryRow(ctx,
-		`SELECT id, owner_id, name, description, slug, is_public, sort_order, created_at, updated_at
+		`SELECT id, owner_id, name, description, slug, is_public, sort_order, created_at, COALESCE(updated_at, NOW())
 		 FROM custom_feeds WHERE id = $1`, feedID,
 	).Scan(&feed.ID, &feed.OwnerID, &feed.Name, &feed.Description, &feed.Slug, &feed.IsPublic, &feed.SortOrder, &feed.CreatedAt, &feed.UpdatedAt)
 	if err != nil {
@@ -67,7 +67,7 @@ func (s *FeedService) DeleteFeed(ctx context.Context, feedID int64) error {
 
 func (s *FeedService) ListUserFeeds(ctx context.Context, ownerID int64) ([]model.CustomFeed, error) {
 	rows, err := s.pg.Query(ctx,
-		`SELECT id, owner_id, name, description, slug, is_public, sort_order, created_at, updated_at
+		`SELECT id, owner_id, name, description, slug, is_public, sort_order, created_at, COALESCE(updated_at, NOW())
 		 FROM custom_feeds WHERE owner_id = $1 ORDER BY sort_order, name`, ownerID)
 	if err != nil {
 		return nil, err

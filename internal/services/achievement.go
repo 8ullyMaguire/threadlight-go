@@ -72,7 +72,7 @@ func (s *AchievementService) UnlockAchievement(ctx context.Context, userID int64
 
 func (s *AchievementService) UpdateProgress(ctx context.Context, userID int64, achievementID int, progress float64) error {
 	_, err := s.pg.Exec(ctx,
-		`UPDATE user_achievements SET progress = $3, unlocked_at = CASE WHEN $3 >= 1.0 AND unlocked_at IS NULL THEN NOW() ELSE unlocked_at END
+		`UPDATE user_achievements SET progress = $3::double precision, unlocked_at = CASE WHEN $3::double precision >= 1.0 AND unlocked_at IS NULL THEN NOW() ELSE unlocked_at END
 		 WHERE user_id = $1 AND achievement_id = $2`,
 		userID, achievementID, progress)
 	return err

@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/opencode-ai/polaris/internal/model"
@@ -36,17 +37,28 @@ func (s *TrendingService) GetTrendingTopics(ctx context.Context, limit int) ([]m
 }
 
 func (s *TrendingService) IncrementTopic(ctx context.Context, topic string) error {
-	_, err := s.pg.Exec(ctx,
-		`INSERT INTO trending_topics (topic, frequency, velocity)
-		 VALUES ($1, 1, 1.0)
-		 ON CONFLICT (topic) DO UPDATE SET frequency = trending_topics.frequency + 1,
-		                                   velocity = trending_topics.velocity * 0.9 + 1.0`,
-		topic)
+	var exists bool
+	err := s.pg.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM trending_topics WHERE topic = $1)`, topic).Scan(&exists)
+	if err != nil {
+		return err
+	}
+	if exists {
+		_, err = s.pg.Exec(ctx,
+			`UPDATE trending_topics SET frequency = frequency + 1, velocity = velocity * 0.9 + 1.0 WHERE topic = $1`, topic)
+	} else {
+		_, err = s.pg.Exec(ctx,
+			`INSERT INTO trending_topics (topic, frequency, velocity) VALUES ($1, 1, 1.0)`, topic)
+	}
 	return err
 }
 
 func (s *TrendingService) AddTopic(ctx context.Context, topic string, tagID *int64) (*model.TrendingTopic, error) {
 	t := &model.TrendingTopic{}
+	var exists bool
+	s.pg.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM trending_topics WHERE topic = $1)`, topic).Scan(&exists)
+	if exists {
+		return nil, fmt.Errorf("topic already exists")
+	}
 	err := s.pg.QueryRow(ctx,
 		`INSERT INTO trending_topics (topic, frequency, velocity, tag_id)
 		 VALUES ($1, 1, 1.0, $2)

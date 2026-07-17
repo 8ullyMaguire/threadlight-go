@@ -75,7 +75,7 @@ func (s *ModerationService) AddJuror(ctx context.Context, actionID, jurorID int6
 	err := s.pg.QueryRow(ctx,
 		`INSERT INTO jury_panels (target_action_id, juror_id)
 		 VALUES ($1, $2)
-		 RETURNING id, target_action_id, juror_id, vote, reason, created_at`,
+		 RETURNING id, target_action_id, juror_id, vote, COALESCE(reason, ''), created_at`,
 		actionID, jurorID,
 	).Scan(&panel.ID, &panel.TargetActionID, &panel.JurorID, &panel.Vote, &panel.Reason, &panel.CreatedAt)
 	if err != nil {

@@ -22,7 +22,7 @@ func (s *CommunityService) CreateCommunity(ctx context.Context, req model.Commun
 	comm := &model.Community{}
 	err := s.pg.QueryRow(ctx,
 		`INSERT INTO communities (name, description, slug, tags, curator_lock, slow_boot_days, invite_only, min_trust_score, forked_from, created_by)
-		 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+		 VALUES ($1, $2, $3, $4::text[], $5, $6, $7, $8, $9, $10)
 		 RETURNING id, name, description, slug, tags, curator_lock, slow_boot_days, invite_only, min_trust_score, forked_from, created_by, member_count, created_at, updated_at`,
 		req.Name, req.Description, req.Slug, req.Tags, req.CuratorLock, req.SlowBootDays, req.InviteOnly,
 		req.MinTrustScore, req.ForkedFrom, req.CreatedBy,
@@ -68,7 +68,7 @@ func (s *CommunityService) UpdateCommunity(ctx context.Context, communityID int6
 		`UPDATE communities SET name = COALESCE(NULLIF($2, ''), name),
 		                        description = COALESCE(NULLIF($3, ''), description),
 		                        slug = COALESCE(NULLIF($4, ''), slug),
-		                        tags = CASE WHEN $5 IS NOT NULL THEN $5 ELSE tags END,
+		                        tags = COALESCE($5::text[], tags),
 		                        curator_lock = $6,
 		                        slow_boot_days = $7,
 		                        invite_only = $8,

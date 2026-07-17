@@ -148,7 +148,7 @@ func (s *UserService) ListBlockedUsers(ctx context.Context, userID int64) ([]mod
 func (s *UserService) GetNotifications(ctx context.Context, userID int64) ([]model.Notification, error) {
 	rows, err := s.pg.Query(ctx,
 		`SELECT id, user_id, notification_type, actor_id, post_id, body, is_read, created_at
-		 FROM notifications WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50`, userID)
+		 FROM user_notifications WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50`, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -168,6 +168,6 @@ func (s *UserService) GetNotifications(ctx context.Context, userID int64) ([]mod
 
 func (s *UserService) MarkNotificationRead(ctx context.Context, notificationID int64) error {
 	_, err := s.pg.Exec(ctx,
-		`UPDATE notifications SET is_read = true WHERE id = $1`, notificationID)
+		`UPDATE user_notifications SET is_read = true WHERE id = $1`, notificationID)
 	return err
 }

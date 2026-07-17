@@ -84,11 +84,11 @@ func (s *CollectionService) ListUserCollections(ctx context.Context, ownerID int
 	return cols, nil
 }
 
-func (s *CollectionService) AddPostToCollection(ctx context.Context, collectionID, postID int64) error {
+func (s *CollectionService) AddPostToCollection(ctx context.Context, collectionID, postID, addedBy int64) error {
 	_, err := s.pg.Exec(ctx,
-		`INSERT INTO collection_posts (collection_id, post_id, created_at)
-		 VALUES ($1, $2, NOW()) ON CONFLICT DO NOTHING`,
-		collectionID, postID)
+		`INSERT INTO collection_posts (collection_id, post_id, added_by, created_at)
+		 VALUES ($1, $2, $3, NOW()) ON CONFLICT DO NOTHING`,
+		collectionID, postID, addedBy)
 	return err
 }
 
