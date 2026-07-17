@@ -62,6 +62,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	blockHandler := handlers.NewBlockHandler(blockSvc)
 	reportHandler := handlers.NewReportHandler(reportSvc)
 	notifHandler := handlers.NewNotificationHandler(notifSvc)
+	aboutHandler := handlers.NewAboutHandler(configSvc)
 
 	r.GET("/health", healthHandler.Health)
 
@@ -319,6 +320,8 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			invites.GET("/limit", configHandler.GetInviteLimit)
 		}
 	}
+
+	r.GET("/api/v1/about", aboutHandler.GetAbout)
 
 	return r
 }

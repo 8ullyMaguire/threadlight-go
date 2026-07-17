@@ -16,6 +16,8 @@
   import BlockedUsersPage from './routes/BlockedUsersPage.svelte';
   import LeaderboardPage from './routes/LeaderboardPage.svelte';
   import AdminPage from './routes/AdminPage.svelte';
+  import AboutPage from './routes/AboutPage.svelte';
+  import Footer from './lib/components/Footer.svelte';
   import TrendingSidebar from './lib/components/TrendingSidebar.svelte';
 
   let page = 'feed';
@@ -41,12 +43,14 @@
   });
 </script>
 
-{#if !$isAuthenticated}
+{#if !$isAuthenticated && page !== 'about'}
   {#if page === 'register'}
     <RegisterPage on:register={() => goTo('feed')} on:nav={(e) => goTo(e.detail.page)} />
   {:else}
     <LoginPage on:login={() => goTo('feed')} on:nav={(e) => goTo(e.detail.page)} />
   {/if}
+{:else if !$isAuthenticated && page === 'about'}
+  <AboutPage />
 {:else if onboardingIncomplete}
   <OnboardingWizard on:complete={() => goTo('feed')} />
 {:else}
@@ -75,6 +79,8 @@
         <LeaderboardPage />
       {:else if page === 'admin'}
         <AdminPage />
+      {:else if page === 'about'}
+        <AboutPage />
       {:else}
         <FeedPage {goTo} />
       {/if}
@@ -83,6 +89,7 @@
       <TrendingSidebar {goTo} />
     </aside>
   </div>
+  <Footer {goTo} />
 {/if}
 
 <style>

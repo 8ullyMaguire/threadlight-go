@@ -567,4 +567,20 @@ ALTER TABLE communities ADD COLUMN IF NOT EXISTS invite_only BOOLEAN NOT NULL DE
 ALTER TABLE communities ADD COLUMN IF NOT EXISTS min_trust_score REAL DEFAULT 0.5;
 ALTER TABLE communities ADD COLUMN IF NOT EXISTS member_count INTEGER DEFAULT 0;
 
+-- Instance info + pruning config
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS instance_name VARCHAR(200) DEFAULT 'Polaris';
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS instance_short_description VARCHAR(500) DEFAULT 'A community-built social platform';
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS instance_description TEXT DEFAULT 'Polaris is a social platform for positive connection.';
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS admin_contact_email VARCHAR(255) DEFAULT '';
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS version VARCHAR(20) DEFAULT '0.1';
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS privacy_policy_url VARCHAR(500) DEFAULT '';
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS terms_url VARCHAR(500) DEFAULT '';
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS code_of_conduct_url VARCHAR(500) DEFAULT '';
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS defederation_policy_url VARCHAR(500) DEFAULT '';
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS donation_url VARCHAR(500) DEFAULT '';
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS donate_text TEXT DEFAULT '';
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS prune_age_days INTEGER DEFAULT 180;
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS prune_min_interactions INTEGER DEFAULT 3;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
+
 COMMIT;

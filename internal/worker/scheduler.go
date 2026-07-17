@@ -40,7 +40,7 @@ func (s *Scheduler) Start(ctx context.Context) {
 		{"scheduled-post", 1 * time.Minute, func(c context.Context) { RunScheduledPostPublisher(c, s.pg) }},
 		{"community-notes", 15 * time.Minute, func(c context.Context) { RunCommunityNotesProcessor(c, s.pg) }},
 		{"active-stats", 5 * time.Minute, func(c context.Context) { RunActiveStatsUpdater(c, s.pg, s.rdb) }},
-		{"prune", 1 * time.Hour, func(c context.Context) { RunPruneWorker(c, s.pg) }},
+  {"prune", 1 * time.Hour, func(c context.Context) { RunPrune(c, s.pg) }},
 	}
 
 	for _, w := range workers {

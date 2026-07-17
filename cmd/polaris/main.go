@@ -9,10 +9,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/opencode-ai/polaris/internal/api"
-	"github.com/opencode-ai/polaris/internal/db"
 	"github.com/opencode-ai/polaris/internal/api/middleware"
+	"github.com/opencode-ai/polaris/internal/db"
 	"github.com/rs/zerolog"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func main() {
@@ -62,8 +64,19 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 	router := api.NewRouter(pg, rdb, jwtSecret)
-	// Add logging middleware at the top of the chain
 	router.Use(middleware.Logging(logger))
+
+	// Seed admin user if ADMIN_EMAIL and ADMIN_PASSWORD are set
+	adminEmail := os.Getenv("ADMIN_EMAIL")
+	adminPass := os.Getenv("ADMIN_PASSWORD")
+	if adminEmail != "" && adminPass != "" {
+		err := seedAdmin(pg, adminEmail, adminPass)
+		if err != nil {
+			logger.Warn().Err(err).Msg("failed to seed admin user")
+		} else {
+			logger.Info().Str("email", adminEmail).Msg("admin user ready")
+		}
+	}
 
 	srv := &http.Server{
 		Addr:         addr,
@@ -90,4 +103,28 @@ func main() {
 		logger.Fatal().Err(err).Msg("shutdown failed")
 	}
 	logger.Info().Msg("server stopped")
+}
+
+func seedAdmin(pg *pgxpool.Pool, email, password string) error {
+	ctx := context.Background()
+	var count int
+	pg.QueryRow(ctx, `SELECT COUNT(*) FROM users WHERE is_admin = true`).Scan(&count)
+	if count > 0 {
+		return nil
+	}
+	var userID int64
+	err := pg.QueryRow(ctx, `SELECT id FROM users WHERE email = $1`, email).Scan(&userID)
+	if err == nil {
+		_, err := pg.Exec(ctx, `UPDATE users SET is_admin = true, trust_score = 10.0 WHERE id = $1`, userID)
+		return err
+	}
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+	_, err = pg.Exec(ctx,
+		`INSERT INTO users (username, email, password_hash, is_admin, trust_score, onboarding_stage)
+		 VALUES ($1, $2, $3, true, 10.0, 4)`,
+		"admin", email, string(hash))
+	return err
 }
