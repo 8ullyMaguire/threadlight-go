@@ -53,7 +53,7 @@ func (s *UserService) UpdateProfile(ctx context.Context, userID int64, req model
 	err := s.pg.QueryRow(ctx,
 		`UPDATE users SET
 		     display_name = COALESCE(NULLIF($2, ''), display_name),
-		     bio = COALESCE(NULLIF($3, ''), bio),
+		bio = COALESCE($3, bio),
 		     theme = COALESCE(NULLIF($4, ''), theme),
 		     hide_read_posts = COALESCE($5, hide_read_posts),
 		     proximity_opt_out = COALESCE($6, proximity_opt_out)

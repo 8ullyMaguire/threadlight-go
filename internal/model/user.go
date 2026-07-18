@@ -6,7 +6,7 @@ type User struct {
 	ID               int64      `json:"id"`
 	Username         string     `json:"username"`
 	DisplayName      *string    `json:"display_name,omitempty"`
-	Bio              string     `json:"bio,omitempty"`
+	Bio *string `json:"bio,omitempty"`
 	Email            string     `json:"email,omitempty"`
 	PasswordHash     string     `json:"-"`
 	TrustLevel       int16      `json:"trust_level"`

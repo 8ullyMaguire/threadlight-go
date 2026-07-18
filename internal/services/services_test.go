@@ -250,12 +250,12 @@ func TestUserService_UpdateProfile(t *testing.T) {
 		fmt.Sprintf("upd_%d@test.com", time.Now().UnixNano()))
 
 	newBio := "Updated biography"
-	upd, err := svc.UpdateProfile(ctx, user.ID, model.User{Bio: newBio})
+	upd, err := svc.UpdateProfile(ctx, user.ID, model.User{Bio: &newBio})
 	if err != nil {
 		t.Errorf("UpdateProfile: %v", err)
 	}
-	if upd.Bio != newBio {
-		t.Errorf("Bio: got %q, want %q", upd.Bio, newBio)
+	if upd.Bio == nil || *upd.Bio != newBio {
+		t.Errorf("Bio: got %v, want %q", upd.Bio, newBio)
 	}
 }
 
