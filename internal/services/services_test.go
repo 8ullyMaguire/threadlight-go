@@ -48,6 +48,8 @@ func migrate(pg *pgxpool.Pool) {
 	}
 
 	// Clean up any leftover test data: delete from referencing tables first
+	pg.Exec(context.Background(), `DELETE FROM post_tags WHERE post_id IN (SELECT id FROM posts WHERE author_id IN (SELECT id FROM users WHERE email LIKE '%@test.com'))`)
+	pg.Exec(context.Background(), `DELETE FROM posts WHERE author_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM user_achievements WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM community_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM trust_connections WHERE truster_id IN (SELECT id FROM users WHERE email LIKE '%@test.com') OR trustee_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
@@ -363,7 +365,7 @@ func TestPostService_UpdatePost(t *testing.T) {
 
 	resp, _ := svc.CreatePost(ctx, user.ID, model.CreatePostRequest{Title: "Original", Body: "Original body"})
 	updReq := model.UpdatePostRequest{Title: "Updated Title"}
-	upd, err := svc.UpdatePost(ctx, resp.Post.ID, updReq)
+	upd, err := svc.UpdatePost(ctx, resp.Post.ID, user.ID, updReq)
 	if err != nil {
 		t.Errorf("UpdatePost: %v", err)
 	}
@@ -381,7 +383,7 @@ func TestPostService_ArchivePost(t *testing.T) {
 
 	resp, _ := svc.CreatePost(ctx, user.ID, model.CreatePostRequest{Title: "Archive Me", Body: "Body"})
 
-	if err := svc.ArchivePost(ctx, resp.Post.ID); err != nil {
+	if err := svc.ArchivePost(ctx, resp.Post.ID, user.ID); err != nil {
 		t.Errorf("ArchivePost: %v", err)
 	}
 

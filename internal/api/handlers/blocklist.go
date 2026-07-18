@@ -23,8 +23,16 @@ func (h *BlocklistHandler) Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	uid, _ := c.Get("user_id")
-	userID := uid.(int64)
+	uid, ok := c.Get("user_id")
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+	userID, ok := uid.(int64)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user id type"})
+		return
+	}
 	req.AddedBy = &userID
 
 	entry, err := h.blocklistSvc.AddEntry(c.Request.Context(), req)

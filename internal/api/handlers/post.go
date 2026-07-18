@@ -93,13 +93,19 @@ func (h *PostHandler) Update(c *gin.Context) {
 		return
 	}
 
+	uid, _ := c.Get("user_id")
+
 	var req model.UpdatePostRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	post, err := h.postSvc.UpdatePost(c.Request.Context(), id, req)
+	post, err := h.postSvc.UpdatePost(c.Request.Context(), id, uid.(int64), req)
+	if err == model.ErrForbidden {
+		c.JSON(http.StatusForbidden, gin.H{"error": "you do not own this post"})
+		return
+	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -114,7 +120,12 @@ func (h *PostHandler) Delete(c *gin.Context) {
 		return
 	}
 
-	if err := h.postSvc.ArchivePost(c.Request.Context(), id); err != nil {
+	uid, _ := c.Get("user_id")
+
+	if err := h.postSvc.ArchivePost(c.Request.Context(), id, uid.(int64)); err == model.ErrForbidden {
+		c.JSON(http.StatusForbidden, gin.H{"error": "you do not own this post"})
+		return
+	} else if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -128,7 +139,12 @@ func (h *PostHandler) Archive(c *gin.Context) {
 		return
 	}
 
-	if err := h.postSvc.ArchivePost(c.Request.Context(), id); err != nil {
+	uid, _ := c.Get("user_id")
+
+	if err := h.postSvc.ArchivePost(c.Request.Context(), id, uid.(int64)); err == model.ErrForbidden {
+		c.JSON(http.StatusForbidden, gin.H{"error": "you do not own this post"})
+		return
+	} else if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

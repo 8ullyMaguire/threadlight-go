@@ -51,7 +51,7 @@ func (s *PostService) GetPost(ctx context.Context, postID int64) (*model.PostRes
 	return &model.PostResponse{Post: *post}, nil
 }
 
-func (s *PostService) UpdatePost(ctx context.Context, postID int64, req model.UpdatePostRequest) (*model.PostResponse, error) {
+func (s *PostService) UpdatePost(ctx context.Context, postID, userID int64, req model.UpdatePostRequest) (*model.PostResponse, error) {
 	post := &model.Post{}
 	err := s.pg.QueryRow(ctx,
 		`UPDATE posts SET title = COALESCE(NULLIF($2, ''), title),
@@ -73,18 +73,26 @@ func (s *PostService) UpdatePost(ctx context.Context, postID int64, req model.Up
 	if err != nil {
 		return nil, model.ErrNotFound
 	}
+	if post.AuthorID != userID {
+		return nil, model.ErrForbidden
+	}
 
 	return &model.PostResponse{Post: *post, Message: "post updated"}, nil
 }
 
-func (s *PostService) ArchivePost(ctx context.Context, postID int64) error {
-	_, err := s.pg.Exec(ctx,
-		`UPDATE posts SET archived_at = NOW(), is_deleted = TRUE, updated_at = NOW() WHERE id = $1 AND NOT is_deleted`,
-		postID)
+func (s *PostService) ArchivePost(ctx context.Context, postID, userID int64) error {
+	var authorID int64
+	err := s.pg.QueryRow(ctx, `SELECT author_id FROM posts WHERE id = $1 AND NOT is_deleted`, postID).Scan(&authorID)
 	if err != nil {
 		return model.ErrNotFound
 	}
-	return nil
+	if authorID != userID {
+		return model.ErrForbidden
+	}
+	_, err = s.pg.Exec(ctx,
+		`UPDATE posts SET archived_at = NOW(), is_deleted = TRUE, updated_at = NOW() WHERE id = $1 AND NOT is_deleted`,
+		postID)
+	return err
 }
 
 func (s *PostService) ListPostsByAuthor(ctx context.Context, authorID int64, limit, offset int) ([]model.Post, error) {
