@@ -3,15 +3,22 @@ package worker
 import (
 	"context"
 	"log"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func RunPrune(ctx context.Context, pg *pgxpool.Pool) {
+	// Allow full disable via env var
+	if os.Getenv("PRUNE_DISABLE") == "true" {
+		return
+	}
+
 	log.Println("prune: starting daily content pruning")
 
-	// Get prune config from site_config
+	// Get prune config from site_config, overridable by env vars
 	var ageDays, minInteractions int
 	err := pg.QueryRow(ctx,
 		`SELECT COALESCE(prune_age_days, 180), COALESCE(prune_min_interactions, 3)
@@ -20,6 +27,18 @@ func RunPrune(ctx context.Context, pg *pgxpool.Pool) {
 		log.Printf("prune: failed to read config: %v, using defaults", err)
 		ageDays = 180
 		minInteractions = 3
+	}
+
+	// Env overrides
+	if v := os.Getenv("PRUNE_AGE_DAYS"); v != "" {
+		if d, err := strconv.Atoi(v); err == nil && d > 0 {
+			ageDays = d
+		}
+	}
+	if v := os.Getenv("PRUNE_MIN_INTERACTIONS"); v != "" {
+		if m, err := strconv.Atoi(v); err == nil && m >= 0 {
+			minInteractions = m
+		}
 	}
 
 	cutoff := time.Now().AddDate(0, 0, -ageDays)

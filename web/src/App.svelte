@@ -34,7 +34,7 @@
     params = p2 || {};
   }
 
-  $: onboardingIncomplete = $currentUser && $currentUser.onboarding_stage != null && $currentUser.onboarding_stage < 4;
+  $: onboardingIncomplete = false;
 
   onMount(() => {
     checkAuth();

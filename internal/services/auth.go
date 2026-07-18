@@ -66,8 +66,8 @@ func (s *AuthService) Register(ctx context.Context, req model.RegisterRequest) (
 		invitedByArg = *invitedBy
 	}
 	err = s.pg.QueryRow(ctx,
-		`INSERT INTO users (username, email, password_hash, invite_code, invited_by)
-		 VALUES ($1, $2, $3, $4, $5)
+		`INSERT INTO users (username, email, password_hash, invite_code, invited_by, onboarding_stage)
+		 VALUES ($1, $2, $3, $4, $5, 4)
 		 RETURNING id, username, display_name, bio, email, trust_level, trust_score,
 		           reputation, credits, is_active, onboarding_stage, proximity_opt_out, created_at`,
 		req.Username, req.Email, string(hash), personalInviteCode, invitedByArg,
