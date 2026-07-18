@@ -32,7 +32,7 @@
     <div class="footer-section">
       <h4>Support</h4>
       <button class="link" on:click={() => nav('about')}>About</button>
-      <a class="link" href="/docs/" target="_blank" rel="noopener">Docs</a>
+      <a class="link" href="/docs/" target="_blank" rel="noopener">Documentation</a>
       <a class="link" href="/donate" target="_blank" rel="noopener">Donate</a>
     </div>
     <div class="footer-section version">

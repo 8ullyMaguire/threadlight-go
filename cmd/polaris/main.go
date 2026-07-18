@@ -45,9 +45,10 @@ func main() {
 		logger.Warn().Msg("JWT_SECRET not set, using dev secret - DO NOT USE IN PRODUCTION")
 		jwtSecret = "dev-secret-change-in-production"
 	}
+
 	docsDir := os.Getenv("DOCS_DIR")
 	if docsDir == "" {
-		docsDir = "./docs"
+		docsDir = "./docs/book"
 	}
 
 	logger.Info().Str("addr", addr).Msg("connecting to postgres")
@@ -82,7 +83,6 @@ func main() {
 		}
 	}
 
-	// Serve documentation as static files if the docs directory exists
 	if info, err := os.Stat(docsDir); err == nil && info.IsDir() {
 		router.Static("/docs", docsDir)
 		logger.Info().Str("dir", docsDir).Msg("serving docs at /docs")
