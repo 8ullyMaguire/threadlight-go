@@ -1,6 +1,9 @@
 # Summary
 
 [Introduction](introduction.md)
+[Dream Features](dream-features.md)
+
+# Using Polaris
 
 - [Getting Started](users/01-getting-started.md)
 - [Posts, Moods, and Media](users/02-posting.md)
