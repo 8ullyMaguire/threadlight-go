@@ -70,6 +70,25 @@ you that your problems are caused by a group of bad people, not by a system that
 wealth and power at the top. They turn your neighbor into an enemy so you don't notice who's
 actually looting your future.
 
+Beneath the surface of this apparent symmetry, the material reality reveals a different
+dynamic: the performative moralism and linguistic policing of the so-called woke left are
+not a rival to fascism but a distinctly bourgeois diversion &mdash; a petty-bourgeois
+identity politics that fragments the working class along racial and gender lines, diverting
+economic grievances into cultural feuds that serve the ruling elite's need for social control.
+The open hatred and nativist rage of the far-right, by contrast, are the raw, coercive arm
+of capital in systemic crisis, preparing the ground for authoritarian terror when liberal
+democracy can no longer manage the fundamental contradiction between labor and ownership.
+Both phenomena, in practice, function to suppress the core conflict of class: one through
+ideological conformity enforced by social penalties and manufactured consent, the other
+through paramilitary violence, scapegoating, and the dismantling of worker protections.
+Neither cancels the other in any meaningful sense; rather, they operate as complementary
+valves of bourgeois hegemony &mdash; the former pacifying dissent by absorbing activists
+into a fractured identity hierarchy, the latter threatening extermination for those who
+refuse to submit. Together, they obscure the only genuine universal interest &mdash; the
+collective emancipation of the many from the few &mdash; which neither cultural censorship
+nor ethnic hatred can ultimately contain, for both ultimately defend the same property
+relations that breed all such division.
+
 **Polaris stands against all of it.**
 
 We believe that the people who work for a living &mdash; whether they live in a city or a
