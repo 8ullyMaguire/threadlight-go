@@ -39,9 +39,10 @@ Polaris is for anyone who:
 Polaris was built because we noticed something strange about the internet.
 
 The same people who own almost everything &mdash; the landlords, the shareholder classes, the
-people who decide whether you keep your job &mdash; also own the social networks you use every
-day. And they've figured out something useful: if they can make you hate the person next to
-you, you won't notice who's picking your pocket.
+people who decide whether you keep your job, the executives who ship production to the lowest-wage
+dictatorship &mdash; also own the social networks you use every day. And they've figured out
+something useful: if they can make you hate the person next to you, you won't notice who's
+picking your pocket.
 
 That's what the algorithm does. It doesn't show you things that are true or useful. It shows
 you things that make you angry at the right people &mdash; the people it's decided are your
@@ -99,6 +100,11 @@ you should judge ideas by whether they're true, not by who said them.
 
 You don't have to agree with any of this to use Polaris. But this is the reason it exists.
 Not to make money. Not to grow. To give people a place to talk without being played.
+
+There are 138 million children in the world today being exploited for their labor &mdash;
+working in mines, in factories, in fields, in homes where they are not safe. Many of those
+children are making the products that fill the stores of the countries that bomb their
+neighborhoods. If you are not bothered by this, we would prefer you do not use this platform.
 
 ## What's in This Guide?
 
