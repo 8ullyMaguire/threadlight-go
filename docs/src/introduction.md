@@ -36,9 +36,33 @@ Polaris is for anyone who:
 
 ## A Note on Philosophy
 
-Polaris is anti-fascist. That means we oppose bullying, bigotry, and authoritarianism wherever it appears. We don't care if it comes from the left or the right &mdash; treating people badly because of who they are is always wrong.
+Polaris is anti-fascist. We believe fascism is not a single point on the political spectrum
+but a pattern of behavior that can emerge from any direction.
 
-We also believe that **virtue signaling** (showing off how good you are just to fit in) and **open hatred** are two sides of the same coin. Both stop you from thinking for yourself. Both turn you into a soldier for a team instead of letting you be a person.
+There's an idea called the **horseshoe theory**: the far-left and far-right bend toward each
+other like the ends of a horseshoe. At both extremes you find the same authoritarian habits.
+
+On the right, this looks like open hatred &mdash; nativist scapegoating, ethnic hostility,
+nostalgic appeals to an idealized past, glorification of a strongman leader who promises
+national restoration, and anti-communist rhetoric used to shut down dissent.
+
+On the left, it takes the form of **virtue signaling** and moral enforcement &mdash; cancel
+culture, political correctness as a weapon, linguistic control, performative activism, and
+branding anyone who disagrees as a bigot or fascist. Dissent is not engaged with; it's
+silenced.
+
+Both sides, in this view, abandon classical liberalism's commitment to civil liberties and
+free speech. Both judge individuals by group identity rather than as individuals. Both seek
+to impose their will through intimidation and social coercion rather than democratic
+deliberation. They use different words but the same playbook.
+
+**Polaris stands against all of it.** We oppose bigotry, bullying, and authoritarianism
+whether it wears a MAGA hat or a pronoun pin. We want you to think for yourself, question
+your own team, and treat other people as individuals &mdash; not as symbols of a side you've
+been taught to hate.
+
+Virtue signaling and open hatred are two sides of the same coin. Both stop you from thinking
+for yourself. Both turn you into a soldier for a team instead of letting you be a person.
 
 Here, we want you to be a person. A person who thinks, questions, and decides for themselves.
 

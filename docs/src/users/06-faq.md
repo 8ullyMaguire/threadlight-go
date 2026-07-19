@@ -30,7 +30,20 @@ Absolutely! Anyone can create a community. New communities start in "slow boot" 
 
 ## What does "anti-fascist" mean?
 
-It means we oppose authoritarianism, bigotry, and bullying regardless of who does it. We don't believe in "good" authoritarians vs "bad" authoritarians &mdash; we think authoritarian behavior is always wrong. This isn't about left vs right; it's about recognizing that treating people badly because of who they are, or trying to silence people you disagree with, is wrong no matter which team does it.
+Polaris opposes authoritarianism, bigotry, and bullying from any direction, not just one
+side of the political spectrum. We follow the **horseshoe theory** &mdash; the idea that the
+far-left and far-right bend towards each other like a horseshoe, developing the same
+authoritarian habits with different branding.
+
+On the right, this looks like nativist scapegoating, ethnic hostility, strongman worship,
+and anti-communist rhetoric used to shut down dissent. On the left, it looks like cancel
+culture, linguistic control, performative activism, and branding all opponents as bigots.
+Both sides abandon free speech, judge people by group identity, and impose their will through
+intimidation rather than argument. One side uses pitchforks and torches; the other uses
+social ostracism and institutional punishment.
+
+This isn't about "both sides are the same" &mdash; the details differ enormously &mdash; but
+the underlying authoritarian pattern is the same. Polaris rejects it in all its forms.
 
 ## Is my data private?
 
