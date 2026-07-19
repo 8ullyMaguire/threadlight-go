@@ -10,13 +10,47 @@ On Polaris, moderation decisions are made by **juries of regular users**. When s
 
 ## The Rules
 
-The global rules of Polaris are short and simple:
+Polaris has four rules. They are deliberately minimal. If you are a decent person trying to
+have a real conversation, you will not have trouble with any of them.
 
-1. **Don't be a bully.** Harassment, targeted hate, and organized bullying are not allowed.
-2. **Don't spread dangerous lies.** Joking is fine. But coordinated disinformation and deliberate lies that cause real harm are not okay.
-3. **Don't use bots or manipulation.** Every account should be a real person. Automation that acts like a human is not allowed.
-4. **Don't post illegal content.** Whatever is illegal where your server is located is also not allowed here.
-5. **Respect community rules.** Each community can add its own rules. Follow them when you're in that community.
+### Rule 1: You must not deny the humanity of another person.
+
+All humans deserve a baseline of dignity. You do not have to like someone, agree with their
+politics, or respect their choices. But you must recognize them as a person &mdash; not a
+cause, not a symbol, not a target.
+
+This means no dehumanization. No advocating for violence against a group. No systematic
+harassment designed to drive someone off the platform. No organizing harm against a person
+or category of people.
+
+The line: you can say "I disagree with X policy" or "X idea is wrong." You cannot say "X
+people don't deserve to exist" or organize a campaign of abuse against an individual.
+
+### Rule 2: You must not lie about material conditions.
+
+You are free to have opinions. You are free to interpret facts differently. You are not free
+to deny observable reality when that denial causes concrete harm.
+
+This means no Holocaust denial, no "vaccines cause autism" pseudoscience, no climate change
+denial that delays action, no conspiracy theories that lead to real-world violence.
+
+The line: fun speculation and humor are fine. Organizing around a demonstrable falsehood
+that hurts real people is not.
+
+### Rule 3: You must not astroturf.
+
+Every account should be a real person communicating in good faith. You may not use bots,
+buy engagement, coordinate sock-puppet campaigns, or manufacture artificial consensus.
+
+We want to know what people actually think. Not what a PR operation wants us to think.
+
+The line: a personal project that uses automation (like a reminder bot) is fine if labeled
+clearly. An army of accounts designed to simulate popular support is not.
+
+### Rule 4: You must not post illegal content.
+
+Whatever is illegal in the jurisdiction where the server is physically located is not
+allowed here. We do not want to be raided.
 
 ## Reporting a Post
 

@@ -30,20 +30,25 @@ Absolutely! Anyone can create a community. New communities start in "slow boot" 
 
 ## What does "anti-fascist" mean?
 
-Polaris opposes authoritarianism, bigotry, and bullying from any direction, not just one
-side of the political spectrum. We follow the **horseshoe theory** &mdash; the idea that the
-far-left and far-right bend towards each other like a horseshoe, developing the same
-authoritarian habits with different branding.
+It means we oppose the pattern of dividing people into enemies so the people at the top can
+stay there. When a society is broken into warring groups &mdash; left vs right, urban vs
+rural, native vs foreigner &mdash; the people who own everything keep owning everything while
+the rest of us fight each other.
 
-On the right, this looks like nativist scapegoating, ethnic hostility, strongman worship,
-and anti-communist rhetoric used to shut down dissent. On the left, it looks like cancel
-culture, linguistic control, performative activism, and branding all opponents as bigots.
-Both sides abandon free speech, judge people by group identity, and impose their will through
-intimidation rather than argument. One side uses pitchforks and torches; the other uses
-social ostracism and institutional punishment.
+This pattern can come from any direction. On the right it looks like nativist scapegoating
+and strongman worship. On the left it looks like cancel culture and moral enforcement. Both
+tell you your problems are caused by a group of bad people rather than by a system that
+concentrates wealth and power.
 
-This isn't about "both sides are the same" &mdash; the details differ enormously &mdash; but
-the underlying authoritarian pattern is the same. Polaris rejects it in all its forms.
+The **horseshoe theory** describes this: the far left and far right bend toward each other
+like the ends of a horseshoe, developing the same authoritarian habits with different
+branding. Both abandon free speech. Both reduce people to group labels. Both seek to impose
+their will through intimidation rather than argument. One side uses pitchforks; the other
+uses social ostracism.
+
+Polaris rejects this pattern in all its forms. We believe the people who work for a living
+have more in common with each other than with the people at the top, and that the only way
+to build something better is to talk to each other instead of fighting for the powerful.
 
 ## Is my data private?
 

@@ -36,35 +36,50 @@ Polaris is for anyone who:
 
 ## A Note on Philosophy
 
-Polaris is anti-fascist. We believe fascism is not a single point on the political spectrum
-but a pattern of behavior that can emerge from any direction.
+Polaris was built because we noticed something strange about the internet.
 
-There's an idea called the **horseshoe theory**: the far-left and far-right bend toward each
-other like the ends of a horseshoe. At both extremes you find the same authoritarian habits.
+The same people who own almost everything &mdash; the landlords, the shareholder classes, the
+people who decide whether you keep your job &mdash; also own the social networks you use every
+day. And they've figured out something useful: if they can make you hate the person next to
+you, you won't notice who's picking your pocket.
 
-On the right, this looks like open hatred &mdash; nativist scapegoating, ethnic hostility,
-nostalgic appeals to an idealized past, glorification of a strongman leader who promises
-national restoration, and anti-communist rhetoric used to shut down dissent.
+That's what the algorithm does. It doesn't show you things that are true or useful. It shows
+you things that make you angry at the right people &mdash; the people it's decided are your
+enemies. Not the people who set your rent. Not the people who voted to cut your school's
+budget. The person on the other side of a culture war. The person who uses different pronouns.
+The person who lives ten miles away but watches a different news channel.
 
-On the left, it takes the form of **virtue signaling** and moral enforcement &mdash; cancel
-culture, political correctness as a weapon, linguistic control, performative activism, and
-branding anyone who disagrees as a bigot or fascist. Dissent is not engaged with; it's
-silenced.
+**This is not an accident. It is a feature.**
 
-Both sides, in this view, abandon classical liberalism's commitment to civil liberties and
-free speech. Both judge individuals by group identity rather than as individuals. Both seek
-to impose their will through intimidation and social coercion rather than democratic
-deliberation. They use different words but the same playbook.
+There is a name for the pattern that emerges when a society gets divided this way. Some call
+it the **horseshoe theory**: the far left and far right bend toward each other like a
+horseshoe, developing the same authoritarian habits with different branding.
 
-**Polaris stands against all of it.** We oppose bigotry, bullying, and authoritarianism
-whether it wears a MAGA hat or a pronoun pin. We want you to think for yourself, question
-your own team, and treat other people as individuals &mdash; not as symbols of a side you've
-been taught to hate.
+What does that look like in practice?
 
-Virtue signaling and open hatred are two sides of the same coin. Both stop you from thinking
-for yourself. Both turn you into a soldier for a team instead of letting you be a person.
+On the right, it shows up as nativist scapegoating: "they" are taking your jobs, "they" are
+destroying your culture, a strongman leader will fix everything. The enemy is always an
+outsider. The solution is always force.
 
-Here, we want you to be a person. A person who thinks, questions, and decides for themselves.
+On the left, it shows up as moral enforcement: cancel anyone who says the wrong thing,
+demand ideological purity, reduce every person to their group identity. The enemy is always
+a heretic. The solution is always exclusion.
+
+Both sides do the same thing: they tell you to stop thinking and start fighting. They tell
+you that your problems are caused by a group of bad people, not by a system that concentrates
+wealth and power at the top. They turn your neighbor into an enemy so you don't notice who's
+actually looting your future.
+
+**Polaris stands against all of it.**
+
+We believe that the people who work for a living &mdash; whether they live in a city or a
+small town, whether they vote blue or red, whether they go to church or they don't &mdash;
+have more in common with each other than they do with the people at the very top. We believe
+that dividing people by identity is the oldest trick in the ruling class's book. We believe
+you should judge ideas by whether they're true, not by who said them.
+
+You don't have to agree with any of this to use Polaris. But this is the reason it exists.
+Not to make money. Not to grow. To give people a place to talk without being played.
 
 ## What's in This Guide?
 
