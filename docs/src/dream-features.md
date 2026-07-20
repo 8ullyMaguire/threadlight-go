@@ -1,63 +1,71 @@
-# Threadlight Roadmap
+# What Comes Next
 
-This page lists features we want to build. They are not promised or scheduled — they are
-things we think would make Threadlight better if someone had the time and energy.
+Threadlight is not finished. There is a lot more we want to build. This page lists the
+things we hope to add one day, if we have the time and energy.
 
----
-
-## Near-Term (Could Build This Weekend)
-
-### 1. Full Booru-Style Tag Curation
-
-Collaborative tagging exists. The next phase adds categorization (Artist, Character,
-Copyright, General, Meta, Rating), tag aliases for misspellings, and tag implications
-that automatically add parent tags. Tagging becomes a game — users earn reputation for
-being the first to tag a post correctly.
-
-### 2. Economy & Achievements
-
-Credits and achievements already exist in the database schema but are not wired into the
-UI. The plan:
-
-- **Credits**: Earned by posting, getting trusted, moderating fairly. Spent on promoting
-  posts or creating invite-only communities. Credit ledger uses a hash-chain for
-  tamper-evident audit (each transaction references the previous one's hash).
-- **Streak bonuses**: Consecutive-day activity rewards.
-- **Giftable**: Credits can be sent to other users.
-- **Achievements**: Badges for milestones — "First Post," "Level 4," "100 Days Active."
-
-### 3. Dark Mode Toggle
-
-The CSS already supports `prefers-color-scheme: dark` but there is no manual toggle. A
-theme switcher (Light / Dark / System) stored in localStorage.
-
-### 4. Frontend Refactor
-
-- Replace the 16-branch `{#if}` router with `<svelte:component>`
-- Split the 672-line SettingsPage into sub-components
-- Fix all silent error catching
-- Add pagination and loading states everywhere
+None of these are promises. They are just ideas we think would be cool.
 
 ---
 
-## Longer-Term
+## Things We Could Build Soon
 
-### 5. Federation (ActivityPub)
+### Full Booru-Style Tagging
 
-Threadlight could speak ActivityPub, becoming compatible with Mastodon, Lemmy, and Piefed.
-The architecture is designed for this — every user has an ed25519 keypair and an `actor_id`
-— but federation code is not yet implemented.
+Tags are powerful already, but we want to make them even better. Tags could be organized
+into categories like Artist, Character, General, and Rating. Misspelled tags could
+redirect to the correct spelling. Tagging could be a fun game — people earn reputation
+for being the first to tag a post correctly.
 
-### 6. Shared Blocklist Exchange
+### Economy and Achievements
 
-The shared blocklist format exists. A future version could add automated exchange between
-trusted instances.
+The database already has tables for credits and achievements, but they are not connected
+to the user interface yet. The plan:
+
+- **Credits:** Earn them by posting, getting trusted, and helping with moderation. Spend
+  them on promoting posts or creating invite-only communities. Credits could eventually
+  use a tamper-evident transaction log.
+- **Streaks:** Get rewarded for visiting multiple days in a row.
+- **Gifting:** Send credits to other users.
+- **Badges:** Get a badge for your first post, for reaching Level 4, or for being active
+  for 100 days.
+
+### Dark Mode Toggle
+
+The website already supports dark mode if your computer or phone is set to dark mode. But
+there is no manual switch yet. We want to add a theme picker (Light / Dark / System) and
+remember your choice.
+
+### Frontend Cleanup
+
+The user interface works, but it could be much better. We want to:
+
+- Replace the 16-if-statement page system with a proper router
+- Split the 672-line settings page into smaller pieces
+- Stop swallowing errors silently — show them to the user
+- Add loading animations and "load more" buttons everywhere
 
 ---
 
-## Meta
+## Things For Later
 
-Most items here are medium-sized features (2-5 files, ~200 lines each). Pick the one that
-excites you and start building.
+### Federation (ActivityPub)
 
+One day Threadlight might speak ActivityPub, the language that Mastodon and other
+platforms use to talk to each other. This would let Threadlight users follow people on
+other servers, and vice versa. The architecture already supports it — every user already
+has the right kind of keys — but the actual messaging code is not written yet.
 
+### Shared Blocklist Exchange
+
+The shared blocklist exists as a JSON file. A future version could let trusted servers
+automatically share blocklists with each other.
+
+---
+
+## The Big Picture
+
+Most of these features are medium-sized — a couple of files and a couple hundred lines
+of code. Any competent programmer could build any single item in a weekend. The hard part
+is not the coding. It is deciding what to build and in what order.
+
+If you want to help, pick the item that excites you most and start building.

@@ -1,127 +1,126 @@
-# Trust, Communities, and the Web of Trust
+# Trust and Communities
 
-This page explains the core systems that make Threadlight work: how trust is earned, how
-communities function, how the Web of Trust prevents bots, and how circles help you discover
-people.
+This page explains two important things: how you earn trust on Threadlight, and how
+communities work.
 
-## Discourse Trust Levels
+## Trust Levels
 
-Threadlight borrows the concept of **trust levels** from Discourse. These are stages of
-earned access — gradually unlocked freedoms, not locked features. Everyone starts at Level 0
-and progresses by participating constructively over time.
+On most social networks, the most important thing is how many followers you have. The
+more followers, the louder your voice. This means popular people get heard more than
+experts, even when the popular person does not know what they are talking about.
 
-### Level 0: New
+Threadlight does it differently. Instead of follower counts, we use **trust levels.**
 
-Read, basic interactions. Limits damage from drive-by spammers.
+You start at Level 0 and go up as you participate. You cannot rush it. It takes time,
+which means trust actually means something.
 
-### Level 1: Basic
+### Level 0: New User
 
-Create unrestricted posts after a few days of constructive participation.
+You just signed up. You can read posts, follow people, and do basic things. This keeps
+spammers and bots from causing trouble.
+
+### Level 1: Basic User
+
+After a few days of being here and participating, you get Level 1. Now you can create
+posts and reply to others without any limits.
 
 ### Level 2: Regular
 
-Flag content, vote on tags, heavier trust weight in the Web of Trust. Reached after
-sustained positive activity.
+After a couple of weeks of consistent participation, you become a Regular. Now you can
+flag content that breaks the rules, vote on tags, and your trust weighs more in the
+system.
 
 ### Level 3: Leader
 
-Vouch for new users, moderate content (M1), moderate tags. Leaders are users who have
-consistently demonstrated good judgment.
+After about a month of being a good community member, you become a Leader. Leaders can
+vouch for new users, help moderate content, and moderate tags.
 
 ### Level 4: Elder
 
-Full trust, weighted moderation votes, ability to help resolve edge cases. Reached after
-months of excellent standing.
+After months of active participation with no serious issues, you become an Elder. Elders
+have the highest trust weight and can help with special moderation cases.
 
-Progression depends on time spent, positive interactions received, and absence of serious
-moderation actions. It cannot be rushed.
+### How to Climb Levels
 
-## Web of Trust
+You cannot just grind for points. Trust comes from:
 
-The Web of Trust is a directed graph of trust connections between users. A→B means
-"A vouches for B as a participant in good faith."
+- **Time.** You have to actually be here.
+- **Positive interactions.** People react to your posts, follow you, and trust you.
+- **Clean record.** No bans, no suspensions, no frequent rule-breaking.
+- **Consistency.** One burst of good behavior followed by silence does not work.
 
-### Vouching
+The whole point is that trust means something. If someone says "I trust this person," it
+means they have proven themselves over time.
 
-At **Leader** level or above, you can vouch for other users. Vouching is public — your name
-appears on the trust connection. If a user you vouched for repeatedly breaks rules, your own
-standing may be affected.
+## The Web of Trust
 
-This makes bot networks structurally impossible: you cannot create a thousand bot accounts
-because you cannot find a thousand real people willing to stake their reputation on them.
+When you reach Leader level, you can **vouch** for other users. Vouching is a public
+act: your name goes on the trust connection. If someone you vouched for breaks rules
+repeatedly, it affects your trust too.
 
-### Trust Weight
+This is Threadlight's defense against bots and fake accounts. You cannot create thousands
+of fake accounts because you cannot find thousands of real people willing to put their
+own reputation on the line for them.
 
-Each user's trust vote has weight determined by their own trust level:
-
-| Level | Weight |
-|-------|--------|
-| 0-1 | 1 |
-| 2 | 2 |
-| 3 | 3 |
-| 4 | 4 |
-
-An Elder's trust matters more than a squad of brand-new accounts.
-
-### Trust Score
-
-Your overall trust score is a function of how many people trust you (weighted by their level),
-how many distrust you, and whether the people trusting you are themselves trusted. Low scores
-limit what you can do.
+Your trust vote also has a weight based on your own level. An Elder's trust matters more
+than a group of brand-new accounts.
 
 ## Communities
 
-Communities are groups of people who share a common interest. Each has its own rules,
-moderators, and culture.
+Communities are groups of people who share a common interest. Each community has its own
+rules, its own moderators, and its own culture.
 
 ### Finding and Joining
 
-Browse all public communities. Each shows name, description, member count, and whether it is
-open or invite-only.
+Browse the list of public communities. Each one shows its name, description, how many
+members it has, and whether it is open to everyone or invite-only.
 
-### Probation Period
+### Probation
 
-When you join a new community, you begin in a short **probation period**. During this time,
-your votes and flags within that community carry less weight. This prevents drive-by brigading
-and lets you learn the community's norms before your actions have full effect.
+When you join a new community, your votes there carry less weight for a little while.
+This gives you time to learn how that community works before your actions have full
+effect.
 
-### Tenure-Weighted Voting
+### Voting Power
 
-Within a community, voting power on community-specific decisions grows with membership
-duration. The relationship is logarithmic — early growth is fast, but long-time members
-accumulate a meaningful voice. This rewards sustained contribution without giving newcomers
-zero say.
+The longer you have been a member of a community, the more your vote counts. This grows
+slowly at first, then faster as you become a more established member.
 
-### Community Curators
+### Curators
 
-Curators are users who enforce a community's **scope tags** — the tags that define what the
-community is about. Curators can add or remove scope tags and prune off-topic content. They
-**cannot ban users**. Bans are handled by the moderation system (M1 + M2) or by administrators.
+Each community has **curators.** Curators make sure posts in the community are on topic.
+They can remove posts that do not belong. They **cannot ban users.** Bans are handled by
+the moderation system.
 
 ### Creating a Community
 
-Any user at **Regular** level or above can create a community. New communities start in
-**slow boot** mode (gradual member growth). Founders can set open or invite-only access.
+Any Regular user or above can create a community. New communities start in **slow boot**
+mode, which means they grow slowly at first. This gives the founders time to set the
+culture before too many people join.
 
 ### Forking a Community
 
 If a community drifts away from what you wanted it to be, you can **fork** it. Forking
-copies the member list and rules into a new community with a different direction. The
-original is unchanged.
+creates a copy of the member list and rules, giving you a fresh start with a new direction.
+The original community stays as it is.
 
 ## Circles
 
-Circles are auto-generated groups of people organized by shared interests and proximity.
-Unlike communities, circles are discovery-focused and do not require joining.
+Circles are groups of people organized by shared interests and location. Unlike
+communities, circles are for discovery. The system suggests groups of nearby people who
+like the same things you like. You do not have to join — just browse, find interesting
+people, follow them, and move on.
 
-- **Auto-Generated**: The system suggests circles of nearby people with overlapping tag
-  subscriptions and interaction history.
-- **Privacy-Preserving**: Location is handled through one-way hashing — you can find nearby
-  people without ever revealing your exact address.
-- **Lightweight**: No commitment, no notification spam. Browse a circle's trending topics
-  and active users, follow interesting people, move on.
+Circles use something called "location hashing" so you can find people near you without
+revealing your exact address.
 
-## Collaborative Tagging
+## Tag Voting
 
-Tags are not owned by post authors. Anyone can add a tag to any post; the community votes
-on relevance. See [Posting and Tagging](02-posting.md) for details.
+Tags on Threadlight are not owned by the post author. Anyone can add a tag to any post.
+And the community votes on which tags are the most accurate.
+
+Tags can be upvoted or downvoted. Widely upvoted tags are prominently displayed.
+Downvoted tags fade away. This means one person cannot force a bad tag on a post.
+
+People who consistently help with tags earn trust points. Tagging is a way to contribute
+to the community.

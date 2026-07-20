@@ -1,82 +1,96 @@
 # Introduction
 
-Welcome to Threadlight. This guide explains what Threadlight is, how it works, and how you can be part of it.
+Welcome to Threadlight. Let's start at the beginning.
 
-## What is Threadlight?
+## What Is Threadlight?
 
-Threadlight is a social platform designed around one question: **what if social media brought people together instead of tearing them apart?**
+Threadlight is a place on the internet where people can talk to each other without being
+manipulated, without being yelled at by strangers, and without some invisible computer
+program deciding what they should see.
 
-Most social networks are built to make you angry. Anger keeps you scrolling. Scrolling makes them money. They show you things that divide you, that turn your neighbor into an enemy, that make you feel like the world is a battlefield and you have to pick a side.
+You know how most social media works. You open the app and it shows you something that
+makes you angry. You scroll, you get angrier, you scroll more. The company that made the
+app makes money because you keep looking at the screen. They don't care if you're happy.
+They just care that you're still there.
 
-Threadlight is different. There are no ads. No algorithm designed to maximize outrage. No billionaires pulling the strings behind the scenes. No hate-speech engagement bait.
+Threadlight is not like that.
 
-**You decide what you see. You decide who to trust. You decide what matters.**
+There are no ads. There is no algorithm that tries to make you angry on purpose. There
+are no billionaires deciding what you should think about. There is no hate speech dressed
+up as "engagement."
 
-Think of other social networks like a mall designed to keep you lost and spending. Threadlight is a neighborhood coffee shop where you know the people, trust their opinions, and can speak freely without being screamed at by strangers.
+On Threadlight, you decide what you see. You decide who to trust. You decide what matters.
 
-## The Core Idea
+Think of other social networks like a giant shopping mall where speakers blast ads at you
+from every direction. Think of Threadlight like a cozy neighborhood coffee shop where you
+know the people, you trust what they say, and you can talk freely without being screamed at.
 
-Threadlight is built on a few beliefs:
+## Why Does Threadlight Exist?
 
-- **You are smart enough to decide for yourself.** The platform gives you tools, not orders. You choose your feed. You choose your thresholds. You choose who to trust.
-- **Good faith is the default.** We assume you're here to connect, learn, and share. The design rewards that.
-- **Collective wisdom beats top-down control.** Moderation, tagging, and curation are shared responsibilities, not corporate functions.
-- **The outrage economy is a trap.** We refuse to build for it.
+Because the people who own almost everything — the people who own the buildings you live in,
+the people who own the factories where your clothes are made, the people who decide whether
+you still have a job tomorrow — also own the social networks you use every day.
 
-## Who is This For?
+And they have figured something out.
+
+If they can make you hate the person who lives next door, you won't notice that they are
+the ones who set your rent. If they can make you angry at someone on the other side of the
+country who uses different words than you do, you won't notice that your school's budget
+just got cut again.
+
+The algorithm on other social networks does not show you things that are true or useful.
+It shows you things that make you angry at the right people. Not the people who actually
+have power over your life. The person who lives ten miles away but watches a different news
+channel. The person who uses different pronouns. The person who goes to a different church.
+
+This is not an accident. It is how those networks are designed to work.
+
+Threadlight was built to work differently. We do not want to make you angry. We want to
+give you a place to talk, to share, to learn, and to connect with people who care about
+the same things you care about.
+
+## Who Is This For?
 
 Threadlight is for anyone who:
 
-- Is tired of being manipulated by algorithms
-- Wants real conversations, not shouting matches
-- Believes social media can bring people together instead of dividing them
-- Thinks the people running the big platforms don't have their best interests at heart
+- Is tired of being yelled at by algorithms
+- Wants to have real conversations, not shouting matches
+- Thinks social media should bring people together instead of tearing them apart
+- Believes that the people running the big social networks do not have your best interests
+  in mind
 
-## A Note on Philosophy
+## How Threadlight Works
 
-Threadlight was built because we noticed something strange about the internet.
+Threadlight has a few simple ideas that work together:
 
-The same people who own almost everything &mdash; the landlords, the shareholder classes, the executives who ship production to the lowest-wage dictatorship &mdash; also own the social networks you use every day. They've figured out something useful: if they can make you hate the person next to you, you won't notice who's picking your pocket.
+- **Trust levels.** The longer you are here and the more you participate in good faith, the
+  more you can do. You earn trust over time, not by being loud.
+- **Vouching for each other.** When someone who has been here a while says "I trust this
+  person," they put their own reputation on the line. This makes it very hard for fake
+  accounts and bots to take over.
+- **Everyone helps moderate.** Instead of a small group of people deciding what is allowed,
+  everyone can rate posts as helpful or misleading. And the people who do the rating
+  are themselves rated by others.
+- **Tagging together.** Nobody owns the tags. Anyone can add a tag to any post, and the
+  community votes on which tags fit best.
+- **Your feed, your rules.** The things you see are based on who you trust and what you
+  care about, not what makes the most money for a corporation.
 
-That's what the algorithm does. It doesn't show you things that are true or useful. It shows you things that make you angry at the right people &mdash; the people it's decided are your enemies. Not the people who set your rent. Not the people who voted to cut your school's budget. The person on the other side of a culture war. The person who uses different pronouns. The person who lives ten miles away but watches a different news channel.
-
-**This is not an accident. It is a feature.**
-
-There is a name for the pattern that emerges when a society gets divided this way. Some call it the **horseshoe theory**: the far left and far right bend toward each other like a horseshoe, developing the same authoritarian habits with different branding.
-
-On the right, this shows up as nativist scapegoating: "they" are taking your jobs, "they" are destroying your culture, a strongman leader will fix everything. The enemy is always an outsider. The solution is always force.
-
-On the left, it shows up as moral enforcement: cancel anyone who says the wrong thing, demand ideological purity, reduce every person to their group identity. The enemy is always a heretic. The solution is always exclusion.
-
-Beneath the surface of this apparent symmetry, the material reality reveals a different dynamic: the performative moralism and linguistic policing of the so-called woke left are not a rival to fascism but a distinctly bourgeois diversion &mdash; a petty-bourgeois identity politics that fragments the working class along racial and gender lines, diverting economic grievances into cultural feuds that serve the ruling elite's need for social control. The open hatred and nativist rage of the far-right, by contrast, are the raw, coercive arm of capital in systemic crisis, preparing the ground for authoritarian terror when liberal democracy can no longer manage the fundamental contradiction between labor and ownership. Both phenomena function to suppress the core conflict of class: one through ideological conformity enforced by social penalties, the other through paramilitary violence, scapegoating, and the dismantling of worker protections. Neither cancels the other; they operate as complementary valves of bourgeois hegemony &mdash; the former pacifying dissent by absorbing activists into a fractured identity hierarchy, the latter threatening extermination for those who refuse to submit. Together they obscure the only genuine universal interest &mdash; the collective emancipation of the many from the few.
-
-**Threadlight stands against all of it.**
-
-We believe that the people who work for a living &mdash; whether they live in a city or a small town, whether they vote blue or red, whether they go to church or they don't &mdash; have more in common with each other than they do with the people at the very top. We believe that dividing people by identity is the oldest trick in the ruling class's book. We believe you should judge ideas by whether they're true, not by who said them.
-
-You don't have to agree with any of this to use Threadlight. But this is the reason it exists. Not to make money. Not to grow. To give people a place to talk without being played.
-
-There are 138 million children in the world today being exploited for their labor &mdash; working in mines, in factories, in fields, in homes where they are not safe. Many of those children are making the products that fill the stores of the countries that bomb their neighborhoods. If you are not bothered by this, we would prefer you do not use this platform.
-
-## How Threadlight Is Different
-
-Threadlight is built around a few interconnected systems that work together to create a healthy social environment:
-
-- **Discourse Trust Levels** — you earn abilities by participating constructively over time, not by being loud.
-- **Web of Trust** — vouching for someone stakes your own reputation, making bot networks structurally impossible.
-- **Slashdot Moderation (M1 + M2)** — content quality is rated by peers using descriptive labels like "insightful" or "misleading," and moderators themselves are reviewed.
-- **Collaborative Tagging** — the community curates the taxonomy. Tags are not owned by post authors.
-- **The Positive Algorithm** — your feed prioritizes substance and connection, not outrage.
-- **Circles** — discover people near you who share your interests, without sharing your exact location.
-
-Each of these is explained in detail in the following sections.
+The rest of this guide explains each of these ideas in detail.
 
 ## What's in This Guide?
 
-This guide is split into three parts:
+The guide has three parts:
 
-- **For Users**: How to sign up, post, find communities, and stay safe
-- **For Administrators**: How to install, configure, and run a Threadlight server
-- **For Contributors**: How the code is organized and how to help build Threadlight
+- **For people using Threadlight** — how to sign up, post, find communities, and stay safe
+- **For people running a Threadlight server** — how to install and set things up
+- **For people who want to help build Threadlight** — how the code works
 
-If you're new here, start with the [Getting Started](users/01-getting-started.md) section.
+If you are new here, start with the [Getting Started](users/01-getting-started.md) page.
+
+---
+
+There are 138 million children in the world today who are forced to work instead of going
+to school. Many of them make the products that fill the stores of the countries that bomb
+their neighborhoods. If you read that and feel nothing, we would prefer you do not use
+this platform.
