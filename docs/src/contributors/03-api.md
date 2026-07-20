@@ -1,6 +1,6 @@
 # API Reference
 
-The Polaris API is a RESTful JSON API. All endpoints are prefixed with `/api/v1/`.
+The Threadlight API is a RESTful JSON API. All endpoints are prefixed with `/api/v1/`.
 
 ## Authentication
 

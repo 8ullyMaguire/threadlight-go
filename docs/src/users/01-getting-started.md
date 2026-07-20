@@ -1,98 +1,81 @@
 # Getting Started
 
-This page walks you through everything you need to know to start using Polaris.
+This page walks you through everything you need to know to start using Threadlight.
 
 ## Creating an Account
 
-To join a Polaris server, you'll need:
+To join a Threadlight server, you need:
 
-- **An email address** &mdash; used only for your account. It's never shared with anyone unless you choose to make it visible.
-- **A username** &mdash; this is your public name on Polaris. Pick something you like!
-- **A password** &mdash; make it strong. At least 8 characters, mixed with letters, numbers, and symbols.
+- An email address — used only for your account, never shared
+- A username — your public name
+- A password — at least 8 characters
 
-Once you've signed up, you'll get a confirmation email (if the server requires it). Click the link in that email to activate your account.
+Once you sign up, confirm your email (if the server requires it) and you are in.
 
-## Your First Login
+## Onboarding Wizard
 
-After logging in for the first time, you'll see a simple onboarding screen. This will ask you a few questions to help get you started:
+After your first login, the **onboarding wizard** helps you get set up:
 
-1. **Pick some topics you're interested in** &mdash; this helps Polaris suggest people and communities you might like.
-2. **Find people to follow** &mdash; you don't have to follow anyone yet if you're not sure. You can always do this later.
-3. **Take a quick tour** &mdash; a brief walkthrough of the main features.
+1. **Pick your interests** — choose topics you care about so the system can suggest relevant
+   people and communities
+2. **Follow suggested users** — based on your interest picks, you'll see accounts worth
+   following
+3. **Make an introductory post** — say hello to the community
 
-You can skip any of these steps and come back to them later.
+You can skip any step and complete onboarding later from your settings.
+
+## Trust Levels (Quick Look)
+
+You start at **Level 0** (New User). As you participate constructively over time, you earn
+access to more features:
+
+| Level | Name | Main abilities gained |
+|-------|------|-----------------------|
+| 0 | New | Read, basic interactions |
+| 1 | Basic | Create unrestricted posts |
+| 2 | Regular | Flag content, vote on tags, heavier trust weight |
+| 3 | Leader | Vouch for users, moderate content (M1), moderate tags |
+| 4 | Elder | Full trust, oversight roles, meta-moderation |
 
 ## Your Home Feed
 
-The main page you see after logging in is your **home feed**. This shows posts from:
+The main page shows posts ranked by **The Positive Algorithm** — a system designed to surface
+substance and connection, not outrage. Click **"Why this post?"** on any item to see exactly
+why it appeared.
 
-- People you follow
-- Communities you've joined
-- Topics (tags) you've subscribed to
+Default sources: people you follow, communities you have joined, tags you subscribe to.
 
-By default, it's sorted by recency &mdash; newest posts first. You can change this to show the most active or most trusted posts instead.
-
-## Your Profile
-
-Your profile page shows:
-
-- Your username and optional bio
-- When you joined
-- Your trust score (more on this later)
-- Your posts
-
-You can edit your profile by clicking the settings icon. From there you can:
-
-- Change your display name and bio
-- Upload an avatar (profile picture)
-- Set your email visibility
-- Change your password
+Sort by: Hot (recent activity), New (recency), Top (best-rated), Trusted (from highest-rated
+users).
 
 ## Following People
 
-To follow someone, visit their profile and click the "Follow" button. Their posts will then appear in your home feed.
-
-Following someone doesn't require them to follow you back. It's not a friendship request &mdash; it just means you want to see their posts.
-
-You can unfollow anyone at any time.
+Visit a profile and click "Follow." Their posts appear in your feed. Following is not
+reciprocal.
 
 ## Joining Communities
 
-Communities are groups of people who share a common interest. To find communities:
+Browse communities, read the rules, and click "Join." Some are invite-only. When you join a
+new community, you enter a short probation period where your votes carry less weight —
+this gives you time to learn the norms.
 
-1. Click the "Communities" link in the navigation
-2. Browse the list of public communities
-3. Click a community name to see its posts and rules
-4. Click "Join" to become a member
+## Creating Posts
 
-Some communities are **invite-only**, meaning you need an invitation from an existing member to join. Others are open to anyone.
+Click the post box or Create button. You can include text, links, images, and tags. You can
+also schedule a post for later or add a content warning.
 
-## Your First Post
+## Reactions
 
-To create a post:
+When you see a post you like, react with an appropriate label: **Insightful**, **Helpful**,
+**Beautiful**, **Funny**, **Wholesome**, or **Needs Sources**. Each tells the algorithm
+something different about the value you found.
 
-1. Click the "Create" button or the post box at the top of your feed
-2. Write your thoughts in the text area
-3. Optionally add a **mood** (like "curious" or "excited") to let people know your tone
-4. Click "Post"
+## What's Next
 
-That's it! Your post will appear in your followers' feeds and on your profile.
-
-## Onboarding Stages
-
-Polaris uses a simple onboarding system to guide new users. As you complete each stage, you unlock more features:
-
-- **Stage 1**: Basic account &mdash; you can read posts and follow people
-- **Stage 2**: You can create posts and reply to others
-- **Stage 3**: You can create communities and invite people
-- **Stage 4**: You can participate in juries and moderation (more on this later)
-
-These stages help prevent spam and give you time to learn how things work before you have access to everything.
-
-## Next Steps
-
-Now that you're set up, check out:
-
-- [Posts, Moods, and Media](02-posting.md) &mdash; how to make great posts
-- [Trust and Communities](03-trust-and-communities.md) &mdash; how trust works and how communities function
-- [Feeds and Circles](05-feeds-and-circles.md) &mdash; how to customize what you see
+- [Posting and Tagging](02-posting.md) — reactions, scheduling, collections, collaborative
+  tags
+- [Trust and Communities](03-trust-and-communities.md) — trust levels, Web of Vouching,
+  circles
+- [Moderation and Safety](04-moderation.md) — rules, content labeling, meta-moderation
+- [Feeds, Circles, and Search](05-feeds-and-circles.md) — the Positive Algorithm, custom
+  feeds, RSS, advanced search

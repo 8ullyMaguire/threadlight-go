@@ -1,10 +1,10 @@
 # Maintenance
 
-This page covers common maintenance tasks for keeping your Polaris server healthy.
+This page covers common maintenance tasks for keeping your Threadlight server healthy.
 
 ## Database Migrations
 
-Polaris automatically runs database migrations on startup, so you don't need to do anything manually. When you update Polaris to a newer version, the new migrations will run automatically the next time you restart the server.
+Threadlight automatically runs database migrations on startup, so you don't need to do anything manually. When you update Threadlight to a newer version, the new migrations will run automatically the next time you restart the server.
 
 ## Content Pruning
 
@@ -59,13 +59,13 @@ You can use tools like `htop`, `df -h`, and `journalctl -u polaris` to check the
 
 ## Logs
 
-Polaris logs to standard output (stdout). If you're using systemd, you can view logs with:
+Threadlight logs to standard output (stdout). If you're using systemd, you can view logs with:
 
 ```bash
 journalctl -u polaris -f
 ```
 
-## Updating Polaris
+## Updating Threadlight
 
 To update to the latest version:
 

@@ -1,16 +1,16 @@
 # Deployment
 
-This page covers how to deploy Polaris for public access.
+This page covers how to deploy Threadlight for public access.
 
 ## Running as a System Service
 
-The best way to run Polaris in production is as a systemd service so it starts automatically when your server boots.
+The best way to run Threadlight in production is as a systemd service so it starts automatically when your server boots.
 
 Create a file at `/etc/systemd/system/polaris.service`:
 
 ```ini
 [Unit]
-Description=Polaris Social Network
+Description=Threadlight Social Network
 After=network.target postgresql.service redis-server.service
 
 [Service]
@@ -33,9 +33,9 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now polaris
 ```
 
-## Making Polaris Accessible from the Internet
+## Making Threadlight Accessible from the Internet
 
-There are several ways to make your Polaris server accessible from the internet.
+There are several ways to make your Threadlight server accessible from the internet.
 
 ### Option 1: Direct Connection (with a Public IP)
 
@@ -125,7 +125,7 @@ sudo cloudflared service install
 sudo systemctl enable --now cloudflared
 ```
 
-Now your Polaris server is accessible at `https://polaris.yourdomain.com`!
+Now your Threadlight server is accessible at `https://polaris.yourdomain.com`!
 
 ### Serving Documentation as a Subdomain
 

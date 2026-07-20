@@ -1,6 +1,6 @@
 # Local Development
 
-This page explains how to set up a development environment for working on Polaris.
+This page explains how to set up a development environment for working on Threadlight.
 
 ## Prerequisites
 

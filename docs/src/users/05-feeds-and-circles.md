@@ -1,86 +1,80 @@
-# Feeds and Circles
+# Feeds, Circles, Search, and The Positive Algorithm
 
-One of the best things about Polaris is that **you control what you see**. This page explains the different ways to customize your feed.
+This page explains how Threadlight decides what to show you and how to find what you're
+looking for.
 
-## The Home Feed
+## The Positive Algorithm
 
-Your home feed is the first thing you see when you log in. It shows posts from:
+Most platforms optimize for engagement — time spent, clicks, reactions. These algorithms
+learn that anger and outrage produce the most engagement, so they show you things that make
+you angry.
 
-- People you follow
-- Communities you've joined
-- Tags (topics) you've subscribed to
+Threadlight's feed algorithm is different. It is called **The Positive Algorithm**, and it
+optimizes for substance and connection:
 
-You can sort your home feed in different ways:
+- Content from people you trust is ranked higher
+- Content rated "insightful" or "interesting" by moderators is ranked higher
+- Content rated "misleading" or "troll" is ranked lower
+- Repeatedly flagged content from a user reduces that user's visibility
+- Recency is balanced against quality
 
-- **Hot** &mdash; posts that are getting a lot of activity right now
-- **New** &mdash; the most recent posts first (default)
-- **Top** &mdash; the most popular posts from a time period (today, this week, this month, all time)
-- **Trusted** &mdash; posts from people with the highest trust scores
+### Why This Post?
+
+Every post in your feed has a **"Why this post?"** button. Click it to see exactly why the
+algorithm surfaced that specific piece of content — "because you follow @user," "because
+this community matches your tags," "because this is trending in your circles." This makes
+the algorithm fully transparent.
+
+### Outrage Downranking
+
+Content that generates high interaction but low trust-weighted quality scores (heated
+arguments, trolling, bad-faith engagement) is automatically downranked. The algorithm
+prefers posts that generate thoughtful reactions over posts that generate angry ones.
 
 ## Custom Feeds
 
-Custom feeds let you mix and match different sources into a single feed. You can create a feed that shows:
+You can create custom feeds that combine different sources:
 
-- Posts from a specific set of communities
-- Posts about specific topics (tags)
+- Posts from specific communities
+- Posts with specific tags
 - Posts from specific people
 - Any combination of the above
 
-To create a custom feed:
+Each custom feed can be exported as **RSS/Atom** — subscribe in any RSS reader. Feeds are
+also available for any tag, community, or collection.
 
-1. Go to your feed settings
-2. Click "Create New Feed"
-3. Give it a name (like "Tech News" or "Local Gardening")
-4. Choose what sources to include
-5. Save it
+## Trending Topics
 
-Your custom feeds will appear in the sidebar so you can switch between them easily.
+Threadlight detects trending topics from **post content**, not hashtags. The system analyzes
+the text of posts that are receiving disproportionate attention in a time window and surfaces
+the emerging themes. This prevents hashtag spam and catches trends the community hasn't named
+yet.
 
-## Tags
+Trending is scoped to your communities and circles — you see what matters to the people you
+care about, not a global feed.
 
-Tags are like labels that people add to their posts (for example, `#photography` or `#cooking`). You can:
+## Advanced Search
 
-- **Click a tag** to see all posts with that tag
-- **Subscribe to a tag** to automatically see tagged posts in your feed
-- **Use tags in your own posts** to help people find them
+Search across posts, users, communities, and tags with:
+
+- **Boolean operators**: `cats AND dogs`, `cats OR dogs`, `cats NOT dogs`
+- **Fielded search**: `author:username`, `community:name`, `tag:tagname`
+- **Date range**: `after:2025-01-01 before:2025-06-01`
+- **Saved searches**: Save frequently used searches for quick access
 
 ## Circles
 
-Circles are groups of people organized by topics or shared interests. Think of them like neighborhood groups for the internet.
+Circles are auto-generated groups of people who share your interests and are near you.
+Unlike communities, circles are discovery-focused. The system proposes circles based on
+overlapping tag subscriptions and interaction patterns.
 
-Unlike communities (which are focused on a specific topic), circles help you discover:
+Circles use one-way location hashing — you can find people nearby without revealing your
+exact location. Browse a circle's trending topics and active members, follow interesting
+people, and move on.
 
-- People near you who share your interests
-- Trending topics in your area
-- Events and discussions relevant to your location or interests
+## Shared Blocklist
 
-Circles are a great way to find new people to follow and new communities to join.
-
-## Trending
-
-Polaris shows you what's trending, but with a twist: it shows what's trending **in your communities and circles**, not what's trending globally.
-
-This means you see what matters to the people you care about, not what some algorithm decided should be popular everywhere.
-
-## Search
-
-You can search for:
-
-- **People** by username or display name
-- **Posts** by content
-- **Communities** by name or description
-- **Tags** by topic
-
-Search results can be filtered by type (people, posts, communities, tags) and sorted by relevance or recency.
-
-## Notifications
-
-You'll get notifications for:
-
-- Replies to your posts
-- Someone following you
-- Community notes on your posts
-- Jury duty (you've been selected for a jury)
-- Community invitations
-
-You can control which notifications you receive in your settings.
+For federation-ready instances, a **shared blocklist** in JSON format lists domains, IPs,
+and server fingerprints that the instance blocks. The blocklist is publicly exportable so
+other instance admins can import it. This is defensive infrastructure — it exists for
+federation readiness even if no federation code is active yet.

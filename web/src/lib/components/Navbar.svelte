@@ -24,7 +24,7 @@
 
 <nav class="navbar">
   <div class="nav-brand" on:click={() => goTo('feed')} on:keydown={() => {}} role="button" tabindex="0">
-    <span class="logo">Polaris</span>
+    <span class="logo">Threadlight</span>
   </div>
   <div class="nav-links">
     {#each pages as p}

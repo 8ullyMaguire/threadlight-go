@@ -58,7 +58,7 @@
   {#if mode === 'login'}
     <form class="auth-card" on:submit|preventDefault={handleLogin}>
       <h1>Welcome back</h1>
-      <p class="subtitle">Sign in to Polaris</p>
+      <p class="subtitle">Sign in to Threadlight</p>
       {#if error}
         <div class="error">{error}</div>
       {/if}

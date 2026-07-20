@@ -7,16 +7,16 @@ class ApiClient {
 
   setToken(token) {
     this.token = token;
-    localStorage.setItem('polaris_token', token);
+    localStorage.setItem('threadlight_token', token);
   }
 
   clearToken() {
     this.token = null;
-    localStorage.removeItem('polaris_token');
+    localStorage.removeItem('threadlight_token');
   }
 
   loadToken() {
-    this.token = localStorage.getItem('polaris_token');
+    this.token = localStorage.getItem('threadlight_token');
     return this.token;
   }
 

@@ -1,64 +1,85 @@
-# Posts, Moods, and Media
+# Posting and Tagging
 
-This page covers everything you need to know about creating content on Polaris.
+This page covers how to create content on Threadlight and how the collaborative tagging and
+reaction systems work.
 
 ## Creating a Post
 
-Posting on Polaris is straightforward. Here's what you can include:
+Posts can include text, links, and images. Formatting uses basic Markdown:
 
-- **Text** &mdash; the main content of your post
-- **Links** &mdash; URLs to articles, videos, or other web pages
-- **Images** &mdash; pictures you want to share (JPEG, PNG, or GIF)
+- `**bold**`, `*italic*`, `[links](url)`, `> quotes`
 
-To create a post, click the "Create" button or type in the post box at the top of your feed.
+To post, type in the post box and click Post.
 
-## Formatting
+### Post Scheduling
 
-Polaris supports basic text formatting using something called **Markdown**. It's a simple way to make your text look nice without needing to know any complicated code.
+You can schedule a post for a future time instead of publishing immediately. Scheduled posts
+are held until their publication time and then released automatically.
 
-Here are the most common things you can do:
+### Content Warnings
 
-- `*italic*` makes text *italic*
-- `**bold**` makes text **bold**
-- `[link text](https://example.com)` creates a clickable link
-- `> quote` creates a blockquote for quoting someone
+If your post contains potentially sensitive material (violence, strong language, adult themes),
+you can add a **content warning**. The post will appear blurred or hidden behind a click-through
+in users' feeds.
 
-## Moods
+## Reaction Types
 
-Moods are a special feature of Polaris. Before you post, you can choose a mood that tells people the tone of your message:
+Threadlight supports multiple reaction types beyond a single "like." Each reaction is a
+distinct signal:
 
-- **Curious** &mdash; you're asking a genuine question or exploring an idea
-- **Excited** &mdash; you're sharing something positive or thrilling
-- **Thoughtful** &mdash; you're sharing a considered opinion
-- **Playful** &mdash; you're joking or being lighthearted
-- **Serious** &mdash; this is an important topic
-- **Supportive** &mdash; you're offering encouragement
+- **Insightful** — this post made me think or taught me something
+- **Helpful** — this post provided practical value
+- **Beautiful** — this post is aesthetically or emotionally striking
+- **Funny** — this post made me laugh
+- **Wholesome** — this post gave me a warm feeling
+- **Needs Sources** — this post makes claims that should be backed up
 
-Using moods helps prevent misunderstandings. When someone sees a "Playful" post, they know not to take it too seriously. When they see a "Serious" post, they know to read it carefully.
+Reactions help the feed algorithm understand what kind of value a post provides, not just
+whether it was engaging.
 
-## Replying and Threads
+## Collaborative Tagging
 
-You can reply to any post by clicking the reply button. Replies are grouped into threads, making it easy to follow conversations.
+Tags on Threadlight work differently from most platforms. Tags are **not owned by the post
+author**. Anyone can add a tag to any post, and the community votes on relevance.
 
-## Saving and Hiding Posts
+This is inspired by imageboard-style (booru) curation. The collective intelligence of the
+community produces better categorization than any single person can.
 
-- **Save** a post to find it later (your saved posts are in your profile)
-- **Hide** a post if you don't want to see it in your feed anymore
+### Tag Categories
 
-## Hashtags
+Tags fall into three categories:
 
-You can add hashtags to your posts (like `#technology` or `#gardening`). Clicking a hashtag shows you all posts with that tag. You can also subscribe to tags to see related posts in your feed.
+- **Content** — what the post is about (technology, music, gardening, philosophy)
+- **Descriptors** — tone or quality (wholesome, thoughtful, controversial, funny)
+- **Moderation** — flags that need community consensus (spoiler, AI-generated, NSFW)
 
-## Reporting Posts
+### Adding a Tag
 
-If you see a post that breaks the rules (see [Moderation and Safety](04-moderation.md)), you can report it. Click the three dots on the post and select "Report." You'll be asked why you're reporting it, and then a jury of users will review it.
+Click "Add Tag" on any post and type a tag name. If the tag already exists, it attaches to
+the post. If it is new, it enters the pool for others to vote on.
+
+### Voting on Tags
+
+Tags you disagree with can be downvoted. Widely-upvoted tags are prominently displayed.
+Downvoted tags fade. This prevents tag spam while still letting anyone contribute.
+
+## Collections
+
+Collections let you group posts around a theme. Every collection has one of four visibility
+levels:
+
+- **Private** — only you can see it
+- **Public Read** — anyone can view, only you can add or remove posts
+- **Public Edit** — anyone can view, trusted users can add or remove posts
+- **Anybody Edit** — fully open collaborative curation
+
+Collections can be used for reading lists, topic tracking, shared resource directories, or
+community highlights.
 
 ## Community Notes
 
-Sometimes a post might be misleading or missing important context. **Community notes** let anyone add helpful information to a post. Here's how it works:
+If a post is misleading or missing context, you can add a **community note** — a short
+correction or additional information attached to the post. Other users vote on whether the
+note is helpful. Helpful notes rise to prominence; unhelpful ones fade.
 
-1. Someone adds a note to a post providing context or correcting a mistake
-2. Other users vote on whether the note is helpful
-3. The most helpful notes rise to the top where everyone can see them
-
-This is like having a crowd of fact-checkers who work together, instead of one company deciding what's true. If you see something that doesn't seem right, you can add a note yourself.
+This is not moderation — it is collaboration. Anyone can contribute.

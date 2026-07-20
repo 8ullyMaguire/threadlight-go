@@ -1,6 +1,6 @@
 # Configuration
 
-All Polaris configuration is done through environment variables. This page explains each one.
+All Threadlight configuration is done through environment variables. This page explains each one.
 
 ## Required Settings
 
@@ -17,7 +17,7 @@ All Polaris configuration is done through environment variables. This page expla
 | `REDIS_ADDR` | Redis server address | `localhost:6379` |
 | `ADMIN_EMAIL` | Email for the auto-created admin account | &mdash; |
 | `ADMIN_PASSWORD` | Password for the admin account | &mdash; |
-| `INSTANCE_NAME` | Name shown on the About page | `Polaris` |
+  | `INSTANCE_NAME` | Name shown on the About page | `Threadlight` |
 | `INSTANCE_DESCRIPTION` | Description shown on the About page | &mdash; |
 | `DOCS_DIR` | Path to the documentation directory | `./docs` |
 
@@ -46,7 +46,7 @@ openssl rand -base64 32
 
 ## Admin Account
 
-If `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set, Polaris will create an admin account on first startup (if one doesn't already exist). The admin has:
+  If `ADMIN_EMAIL` and `ADMIN_PASSWORD` are set, Threadlight will create an admin account on first startup (if one doesn't already exist). The admin has:
 
 - Unlimited invites (even if invites are normally required)
 - A maximized trust score

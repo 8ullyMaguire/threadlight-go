@@ -143,7 +143,7 @@
   {:else if step === 4}
     <div class="step-content">
       <h2>You're all set!</h2>
-      <p>Welcome to Polaris. Let's see what's in your feed.</p>
+      <p>Welcome to Threadlight. Let's see what's in your feed.</p>
     </div>
   {/if}
 

@@ -27,7 +27,7 @@
 
 <div class="auth-page">
   <form class="auth-card" on:submit|preventDefault={handleSubmit}>
-    <h1>Join Polaris</h1>
+    <h1>Join Threadlight</h1>
     <p class="subtitle">Create your account</p>
     {#if error}
       <div class="error">{error}</div>

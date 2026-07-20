@@ -1,8 +1,8 @@
 [book]
-authors = ["Polaris Team"]
+authors = ["Threadlight Team"]
 language = "en"
 src = "src"
-title = "Polaris Documentation"
+title = "Threadlight Documentation"
 
 [output.html]
 default-theme = "ayu"

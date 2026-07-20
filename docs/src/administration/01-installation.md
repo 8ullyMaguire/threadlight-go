@@ -1,6 +1,6 @@
 # Installation
 
-This guide walks you through installing a Polaris server from scratch.
+This guide walks you through installing a Threadlight server from scratch.
 
 ## Requirements
 
@@ -28,7 +28,7 @@ sudo apt install postgresql postgresql-client
 sudo systemctl enable --now postgresql
 ```
 
-Create a database and user for Polaris:
+Create a database and user for Threadlight:
 
 ```bash
 sudo -u postgres psql
@@ -121,5 +121,5 @@ ADMIN_EMAIL=you@example.com
 ADMIN_PASSWORD=your-admin-password
 
 # Instance info (shown on the About page)
-INSTANCE_NAME=My Polaris Server
+  INSTANCE_NAME=My Threadlight Server
 INSTANCE_DESCRIPTION=A friendly community for thoughtful people.

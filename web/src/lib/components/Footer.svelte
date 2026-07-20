@@ -36,8 +36,8 @@
       <a class="link" href="/donate" target="_blank" rel="noopener">Donate</a>
     </div>
     <div class="footer-section version">
-      <p>Polaris v{version}</p>
-      <p class="muted">Built for positive connection</p>
+      <p>Threadlight v{version}</p>
+      <p class="muted">Designed for positive connection</p>
     </div>
   </div>
 </footer>

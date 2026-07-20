@@ -1,10 +1,10 @@
 # Architecture Overview
 
-This page explains how Polaris is built, for developers who want to understand or contribute to the code.
+This page explains how Threadlight is built, for developers who want to understand or contribute to the code.
 
 ## High-Level Structure
 
-Polaris has three main parts:
+Threadlight has three main parts:
 
 ```
 polaris/
@@ -65,7 +65,7 @@ The frontend is a single-page application (SPA) built with Svelte and Vite.
 
 ## Database
 
-Polaris uses PostgreSQL with the following main tables:
+Threadlight uses PostgreSQL with the following main tables:
 
 - **users** &mdash; user accounts, profiles, trust scores
 - **posts** &mdash; all posts and their content
@@ -78,7 +78,7 @@ Migrations are applied automatically on startup from `internal/db/migrations/`.
 
 ## Background Workers
 
-Polaris runs background workers that handle periodic tasks:
+Threadlight runs background workers that handle periodic tasks:
 
 - **Content Pruning**: Removes old, low-quality posts hourly
 - More workers can be added in `internal/worker/scheduler.go`
