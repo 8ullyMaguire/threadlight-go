@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/opencode-ai/polaris/internal/model"
@@ -16,8 +17,21 @@ func NewBlockService(pg *pgxpool.Pool) *BlockService {
 }
 
 func (s *BlockService) BlockUser(ctx context.Context, blockerID, blockedID int64) (*model.BlockedUser, error) {
+	if blockerID == blockedID {
+		return nil, fmt.Errorf("cannot block yourself")
+	}
+
+	var exists bool
+	err := s.pg.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM users WHERE id = $1)`, blockedID).Scan(&exists)
+	if err != nil {
+		return nil, fmt.Errorf("check user: %w", err)
+	}
+	if !exists {
+		return nil, model.ErrNotFound
+	}
+
 	block := &model.BlockedUser{}
-	err := s.pg.QueryRow(ctx,
+	err = s.pg.QueryRow(ctx,
 		`INSERT INTO blocked_users (blocker_id, blocked_id)
 		 VALUES ($1, $2)
 		 RETURNING id, blocker_id, blocked_id, created_at`,

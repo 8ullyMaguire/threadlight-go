@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/opencode-ai/polaris/internal/model"
 	"github.com/opencode-ai/polaris/internal/services"
 )
 
@@ -31,7 +33,15 @@ func (h *BlockHandler) Create(c *gin.Context) {
 
 	block, err := h.blockSvc.BlockUser(c.Request.Context(), blockerID, req.BlockedID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if errors.Is(err, model.ErrNotFound) {
+			c.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		if errors.Is(err, model.ErrConflict) {
+			c.JSON(http.StatusConflict, gin.H{"error": "already blocked"})
+			return
+		}
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusCreated, block)

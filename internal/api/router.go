@@ -266,8 +266,8 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 				authed.POST("/@me/banner", userHandler.UploadBanner)
 				authed.GET("/@me/notifications", userHandler.GetNotifications)
 				authed.PUT("/notifications/:id/read", userHandler.MarkNotificationRead)
-				authed.POST("/:id/block", userHandler.BlockUser)
-				authed.DELETE("/:id/block", userHandler.UnblockUser)
+			authed.POST("/:id/block", userHandler.BlockUser)
+			authed.DELETE("/:id/block", userHandler.UnblockUser)
 				authed.GET("/@me/blocks", userHandler.ListBlockedUsers)
 			}
 		}

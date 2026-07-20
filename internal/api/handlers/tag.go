@@ -93,15 +93,13 @@ func (h *TagHandler) TagPost(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid post id"})
 		return
 	}
-	var req struct {
-		TagID int64 `json:"tag_id" binding:"required"`
-	}
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	tagID, err := strconv.ParseInt(c.Param("tag_id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid tag id"})
 		return
 	}
 	userID := c.GetInt64("user_id")
-	if err := h.tagSvc.TagPost(c.Request.Context(), postID, req.TagID, userID); err != nil {
+	if err := h.tagSvc.TagPost(c.Request.Context(), postID, tagID, userID); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

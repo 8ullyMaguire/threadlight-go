@@ -395,9 +395,7 @@ func TestTagPostAssociation(t *testing.T) {
 	var tag struct{ ID int64 `json:"id"` }
 	json.Unmarshal(createTagW.Body.Bytes(), &tag)
 
-	// Note: route path includes :tag_id but handler reads tag_id from body
-	w := request("POST", fmt.Sprintf("/api/v1/tags/posts/%d/tags/%d", post.Post.ID, tag.ID),
-		jsonBody(map[string]interface{}{"tag_id": tag.ID}), token)
+	w := request("POST", fmt.Sprintf("/api/v1/tags/posts/%d/tags/%d", post.Post.ID, tag.ID), nil, token)
 	if w.Code != http.StatusOK {
 		t.Errorf("expected 200 for tag post, got %d: %s", w.Code, w.Body.String())
 	}
@@ -631,6 +629,19 @@ func TestGetUserAtMe(t *testing.T) {
 	}
 }
 
+func TestGetMeRoute(t *testing.T) {
+	token, _ := mustToken(t)
+	w := request("GET", "/api/v1/users/@me", nil, token)
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var resp map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &resp)
+	if resp["username"] == "" {
+		t.Error("expected username in @me response")
+	}
+}
+
 func TestUpdateProfile(t *testing.T) {
 	token, _ := mustToken(t)
 	w := request("PUT", "/api/v1/users/@me", jsonBody(map[string]interface{}{
@@ -664,6 +675,26 @@ func TestBlockUser(t *testing.T) {
 		t.Errorf("expected 200 or 201, got %d: %s", w.Code, w.Body.String())
 	}
 	_ = uid
+}
+
+func TestBlockNonexistentUser(t *testing.T) {
+	token, _ := mustToken(t)
+	w := request("POST", "/api/v1/blocks", jsonBody(map[string]interface{}{
+		"blocked_id": 999999999,
+	}), token)
+	if w.Code != http.StatusNotFound {
+		t.Errorf("expected 404 for blocking nonexistent user, got %d: %s", w.Code, w.Body.String())
+	}
+}
+
+func TestSelfBlock(t *testing.T) {
+	token, uid := mustToken(t)
+	w := request("POST", "/api/v1/blocks", jsonBody(map[string]interface{}{
+		"blocked_id": uid,
+	}), token)
+	if w.Code != http.StatusBadRequest {
+		t.Errorf("expected 400 for self-block, got %d: %s", w.Code, w.Body.String())
+	}
 }
 
 func TestListBlocks(t *testing.T) {
