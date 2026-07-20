@@ -1,105 +1,115 @@
-# Polaris — AI Agent Guide
+# Threadlight — AI Agent Guide
 
 ## Overview
-Social platform backend in Go (Gin/pgx/Redis), frontend in Svelte + Vite (SPA). Go 1.26, PostgreSQL 17, Redis 7. Single binary monolith + 11 background workers.
+Go/Gin backend + Svelte/Vite SPA. Single binary monolith. PostgreSQL 17 + Redis 7.
+21 services, 23 handlers, 26 models, 11 workers, 14 Svelte pages, ~95 API endpoints.
 
-**21 service files, 23 handler files, 26 model files, 11 worker files, 14 Svelte page components, ~95 API endpoints.**
-
-## How to Run
+## Run Commands
 
 | Component | Command | URL |
 |-----------|---------|-----|
-| Infra | `docker compose up -d` | Postgres :5432, Redis :6379 |
-| Backend | `go run ./cmd/polaris` | `http://localhost:8080` |
-| Frontend | `cd web && npm run dev` | `http://localhost:5173` |
+| Infra | `docker compose up -d` | PG :5432, Redis :6379 |
+| Backend | `go run ./cmd/polaris` | `:8080` |
+| Frontend | `cd web && npm run dev` | `:5173` |
 | Tests | `DATABASE_URL="postgres://polaris:polaris@localhost:5432/polaris?sslmode=disable" go test ./... -count=1` | — |
 
-**The Vite dev server has `server.proxy` configured — `/api` calls forward to `:8080`. The Go server has CORS middleware allowing all origins. Both issues from previous iterations are fixed.**
+Vite proxies `/api` → `:8080`. Go CORS allows all origins.
 
 ## Architecture
 
-### Backend Layers
 ```
 router.go → 23 handlers/*.go → 21 services/*.go → pgx SQL → PostgreSQL
-                                                  ↕ Redis (cache, pub/sub, rate limit)
-                                       ↕
-                                 26 model/*.go
-                                 11 worker/*.go (goroutine background tasks)
+                                                     ↑↓ Redis
+                                         26 model/*.go
+                                         11 worker/*.go
 ```
 
-### Key Conventions
-- **No ORMs** — raw SQL with pgx. Queries in services. No query builders.
-- **No comments in code** — design doc and AGENTS.md are the documentation.
-- **JWT auth** — `Authorization: Bearer <token>`. Middleware sets `user_id` in Gin context. Extract with `c.Get("user_id")`.
-- **Error handling** — services return Go errors. Sentinels in `model/errors.go` (`ErrNotFound`, `ErrUnauthorized`, `ErrForbidden`, `ErrConflict`).
-- **Time fields** — use `*time.Time` for nullable timestamps throughout (all TIMESTAMPTZ columns are nullable).
-- **API paths** — all under `/api/v1/` except `/health`, `/metrics`, `/pages/:slug`, `/.well-known/webfinger`.
-- **CORS** — `internal/api/middleware/cors.go` allows all origins in dev. Add restrictions for production.
-- **Workers** — `internal/worker/scheduler.go` starts all 11 workers via goroutines. Workers log their runs. Actual implementations are stubs.
-- **PGX scanning** — NULL columns must scan into `*time.Time`, `*string`, `*int64`. Use `.Scan(&field1, &field2, ...)`.
+### Conventions
+- **No ORM** — raw SQL in services. `pgxpool.Pool` injected via struct fields.
+- **No code comments** — this file + design/ are the docs.
+- **JWT auth** — middleware sets `user_id` in Gin context. Get it: `c.Get("user_id")`. Returns `interface{}`, assert to `int64`.
+- **Error sentinels** — `model.ErrNotFound`, `ErrUnauthorized`, `ErrForbidden`, `ErrConflict`.
+- **Nullable time fields** — use `*time.Time` for all TIMESTAMPTZ columns. Scan into `*time.Time`.
+- **Nullable string/int fields** — use `*string`, `*int64` for columns that can be NULL.
+- **API paths** — `/api/v1/` except `/health`, `/metrics`, `/pages/:slug`, `/.well-known/webfinger`.
+- **Workers** — `scheduler.go` starts 11 goroutines. Each worker gets its own goroutine. Panics are caught and logged.
+- **Frontend routing** — Custom event-based: `window.dispatchEvent(new CustomEvent('navigate', { detail: { page, params } }))`.
+- **API client** — `web/src/lib/api/client.js` — plain `fetch()`. Base URL from `VITE_API_URL` env var or proxy.
+- **Svelte stores** — writable stores in `lib/stores/`. Subscribe with `$storeName`.
+- **CSS** — Vanilla CSS with custom properties: `--primary`, `--bg`, `--text`, `--muted`, `--border`, `--radius`, `--success`, `--danger`.
 
-### Frontend
-- **No framework routing** — `window.dispatchEvent(new CustomEvent('navigate', { detail: { page, params } }))` in App.svelte
-- **API client** — `web/src/lib/api/client.js` (plain fetch). Base URL from VITE_API_URL env var or proxied through Vite.
-- **Stores** — svelte writable stores in `web/src/lib/stores/`. Auto-subscribe with `$storeName`.
-- **CSS** — vanilla CSS with CSS custom properties: `--primary`, `--bg`, `--text`, `--muted`, `--border`, `--success`, `--danger`.
+## Backend File Layout
+
+```
+internal/
+├── api/
+│   ├── router.go                          # ~95 route registrations
+│   ├── handlers/ (23 files)               # auth, post, tag, feed, search, collection,
+│   │                                      # community, circle, note, moderation, blocklist,
+│   │                                      # filter, credit, achievement, onboarding, admin,
+│   │                                      # block, report, notification, mod_note, emoji, page
+│   ├── middleware/                        # auth.go, cors.go
+│   └── websocket/                         # hub.go, handlers.go
+├── db/                                    # db.go + migrations/
+├── model/ (26 files + errors.go)
+├── services/ (21 files)
+└── worker/ (scheduler.go + 10 workers)
+```
+
+## Key Services
+
+| Service | DB table(s) | Key methods |
+|---------|------------|-------------|
+| AuthService | users | Register, Login, ForgotPassword, ResetPassword |
+| PostService | posts | CreatePost, UpdatePost, GetFeedPosts, ArchivePost, VotePost |
+| TagService | tags, post_tags, tag_votes | CreateTag, TagPost, VoteTag, SearchTags |
+| FeedService | — | GetFeed, GetCustomFeed (algorithmic ranking) |
+| SearchService | posts (tsvector) | Search (boolean + fielded) |
+| CommunityService | communities, community_members | Create, Join, Leave, SlowBootCheck |
+| ModerationService | moderation_actions, reports, jury_votes | CreateAction, Report, Vote, Jury |
+| BlockService | blocked_users | BlockUser, IsBlocked, Unblock, GetBlockedUsers |
+| CreditService | credit_transactions | Award, Spend, GetBalance, Transfer |
+| AchievementService | achievements, user_achievements | CheckAndAward, GetUserAchievements |
+| NotificationService | notifications | Send, MarkRead, GetUnread |
+| CollectionService | collections, collection_posts | Create, AddPost, RemovePost |
+| CircleService | circles, circle_members | Create, Join, Suggest |
+| NoteService | community_notes, community_note_votes | CreateNote, VoteNote |
+| FilterService | filters | Create, Evaluate, Delete |
+| ReportService | reports | Create, Review, Resolve |
+
+## Key Handlers
+
+| Handler | Endpoints |
+|---------|-----------|
+| AuthHandler | POST register, login, forgot, reset, logout |
+| PostHandler | GET/POST/PUT/DELETE posts, POST /:id/archive, /:id/remove (mod), /:id/vote |
+| TagHandler | GET/POST/DELETE tags, POST /:id/vote |
+| FeedHandler | GET feed, custom feeds |
+| SearchHandler | GET /search (q, type, boolean operators) |
+| CommunityHandler | GET/POST communities, POST /:id/join, /:id/leave |
+| ModerationHandler | POST /moderation/action, report, vote, /jury |
+| AdminHandler | GET /admin/stats, POST /admin/seed |
+| OnboardingHandler | POST /onboarding/tags, /stage, GET /onboarding/suggested |
+| NotificationHandler | GET /notifications, PUT /notifications/:id/read |
+| ModNoteHandler | POST /mod-notes, GET /mod-notes/:user_id |
+
+## Database (~31 tables)
+
+**Core**: users, posts, communities, tags, post_tags, tag_votes
+**Trust**: trust_connections, trust_score_log, vouches
+**Moderation**: moderation_actions, reports, jury_votes, mod_notes
+**Social**: community_members, community_notes, community_note_votes
+**Interaction**: interactions, reactions, hidden_posts
+**Discovery**: tags, post_tags, tag_votes, collections, collection_posts, circles, circle_members
+**Economy**: credit_transactions, achievements, user_achievements
+**Safety**: blocked_users, filters, blocklist, blocklist_subscriptions
+**Notifications**: user_notifications
+**Admin**: site_config, custom_pages, custom_emoji, registration_queue
 
 ## Current State
 
-### Fixed Since v1
-- ✅ **CORS middleware** — gin-contrib/cors alternative, allows all origins
-- ✅ **Vite proxy** — `vite.config.js` proxies `/api` to `http://localhost:8080`
-- ✅ **Worker scheduler** — `internal/worker/scheduler.go` starts all 11 workers
-- ✅ **Worker startup in main.go** — scheduler initialized and started in `cmd/polaris/main.go`
-- ✅ **Updated .gitignore** — covers Go, Node, env, IDE artifacts
-- ✅ **Email verification** — `users.email_verified`, `users.email_verify_token`, endpoints, flows in LoginPage
-- ✅ **Password reset** — `users.password_reset_token`, endpoints, UI in LoginPage
-- ✅ **Account deletion** — soft delete with `is_deleted`/`deleted_at`
-- ✅ **User blocking** — `blocked_users` table, BlockService, BlockHandler, UI in ProfilePage
-- ✅ **Post editing** — 15-min window enforcement, `edited_at` tracking
-- ✅ **Post locking** — mod disables comments, `locked` flag
-- ✅ **Post sticky** — community-level pin, `sticky`/`sticky_at`
-- ✅ **Post hiding** — per-user hide, `hidden_posts` table
-- ✅ **Post moving** — mod moves between communities
-- ✅ **Reports** — `post_reports` table with categories, ReportService/Handler, UI in ModCenter
-- ✅ **Notifications** — `user_notifications` table, NotificationService/Handler, UI in NotificationsPage
-- ✅ **Mod notes** — `mod_notes` table, private per-user notes
-- ✅ **Custom pages** — `custom_pages` table, PageService/Handler, served at `/pages/:slug`
-- ✅ **Custom emoji** — `custom_emoji` table, EmojiService/Handler, admin UI
-- ✅ **OAuth stubs** — `oauth_states` table, provider config ready
-- ✅ **Theme support** — `users.theme`, light/dark toggle in Settings
+**Implemented**: auth, posts, tags with voting, search with boolean/fielded, communities (join/leave/slow-boot/probation/tenure-voting), moderation (M1 labels + admin actions + jury), collections, circles, blocking, content filters, credits, achievements, notifications, onboarding, custom feeds, trending, migration runner, Dockerfile, password reset, email verification, account deletion
 
-### Still Needed
-- **Production Dockerfile** — multi-stage: golang:1.26-alpine build → scratch runtime, expose :8080
-- **Image upload** — POST /api/v1/uploads, disk/S3 storage, thumbnail worker
-- **ActivityPub federation** — WebFinger, outbox/inbox, HTTP Signatures, Follow/Like/Announce
-- **Email delivery** — SMTP config, `email_queue` table, worker sends via sendmail/SMTP
-- **WebSocket frontend** — connect WebSocket client for real-time feed + notifications
-- **Seed data** — migration or script for demo users, posts, communities
-- **Test coverage** — currently 14 integration tests; need service unit tests, E2E with Playwright
+**Missing from docs but not implemented**: M2 meta-moderation (jury system exists but isn't M2-style), Positive Algorithm (feed is chronological), "Why this post?" button, full reaction set (only generic like/unlike), tag autocomplete, auto-generated circles (manual only), credit hash-chain ledger (simple transactions), ActivityPub (keys exist but no inbox/outbox), WebSocket (hub exists but not wired to feed), image upload (model exists, service exists, no endpoint yet)
 
-### File Layout
-```
-internal/
-├── api/                   # router.go (244 lines, ~95 endpoint registrations)
-│   ├── handlers/          # 23 files: auth, post, tag, feed, search, collection, community,
-│   │                      #   circle, note, moderation, blocklist, filter, credit, achievement,
-│   │                      #   onboarding, admin, block, report, notification, mod_note, emoji, page
-│   ├── middleware/        # auth.go, cors.go
-│   └── websocket/         # hub.go, handlers.go (gorilla + Redis pub/sub)
-├── db/                    # db.go + migrations/001_initial.sql (31 tables)
-├── model/                 # 26 files + errors.go
-├── services/              # 21 files
-└── worker/                # scheduler.go + 10 worker files
-```
-
-### Key Design Documents
-| File | Purpose |
-|------|---------|
-| `design/DESIGN.md` | Condensed platform design |
-| `design/AI_01_ARCH.md` | Architecture patterns (Go service/handler/test conventions) |
-| `design/AI_02_MODELS.md` | All 26 model structs with JSON tags |
-| `design/AI_03_API.md` | All ~95 API endpoints |
-| `design/AI_04_DB.md` | Database schema (41 tables, all CREATE TABLE) |
-| `design/AI_05_FRONTEND.md` | Frontend API client, stores, routing |
-| `TODO.md` | Feature backlog: Tier 1–4 + incomplete items |
+**Known issues**: Silent error catching in frontend (some catch blocks log but don't show UI), no pagination UI on feed (backend supports it), test cleanup FKs when run in parallel (services + handlers share DB), migration runner not wired into main.go startup (called from db.go but main.go doesn't call it — fix: add `db.RunMigrations(pg, "internal/db/migrations")` in main after postgres connect)
