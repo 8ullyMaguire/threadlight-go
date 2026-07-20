@@ -1,0 +1,320 @@
+{
+    "profile": {
+        "inbox": "صندوق الوارد",
+        "saved": "المحفوظ",
+        "subscribed": "الاشتراكات",
+        "profile": "ملف الشخضي"
+    },
+    "nav": {
+        "home": "الصفحة الرئيسية",
+        "admin": "مدير",
+        "communities": "اكتشف",
+        "search": "ابحث",
+        "create": {
+            "post": "أنشئ منشور",
+            "community": "مجتمع",
+            "logingate": "يجب تسجيل الدخول لإنشاء محتويات.",
+            "label": "أنشئ"
+        },
+        "menu": {
+            "label": "الملف الشخصي",
+            "app": "تطبيق",
+            "settings": "إعدادات",
+            "colorscheme": {
+                "label": "اللألوان",
+                "system": "المفترض للنظام",
+                "dark": "داكن",
+                "light": "فاتح"
+            },
+            "theme": "المظهر",
+            "about": "عن فوتون",
+            "source": "مصدر",
+            "donate": "تبرع",
+            "instance": "الخادوم"
+        },
+        "commands": {
+            "search": "ابحث عن {{default}}",
+            "prompt": "لوحة التحكم",
+            "recents": "مؤخرًا",
+            "content": "محتويات",
+            "main": "رئيسي",
+            "setView": "اختار طريقة العرض",
+            "setColor": "اختار الألوان",
+            "setColorTo": "ضبط الألوان إلى {{default}}",
+            "setViewTo": "ضبط طريقة العرض إلى {{default}}",
+            "feeds": "تغذية",
+            "setTheme": "ضبط مظهر",
+            "setThemeTo": "ضبط المضهر إلى {{default}}",
+            "contextual": "على هذه الصفحة"
+        },
+        "moderation": "الإشراف"
+    },
+    "account": {
+        "logout": "تسجيل الخروج",
+        "signup": "الاشتراك",
+        "accounts": "حسابات",
+        "changeinstance": "غير الخادوم",
+        "addGuest": "إضافة حساب ضيف",
+        "moveUp": "ارفع",
+        "moveDown": "نزل",
+        "guest": "صيف",
+        "login": "تسجيل الدخول",
+        "resetColor": "إعادة ضبط اللون",
+        "versionGate": "هذا الإصدار الفوتون يقبل الخوادم بالإصدار {{version}} أو اعلى."
+    },
+    "filter": {
+        "location": {
+            "label": "موقع",
+            "all": "الكل",
+            "subscribed": "الإشتراكات",
+            "moderator": "المشرف",
+            "global": "عالمياً",
+            "local": "المحلي"
+        },
+        "sort": {
+            "label": "الترتيب",
+            "active": "النشط",
+            "hot": "المتداولة",
+            "top": {
+                "label": "الأفضل",
+                "time": {
+                    "label": "الزمن",
+                    "9months": "9 اشهر",
+                    "6months": "6 أشهر",
+                    "3months": "3 أشهر",
+                    "month": "شهر",
+                    "week": "إسبوع",
+                    "12hours": "12 ساعة",
+                    "hour": "ساعة",
+                    "all": "جميع الأوقات",
+                    "day": "يوم",
+                    "6hours": "6 ساعات"
+                }
+            },
+            "new": "جديد",
+            "old": "قديم",
+            "controversial": "جدلي",
+            "mostcomments": "أكثر تعليقاً",
+            "newcomments": "تعليقات جديدة",
+            "scaled": "موزون"
+        },
+        "view": {
+            "label": "عرض",
+            "cozy": "مريح",
+            "list": "قائمة",
+            "compact": "مضغوط",
+            "legacy": "قديم"
+        },
+        "type": "نوع",
+        "filter": "فلتر",
+        "inbox": {
+            "messages": "رسالات",
+            "replies": "الردود",
+            "mentions": "الإشارات"
+        },
+        "unread": "غير مقروء"
+    },
+    "form": {
+        "username": "اسم المستخدم",
+        "name": "اسم",
+        "instance": "رابط الخادوم",
+        "confirmPassword": "تأكيد كلمة المرور",
+        "2fa": "رمز 2FA",
+        "forgotpassword": "نسيت الكلمة المرور",
+        "submit": "تقديم",
+        "edit": "عدل",
+        "preview": "معاينة",
+        "post": {
+            "community": "مجتمع",
+            "title": "عنوان",
+            "url": "رابط",
+            "body": "نص",
+            "generateTitle": "إنشاء عنوان",
+            "uploadImage": "تحميل صورة",
+            "selectFile": "إختار ملف",
+            "altText": "نص بديل",
+            "setLanguage": "إختار لغة",
+            "unset": "إلغاء",
+            "readMore": "اقرا المزيد",
+            "addUrl": "ضيف رابط",
+            "edit": "عدل منشور",
+            "create": "إنشاء منشور",
+            "nsfw": "محتويات الحساسة"
+        },
+        "profile": {
+            "displayName": "كنية",
+            "bio": "سيرة",
+            "avatar": "صورة الرمزية",
+            "banner": "خلفية",
+            "email": "بريد الإلكتروني",
+            "scores": "إظهار النقاط",
+            "bot": "حساب الالي",
+            "showBots": "إظهار الألات",
+            "showRead": "إظهار المنشورات المقروء",
+            "newPassword": "كلمة المرور الجديدة",
+            "showNSFW": "عرض المحتويات الحساسة",
+            "2fa": {
+                "totp": "TOTP",
+                "2fa": "2FA",
+                "paste": "الصق هذا في التطبيق التحقيق."
+            },
+            "deleteAccount": {
+                "label": "حذف الحساب",
+                "deleteContent": "إحذف المحتوى",
+                "warning": "هذا سيحذف كل تقديماتك."
+            },
+            "currentPassword": "كلمة المرور الحالية",
+            "matrix": "اسم المستخدم Matrix",
+            "verifyNewPassword": "تحقق من كلمة المرور الجديدة"
+        },
+        "email": "بريد الإلكتروني",
+        "setup": "إعداد",
+        "signup": {
+            "title": "اشتراك",
+            "description": "اختار خادوم التي تهمك, أو اكتب الرابط يدوياً.",
+            "chooseInstance": "إختار خادوم",
+            "application": {
+                "label": "تطبيق",
+                "info": "لتسجل لهذا الخادوم, لازملك ان تعبئة هذا الطلب, وتنتظر لقبولك. سيرسلك بريد إذا مقبول طلبك."
+            },
+            "closed": {
+                "title": "التسجيلات مغلوق",
+                "description": "هذا الخادوم تم تغليق التسجيلات. ابحث عن خادوم اخر.",
+                "anotherInstance": "ابحث عن خادوم اخر"
+            },
+            "info": "الخادوم هو الذي سيخزن حسابك, لاكن لا يزال توصل إلى المحتويات من الخوادم الأخرة."
+        },
+        "description": "وصف",
+        "password": "كلمة المرور"
+    },
+    "routes": {
+        "frontpage": {
+            "title": "صفحة الرئيسية",
+            "footer": "{{users:number}} {{users; 1:مستخدم; default:مستخدمين}} {{users; 1:نشيط; default:نشيطين}}",
+            "endFeed": "إنك وصلت للنهاية {{{{community_name}}:default .الأعلاف:community_name; undefined}}"
+        },
+        "modlog": "سجل الإشراف",
+        "instances": "خوادم",
+        "legal": {
+            "title": "قانونية",
+            "noLegal": "هذا الخادوم لا يوجد له معلومات قانونية."
+        },
+        "profile": {
+            "settings": "إعدادات",
+            "blocks": {
+                "title": "محجوب",
+                "empty": {
+                    "description": "عند تحجيب أي شيء, لم ستضهر في أعلافك.",
+                    "title": "عدم وجود كيانات محجوبة"
+                }
+            },
+            "credentials": "حساب",
+            "moderates": "يشرف",
+            "upvoted": "تصويات الإجابية",
+            "downvoted": "تصويات السالبة",
+            "media": {
+                "title": "إعلام",
+                "download": "حمِّل"
+            },
+            "logins": "تسجيلات الدخول",
+            "welcome": "سلام, {{default}}!",
+            "delete": {
+                "warning": "هذا دائم. هل متئكد ان تريد ان تفعل هذا؟",
+                "title": "احذف الحساب"
+            },
+            "user": "مستخدم",
+            "favorites": "مفضلات",
+            "overview": "إظهار عامة",
+            "submissions": "تقديمات"
+        },
+        "translators": "مترجمين",
+        "accounts": "حواسب",
+        "communities": {
+            "title": "مجتمعات",
+            "trending": "رائجة",
+            "search": {
+                "placeholder": "ابحث عن مجتمعات أخرا"
+            }
+        },
+        "search": {
+            "title": "ابحث",
+            "federating": "متحد",
+            "query": "استعلام",
+            "noResults": {
+                "title": "لا يوجد نتائج",
+                "alt": "ابحث حول الإتحاد",
+                "description": "لا يوجد نتائج التي يشبه تصفيتك. حاول ان تعدل تصفيتك."
+            },
+            "top": "النتائج الغالبة",
+            "other": "نتائج أخر"
+        },
+        "saved": "محفوظ",
+        "createPost": "إنشاء منشور",
+        "createCommunity": "إنشاء مجتمع",
+        "post": {
+            "crosspostCount": "منشورات المتقاطعة",
+            "commentCount": "تعليقات",
+            "scrollToTop": "العودة إلى الأعلى",
+            "addComment": "إضافة تعليق",
+            "remoteView": "عرض عن بعد",
+            "localView": "عرض محلي",
+            "thread": {
+                "allComments": "جميع التعليقات",
+                "part": "أنك ظاهر جزء من موضوعاً.",
+                "context": "إظهار السياق",
+                "single": "أنك تعرض موضوعاً واحداً."
+            },
+            "emptyComments": {
+                "title": "لا يوجد تعليقات",
+                "description": "ابدأ المحادثة!"
+            }
+        },
+        "inbox": {
+            "title": "صندوق الوارد",
+            "markAsRead": "وضع علامة كمقروءة بالكامل",
+            "empty": {
+                "description": "ستظهر الرسائل والردود والإشارات هنا.",
+                "title": "لا يوجد إشعارات جديدة"
+            },
+            "item": {
+                "reply": "{{user}} رد عليك في {{post}}",
+                "mention": "{{user}} ذكرك في {{post}}",
+                "message": "{{user}} أرسل إلى {{recipient}}"
+            }
+        },
+        "moderation": {
+            "title": "الإشراف",
+            "empty": {
+                "title": "لا يوجد تقارير جديدة",
+                "description": "لما يتم الإبلاغ عن التقديمات, تستطيع ان تتصرف هنا."
+            },
+            "reason": "سبب",
+            "resolve": "حل",
+            "resolved": "محلول",
+            "unresolve": "إلغاء الحل",
+            "resolvedBy": "محلول بيد"
+        },
+        "admin": {
+            "title": "إدارة",
+            "config": {
+                "title": "إعدادات",
+                "sidebar": "شريط الجانبي",
+                "banner": "خلفية",
+                "nsfwEnabled": "إظهار التقديمات الحساسة",
+                "registration": {
+                    "label": "نمط التسجيل",
+                    "open": "افتح",
+                    "application": "طلب تطبيق",
+                    "closed": "مقفول"
+                },
+                "icon": "أيقونة",
+                "downvotesEnabled": "تمكين التصويتات السلبية",
+                "adminCommunityOnly": "فقط المشرفين يستطع إنشاء مجموعات",
+                "requireVerifyEmail": "إيجاب التحقيق بالبريد الإلكتروني",
+                "applicationQuestion": "سوأل عن الطلب",
+                "emailAdminsOnApplication": "إرسال بريد للمشرفين لما يصل طلبات جديدة",
+                "emailAdminsOnReport": "إرسال بريد للمشرفين لما يصل التقارير جديدة"
+            }
+        }
+    }
+}

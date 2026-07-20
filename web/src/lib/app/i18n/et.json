@@ -1,0 +1,1049 @@
+{
+    "profile": {
+        "profile": "Profiil",
+        "inbox": "Postkast",
+        "saved": "Salvestatud",
+        "subscribed": "Tellimused"
+    },
+    "nav": {
+        "home": "Avaleht",
+        "communities": "Kogukonnad",
+        "search": "Otsi",
+        "create": {
+            "label": "Koosta",
+            "post": "Postita",
+            "logingate": "Postitamiseks pead sa sisse logima.",
+            "community": "Kogukond"
+        },
+        "menu": {
+            "label": "Profiil",
+            "settings": "Seadistused",
+            "colorscheme": {
+                "label": "Värvikombinatsioon",
+                "system": "Süsteemi kujundus",
+                "dark": "Tume kujundus",
+                "light": "Hele kujundus"
+            },
+            "theme": "Kujundus",
+            "donate": "Toeta rahaliselt",
+            "instance": "Serveri teave",
+            "app": "Rakendus",
+            "about": "Rakenduse teave",
+            "source": "Lähtekood"
+        },
+        "admin": "Peakasutaja",
+        "commands": {
+            "main": "Põhimenüü",
+            "search": "Otsi: **{{default}}**",
+            "feeds": "Uudisvood",
+            "recents": "Hiljutised",
+            "prompt": "Käsupalett",
+            "content": "Sisu",
+            "setView": "Vali vaade",
+            "setViewTo": "Muuda vaateks: **{{default}}**",
+            "setColor": "Seadista värvikombinatsiooni",
+            "setColorTo": "Muuda värvilahenduseks: **{{default}}**",
+            "downloading": "Laadin alla tegevusi",
+            "setTheme": "Vali kujundus",
+            "setThemeTo": "Vali kujunduseks: **{{default}}**",
+            "contextual": "Sellel lehel",
+            "communities": "Kogukonnad, mille nimes on **{{default}}**",
+            "goto": "Ava **{{default}}**"
+        },
+        "moderation": "Modereerimine",
+        "notifications": "Teavitused"
+    },
+    "account": {
+        "login": "Logi sisse",
+        "logout": "Logi välja",
+        "signup": "Registreeru",
+        "accounts": "Kasutajakontod",
+        "changeinstance": "vaheta Instance",
+        "resetColor": "Lähtesta värv",
+        "moveUp": "Nihuta ülespoole",
+        "moveDown": "Nihuta allapoole",
+        "versionGate": "See versioon Photonist Toetab servereid millel on {{version}} Või üles.",
+        "guest": "Külaline",
+        "addGuest": "Lisa külaliskonto",
+        "piefedGate": "Piefedi tugi on katseline. Mõni funktsionaalsus pole toetatud."
+    },
+    "filter": {
+        "location": {
+            "label": "Asukoht",
+            "all": "Kõik",
+            "local": "Kohalik",
+            "subscribed": "Tellimused",
+            "global": "Üldine",
+            "moderator": "Moderaator",
+            "popular": "Populaarne"
+        },
+        "sort": {
+            "label": "Sorteeri",
+            "active": "Aktiivne",
+            "top": {
+                "label": "Parimad",
+                "time": {
+                    "label": "Ajavahemik",
+                    "all": "Läbi aegade",
+                    "9months": "9 kuud",
+                    "6months": "6 kuud",
+                    "3months": "3 kuud",
+                    "month": "Eelmine kuu",
+                    "week": "Eelmine nädal",
+                    "day": "Eile",
+                    "12hours": "12 tundi",
+                    "6hours": "6 tundi",
+                    "hour": "Viimane tund",
+                    "year": "Möödunud aastal"
+                }
+            },
+            "new": "Uuemad",
+            "old": "Vanemad",
+            "controversial": "Vastuolulised",
+            "hot": "Hetkel populaarne",
+            "mostcomments": "Enim kommentaare",
+            "newcomments": "Uued vastused",
+            "scaled": "Skaleeritud"
+        },
+        "view": {
+            "label": "Vaata",
+            "legacy": "Vana menüü",
+            "compact": "Kompaktne",
+            "list": "Loend",
+            "cozy": "Mugav"
+        },
+        "type": "Tüüp",
+        "filter": "Filtreeri",
+        "unread": "Lugemata",
+        "inbox": {
+            "messages": "Sõnumid",
+            "replies": "Vastused",
+            "mentions": "Mainimised"
+        }
+    },
+    "form": {
+        "username": "Kasutajanimi",
+        "name": "Nimi",
+        "instance": "Serveri domeen",
+        "password": "Salasõna",
+        "confirmPassword": "Korda salasõna",
+        "2fa": "2FA-kood",
+        "forgotpassword": "Unustasin salasõna",
+        "submit": "Saada",
+        "edit": "Muuda",
+        "preview": "Eelvaade",
+        "post": {
+            "create": "Koosta postitus",
+            "edit": "Muuda postistust",
+            "title": "Pealkiri",
+            "selectFile": "Vali fail",
+            "readMore": "Loe lsiaks",
+            "url": "Võrguaadress",
+            "body": "Sisutekst",
+            "generateTitle": "Genereeri pealkiri",
+            "nsfw": "Sobimatu sisu",
+            "uploadImage": "Laadi pilt üles",
+            "addUrl": "Lisa link",
+            "setLanguage": "Vali keel",
+            "unset": "Määramata",
+            "community": "Kogukond",
+            "altText": "Pildi selgitustekst",
+            "fetching": "Laadin saidi metateavet",
+            "types": {
+                "normal": "Arutelu",
+                "poll": "Küsitlus",
+                "event": "Sündmus"
+            },
+            "autosubmit": "Saada automaatselt",
+            "customThumbnail": "Määra pisipildiks",
+            "flair": "Lisa stiilimärgis"
+        },
+        "profile": {
+            "bio": "Profiili kirjeldus",
+            "avatar": "Tunnuspilt",
+            "matrix": "Matrixi kasutaja",
+            "bot": "Robotkonto",
+            "currentPassword": "Praegune salasõna",
+            "newPassword": "Uus salasõna",
+            "2fa": {
+                "paste": "Aseta see oma 2FA-autentimisrakendusse.",
+                "totp": "TOTP (ajapõhine ühekorde salasõna)",
+                "2fa": "Kaksikautentimine (2FA)",
+                "disabled": "Kaksikautentimine (2FA) pole kasutusel"
+            },
+            "email": "E-posti aadress",
+            "banner": "Bänner",
+            "showNSFW": "Näita mittesobilikku sisu",
+            "displayName": "Kuvatav nimi",
+            "verifyNewPassword": "Korda uut salasõna",
+            "credentials": {
+                "description": "Suurema turvalisuse nimel saad siin kasutusele võtta kaksikautentimise, muuta oma salasõna, vaadata sisselogitud seadmeid või kustutada oma kasutajakonto.",
+                "title": "Halda enda sisselogimise viisi"
+            },
+            "showBots": "Näita roboteid",
+            "deleteAccount": {
+                "deleteContent": "Kustuta sisu",
+                "warning": "Järgnevaga kustutad KÕIK oma sisu."
+            },
+            "languages": {
+                "title": "Keeled",
+                "description": "Kui mõni on määratud, näed ainult sisu, mis on selgesõnaliselt selle keelega märgistatud. Enamik märgistamata sisu kuulub kategooriasse „Määramata”."
+            },
+            "showRead": "Näita loetud postitusi",
+            "scores": "Näita punktiskoori"
+        },
+        "signup": {
+            "title": "Registreeru",
+            "chooseInstance": "Vali server",
+            "description": "Vali server, mis teenindab sinu kasutajakontot.",
+            "recommended": "Soovitatud",
+            "application": {
+                "label": "Rakendus",
+                "notice": "Sinu registreerumine on praegu ootel. Kui peakasutaja on selle läbi vaadanud, saad heakskiitmisel e-kirjaga kinnituse. Seejärel saad sisse logida.",
+                "info": "Selle serveriga liitumiseks pead täitma käesoleva avalduse ja ootama, kuni sind vastu võetakse. Kui sinu avaldus kiidetakse heaks, siis saad selle kohta e-kirja."
+            },
+            "closed": {
+                "title": "Registreerumine pole avatud",
+                "description": "See server ei luba registreerumist. Palun leia mõni muu server.",
+                "anotherInstance": "Otsi mõni muu server"
+            },
+            "verify": {
+                "title": "Kinnita e-posti aadress",
+                "submit": "Ma olen oma e-posti aadressi kinnitanud",
+                "description": "Vaata oma saabuvaid kirju. Otsi välja meie saadetud kiri kinnituslingiga ning pärast selle klõpsamist vajuta järgnevat nuppu.",
+                "error": "Sinu e-posti aadress pole kinnitanud."
+            },
+            "info": "Saad juurdepääsu kogu Födiversumi sisule sõltumata oma konto serverist; üldjuhul on hea mõte valida ükskõik milline järgmistest."
+        },
+        "email": "E-posti aadress",
+        "setup": "Kasutuselevõtmine",
+        "description": "Kirjeldus",
+        "time": {
+            "duration": "Kestus",
+            "minutes": "Minutid",
+            "hours": "Tunnid",
+            "days": "Päevad",
+            "months": "Kuud",
+            "years": "Aastat",
+            "permanent": "Püsiv"
+        },
+        "instanceType": "Serveri tarkvara tüüp"
+    },
+    "routes": {
+        "search": {
+            "title": "Otsi",
+            "federating": "Üle Födiversumi",
+            "noResults": {
+                "title": "Tulemusi pole",
+                "alt": "Otsi Födiversumist mida iganes.",
+                "description": "Sellele filtrile pole ühtegi vastust. Proovi otsingut muuta."
+            },
+            "other": "Muud tulemused",
+            "top": "Populaarsed tulemused",
+            "query": "Päring"
+        },
+        "saved": "Salvestatud",
+        "createPost": "koosta postitus",
+        "post": {
+            "crosspostCount": "Ristpostitused",
+            "thread": {
+                "context": "Näita konteksti",
+                "single": "Sa vaatad ühte jutulõnga.",
+                "allComments": "Kõik kommentaarid",
+                "part": "Sa vaatad ühe jutulõnga osa."
+            },
+            "commentCount": "Kommentaarid",
+            "addComment": "Kommenteeri",
+            "scrollToTop": "Keri lehe ülemisse äärde",
+            "emptyComments": {
+                "title": "Kommentaare pole",
+                "description": "Alusta vestlust!"
+            },
+            "commented": "Sinu kommentaar on postitatud.",
+            "loadComments": "Laadi kommentaare"
+        },
+        "inbox": {
+            "title": "Sisendpostkast",
+            "messages": {
+                "empty": {
+                    "title": "Sõnumeid pole"
+                },
+                "start": "Alusta vestlemist",
+                "conversation": "See vestluse algus kasutajaga {{user}}",
+                "indicator": "Saadan sõnumit kasutajale {{user}}"
+            },
+            "markAsRead": "Märgi kõik loetuks",
+            "empty": {
+                "title": "Uusi teavitusi pole",
+                "description": "Sõnumid, vastused ja mainimised saavad olema siin nähtavad."
+            },
+            "item": {
+                "mention": "{{user}} mainis sind postituses {{post}}",
+                "message": "{{user}} saatis sõnumi kasutajale {{recipient}}",
+                "reply": "{{user}} vastas sulle postituses {{post}}"
+            }
+        },
+        "admin": {
+            "config": {
+                "registration": {
+                    "open": "Avatud",
+                    "closed": "Suletud",
+                    "label": "Registreerimisrežiim",
+                    "application": "Eelda sooviavaldust"
+                },
+                "listingType": {
+                    "all": "Kõik",
+                    "local": "Kohalik",
+                    "label": "Loendi tüüp"
+                },
+                "private": "Privaatserver",
+                "icon": "Ikoon",
+                "adminCommunityOnly": "Ainult peakasutaja saab lisada kogukondi",
+                "federation": "Födereerimine on kasutusel",
+                "captcha": {
+                    "enabled": "Robotilõks on kasutusel"
+                },
+                "sidebar": "Külgriba",
+                "title": "Seadistus",
+                "banner": "Bänner",
+                "nsfwEnabled": "Luba mittesobilik sisu",
+                "hideModlogModNames": "Peida modereerimislogist nimed",
+                "federationDebug": "Födereerimise silumisrežiim",
+                "requireVerifyEmail": "Eelda e-posti aadressi kinnitamist",
+                "downvotesEnabled": "Luba vastuhääletamine",
+                "applicationQuestion": "Liitumisvõimaluse küsimine",
+                "emailAdminsOnApplication": "Saada uute liitumispäringute lisandumisel peakasutajatele e-kiri",
+                "emailAdminsOnReport": "Saada uute aruannete/teatiste lisandumisel peakasutajatele e-kiri",
+                "slurFilter": "Keelatud sõnad võrguaadressi lõpus (regulaaravaldis)"
+            },
+            "applications": {
+                "user": "Kasutaja",
+                "empty": {
+                    "title": "Uusi liitumistaotlusi pole",
+                    "description": "Liitumistaotlused saavad olema nähtavad siin."
+                },
+                "title": "Liitumistaotlused",
+                "application": "Liitumistaotlus",
+                "approved": "Kinnitatud",
+                "denied": "Tagasilükatud",
+                "deny": "Lükka tagasi",
+                "approve": "Nõustu",
+                "reason": "Põhjus",
+                "modalTitle": "Lükka liitumistaotlus tagasi"
+            },
+            "federation": {
+                "block": "Blokeeri",
+                "blockplaceholder": "Blokeeri server...",
+                "title": "Födereerimine",
+                "csv": "Laadi CSV-fail üles",
+                "blocked": "Blokeeritud serverid",
+                "allowed": "Lubatud serverid",
+                "allowplaceholder": "Luba serveri kasutamine",
+                "allow": "Luba",
+                "emptyBlock": {
+                    "title": "Blokeeritud servereid pole",
+                    "description": "Serveri blokeerimisel peidetakse kõik sealt tehtud postitused."
+                },
+                "emptyAllow": {
+                    "description": "Serveri lisamisel lubatud serverite loendisse blokeerib liikluse muude servertega.",
+                    "title": "Lubatud serverite loend on tühi"
+                }
+            },
+            "title": "Haldus",
+            "team": {
+                "title": "Peakasutajad",
+                "empty": {
+                    "title": "Peakasutajaid pole",
+                    "description": "Mingil imelikul põhjusel sellel saidil pole peakasutajad. Miks nii?"
+                }
+            },
+            "media": {
+                "title": "Meedium"
+            },
+            "taglines": {
+                "title": "Tunnuslaused",
+                "add": "Lisa tunnuslause",
+                "empty": {
+                    "title": "Tunnuslauseid pole",
+                    "description": "Kui kasutajad külastavad sinu serverit, siis saidi kaardil on näha juhuslik tunnuslause."
+                }
+            }
+        },
+        "passwordChange": {
+            "title": "Vaheta salasõna",
+            "description": "Sisesta uus salasõna.",
+            "instance": "Mis serveris on sinu kasutaja?"
+        },
+        "instances": "Seotud serverid",
+        "moderation": {
+            "title": "Modereerimine",
+            "manage": {
+                "title": "Halda",
+                "modlogs": "Hiljutised modereerimislogid",
+                "ban": "Määra suhtluskeeld",
+                "unban": "Eemalda suhtluskeeld"
+            },
+            "reason": "Põhjus",
+            "resolve": "Lahenda",
+            "resolved": "Lahendatud",
+            "unresolve": "Võta lahendus tagsi",
+            "resolvedBy": "Lahendaja",
+            "markAll": "Märgi leht lahendatuks",
+            "markAllComplete": "Pakktöötlusena tehtud toiming on lõppenud.",
+            "empty": {
+                "title": "Uusi aruandeid/teatisi pole",
+                "description": "Kui lisandub uusi aruandeid/teatisi, siis saad nendega tegeleda siin."
+            },
+            "feed": "Aruanded/teatised"
+        },
+        "resetLogin": {
+            "title": "Lähtesta salasõna",
+            "description": "Sisesta oma kasutajakonto e-posti aadress ja saadame sulle salasõna lähtestamise lingi. Kui sinu kasutajakontoga pole e-posti aadressi seotud, siis palun võta ühendust peakasutajatega."
+        },
+        "profile": {
+            "delete": {
+                "title": "Kustuta kasutajakonto",
+                "warning": "See muudatus on lõplik. Kas oled kindel, et soovid seda teha?"
+            },
+            "overview": "Ülevaade",
+            "submissions": "Postitused",
+            "edit": "Muuda",
+            "user": "Kasutaja",
+            "settings": "Seadistused",
+            "blocks": {
+                "title": "Blokeeritud",
+                "empty": {
+                    "user": {
+                        "title": "Blokeeritud kasutajaid pole",
+                        "description": "Kasutaja blokeerimisel peidetakse tema postitused ja kommentaarid uudisvoogudest."
+                    },
+                    "instance": {
+                        "title": "Blokeeritud servereid pole",
+                        "description": "Serveri blokeerimisel peidetakse sealsed postitused ja kommentaarid uudisvoogudest."
+                    },
+                    "community": {
+                        "title": "Blokeeritud kogukondi pole",
+                        "description": "Kogukonna blokeerimisel peidetakse ka postitused uudisvoogudest."
+                    }
+                }
+            },
+            "credentials": "Kasutajanimi/salasõna",
+            "favorites": "Lemmikud",
+            "media": {
+                "title": "Meedium",
+                "download": "Laadi alla"
+            },
+            "logins": "Sisselogimised",
+            "moderates": "Modereeritav sisu",
+            "upvoted": "Hääletasid poolt",
+            "downvoted": "Hääletasid vastu"
+        },
+        "translators": "Tõlkijad",
+        "accounts": "Kasutajakontod",
+        "accounts.placeholder": {
+            "title": "Pole sisselogitud",
+            "description": "Sa pole loginud sisse. Saad siin liituda või sisse logida.",
+            "descriptionWithGuest": "Sa pole loginud sisse. Saad siin liituda, sisse logida või lisada uue külaliskonto."
+        },
+        "postRedirect": {
+            "title": "Serveriülene sisu",
+            "description": "See sisu pole päris serverist: {{homeInstance}}.",
+            "actions": {
+                "back": "Mine tagasi",
+                "fetch": "Jätka serveris {{homeInstance}}",
+                "switch": "Asu kasutama kontot serveris {{destInstance}}"
+            },
+            "automatic": {
+                "found": "Suunan ümber",
+                "title": "Tuvastan sisu",
+                "description": "Tuvastan seda sisu sinu koduserverist…"
+            }
+        },
+        "frontpage": {
+            "title": "Avaleht",
+            "footer": "{{users:number}} {{aktiivsed kasutajad; 1:aktiivne kasutaja; default:aktiivset kasutajat}}",
+            "empty": {
+                "title": "Postitusi pole",
+                "description": "Sellele filtrile ei vasta ühtegi postitust."
+            },
+            "endFeed": "Oled jõudnud {{community_name; undefined:uudisvoo lõpuni.; default:{{community_name}} kogukonna lõpuni.}}"
+        },
+        "modlog": {
+            "filters": "Filtrid",
+            "title": "Modereerimislogi"
+        },
+        "legal": {
+            "title": "Serveri Juriidiline teave",
+            "noLegal": "See server pole lisanud oma juriidilist teavet."
+        },
+        "explore": {
+            "title": "Uuri ja avasta",
+            "feeds": "Uudisvood",
+            "topics": "Teemad"
+        },
+        "communities": {
+            "title": "Kogukonnad",
+            "trending": "Populaarsust koguv",
+            "search": {
+                "placeholder": "Otsi uut kogukonda"
+            }
+        },
+        "verifyEmail": {
+            "error": "Sinu e-posti aadressi kinnitamine ei õnnestunud.",
+            "message": "Sinu e-posti aadressi kinnitamine õnnestus. Sa võid selle akna nüüd sulgeda."
+        },
+        "theme": {
+            "title": "Kujundus",
+            "accent": "Aktsentvärv",
+            "resetWarning": {
+                "title": "Lähtesta kujundus",
+                "description": "Järgnevaga lähtestad kõik värvid vaikimisi värvideks. Soovitame, et igaks juhuks enne ekspordid oma kujunduse."
+            },
+            "preset": {
+                "title": "pole muudetav",
+                "description": "See on vaikimisi kujundus ja teda muuta ei saa.",
+                "delete": {
+                    "title": "Kustuta kujundus",
+                    "confirm": "Kinnita"
+                },
+                "default": "Vaikimisi",
+                "classic": "Klassikaline",
+                "imported": "Sinu kujundus",
+                "new": "Uus kujundus",
+                "presets": "Eelseadistused"
+            }
+        },
+        "community": {
+            "settings": {
+                "settings": "Seadistused",
+                "manage": "Halda",
+                "team": "Tiim"
+            },
+            "languageWarning": "Selle kogukonna sisu on keeltes, mida sa pole valinud. Mõned või kõik postitused võivad olla puudu."
+        },
+        "user": {
+            "note": "Lisa märge"
+        }
+    },
+    "cards": {
+        "community": {
+            "members": "Liikmed",
+            "subscribe": "Telli",
+            "subscribed": "Tellitud",
+            "block": "Blokeeri",
+            "unblock": "Lõpeta blokeerimine",
+            "blockInstance": "Blokeeri server",
+            "moderators": "Moderaatorid",
+            "modlog": "Modereerimislogi",
+            "activeDay": "Täna aktiivsed",
+            "flair": "Määratle oma stiilimärgis"
+        },
+        "site": {
+            "admins": "Peakasutajad",
+            "about": "Üldteave",
+            "stats": "Statistika"
+        }
+    },
+    "admin": {
+        "instance": "Server",
+        "label": "Süsteemihaldus",
+        "purge": "Puhasta",
+        "purgeCommunity": {
+            "title": "Puhastan kogukonda",
+            "warning": "Järgnevaga kustutad kõik postitused. Kas oled kindel? (Nupp muutub kasutatavaks 3 sekundi pärast.)"
+        }
+    },
+    "content": {
+        "all": "Kõik",
+        "users": "Kasutajad",
+        "posts": "Postitused",
+        "message": "Sõnum",
+        "communities": "Kogukonnad",
+        "comments": "Kommentaarid",
+        "instances": "Serverid",
+        "url": "Võrguaadress"
+    },
+    "post": {
+        "actions": {
+            "more": {
+                "delete": "Kustuta",
+                "restore": "Taasta",
+                "label": "Täiendavad tegevused",
+                "edit": "Muuda",
+                "creator": "Looja",
+                "actions": "Tegevused",
+                "markRead": "Märgi loetuks",
+                "markUnread": "Märgi mitteloetuks",
+                "hide": "Peida",
+                "unhide": "Lõpeta peitmine",
+                "share": "Jaga",
+                "share.global": "Lähteserver",
+                "share.local": "Sinu server",
+                "share.photon": "Photoni link",
+                "crosspost": "Ristpostita",
+                "share.from": "Jaga rakendusest"
+            },
+            "mediaBias": {
+                "noData": {
+                    "title": "informatsiooni puudub"
+                }
+            },
+            "comments": "Kommentaarid",
+            "save": "Salvesta",
+            "unsave": "Eemalda salvestus",
+            "vote": {
+                "upvote": "Hääleta poolt",
+                "downvote": "Hääleta vastu",
+                "score": "Tulemus"
+            }
+        },
+        "badges": {
+            "locked": "Lukustatud",
+            "deleted": "Kustutatud",
+            "removed": "Eemaldatud",
+            "featured": "Esiletõstetud",
+            "saved": "Salvestatud",
+            "nsfw": "Sobimatu sisu"
+        },
+        "image": {
+            "zoomIn": "Suumi sisse",
+            "zoomOut": "Suumi välja"
+        },
+        "meta": {
+            "lastEdited": "Viimati muudetud {{default}}",
+            "created": "Loodud {{default}}"
+        },
+        "poll": {
+            "votes": "{{votes:number}} häält",
+            "results": {
+                "show": "Näita tulemusi",
+                "hide": "Peida tulemused",
+                "ends": "Lõppeb {{time}}",
+                "ended": "Lõppes {{time}}"
+            },
+            "choices": "Valikud",
+            "multiple": "Mitu valikut",
+            "single": "Üks valik",
+            "mode": "Režiim"
+        }
+    },
+    "comment": {
+        "locked": "See postitus on lukustatud.",
+        "actions": {
+            "link": "Kopeeri link",
+            "label": "Tegevused"
+        },
+        "reply": "Vasta",
+        "banned": "Sul on siin kogukonnas suhtluskeeld.",
+        "more": "Veel {{comments:number}}",
+        "collapse": "Ahenda",
+        "expand": "Laienda"
+    },
+    "moderation": {
+        "removeSubmission": {
+            "message": "Sõnum",
+            "withReason": "Teavita autorit",
+            "comment": "Kommentaar",
+            "failReply": "Vastuse postitamine ei õnnestunud. Eemaldan ikkagi…",
+            "failMessage": "Sõnumi saatmine kasutajale ei õnnestunud. Eemaldan ikkagi…",
+            "title": "Eemaldan postitust",
+            "titleRestore": "Taastan postitust",
+            "titlePurge": "Kustutan postitust",
+            "failEmptyReply": "Kui „Teavita autorit“ on kasutusel, siis sinu vastus ei saa olla tühi.",
+            "successPurge": "Selle postituse kustutamine õnnestus."
+        },
+        "lock": "Lukusta",
+        "unlock": "Ava lukustus",
+        "restore": "Taasta",
+        "remove": "Eemalda",
+        "modlog": {
+            "user": "Kasutajate modereerimislogi",
+            "post": "Postituste modereerimislogi",
+            "comment": "Kommentaaride modereerimislogi"
+        },
+        "reason": "Põhjus",
+        "ban": {
+            "deleteData": "Kustuta andmed",
+            "warning": "Järgnevaga kustutad KÕIK selle kasutaja siinsed postitused.",
+            "expires": "Aegub (UTC aja järgi)",
+            "banning": "Määran kasutajale suhtluskeeldu",
+            "unbanning": "Eemaldan kasutajalt suhtluskeelu",
+            "banFromCommunity": "Keela kasutajale ligipääs kogukonda",
+            "unbanFromCommunity": "Lõpeta kasutajale ligipääsukeeld kogukonda"
+        },
+        "reportModal": {
+            "presets": {
+                "spam": "Spämm",
+                "rules": "Rikub kogukonna reegleid",
+                "rules.content": "See postitus rikub reegleid, sest __"
+            },
+            "success": "Teatamine sellest postitusest.",
+            "title": "Teata haldajale"
+        },
+        "label": "Modereerimine",
+        "labelInstanceOnly": "Modereerimine (vaid kohalikus serveris)",
+        "feature": "Tõsta esile",
+        "unfeature": "Lõpeta esiletõstmine",
+        "votes": "Hääli",
+        "report": "Teata haldajale"
+    },
+    "common": {
+        "back": "Tagasi",
+        "next": "Järgmine",
+        "add": "Lisa",
+        "send": "Saada",
+        "cancel": "Katkesta",
+        "general": "Üldist",
+        "remove": "Eemalda",
+        "download": "Laadi alla",
+        "attach": "Lisa fail",
+        "info": "Teave",
+        "continue": "Jätka",
+        "save": "Salvesta",
+        "enabled": "Kasutusel",
+        "disabled": "Pole kasutusel",
+        "enable": "Lülita sisse",
+        "disable": "Lülita välja",
+        "debug": "Veaotsing",
+        "refresh": "Värskenda",
+        "jump": "Hüppa"
+    },
+    "toast": {
+        "copied": "Kopeeritud lõikelauale.",
+        "failFindUser": "Seda kasutajat ei leidunud.",
+        "confirmDelete1": "Kas oled kindel et tahad kustutada oma kasutajakonto?",
+        "confirmDelete2": "Kas sa oled tõesti kindel?",
+        "confirmDelete3": "Viimane hoiatus. Kas sa oled tõesti kindel?",
+        "needPassword": "Sa pead sisestama oma salasõna.",
+        "deleting": "Kustutan sinu kasutajakontot...",
+        "deleted": "Sinu kasutajakonto on kustutatud.",
+        "passwordReset": "Sinu salasõna on lähtestatud.",
+        "resetLink": "Salasõna lähtestamise link on saadetud sinu e-posti aadressile.",
+        "noComments": "API päringu vastuses ei leidunud kommentaare.",
+        "loginVoteGate": "Hääletamiseks pead logima sisse.",
+        "invalidURL": "Vigane võrguaadress",
+        "blockedCommunity": "See kogukond on blokeeritud.",
+        "unblockedCommunity": "Selle kogukonna blokeerimine on lõpetatud.",
+        "purgedCommunity": "See kogukond on puhastatud.",
+        "blockedInstance": "See server on blokeeritud.",
+        "updatedCommunity": "Sinu kogukond on uuendatud.",
+        "sentMessage": "See sõnum on saadetud.",
+        "invalidDateAbsolute": "Vigane kuupäev - see peaks olema absoluutne kuupäev.",
+        "invalidDateBeforeCurrent": "Vigane kuupäev - ta on praegusest ajast varasem.",
+        "needCommunity": "Sa pead määrama kogukonna.",
+        "generatedTitle": "Pealkiri ja sisu on loodud võrguaadressist. Kas tahaksid selle sammu tagasi võtta?",
+        "restoredFromDraft": "Postitus on kavandist taaastatud.",
+        "failGenerateTitle": "Selle veebisaidi kohta ei leidunud kasutatavat pealkirja ega kirjeldust.",
+        "approvedApplication": "See taotlus on heaks kiidetud.",
+        "deniedApplication": "See taotlus on tagasi lükatud.",
+        "updatedSite": "Sinu veebisait on uuendatud.",
+        "failCSV": "CSV-faili lugemine ei õnnestunud",
+        "removeAdminWarning": "Kas oled kindel, et soovid selle peakasutaja eemaldada?",
+        "removeAdmin": "See kasutaja on eemaldatud.",
+        "addMod": "See moderaator on lisatud.",
+        "updateMods": "Kogukonna moderaatorid on uuendatud.",
+        "logIn": "Sisselogimine õnnestus.",
+        "addAccount": "See kasutajakonto on lisatud.",
+        "invalidLogin": "Vigane kasutajanimi/salasõna",
+        "saveSettings": "Kasutaja seadistused on salvestatud. Kui sa muutsid oma e-posti aadressi, siis saatsime sinna kinnituslingi.",
+        "resetSettings": "Kas oled kindel, et soovid oma seadistused lähtestada vaikimisi seadistusteks?",
+        "failFetchInstances": "Saadavaolevate serverite tuvastamine/laadimine ei õnnestunud.",
+        "verifyEmail": "Kinnituslink on saadetud sinu e-posti aadressile. Kinnita oma e-posti aadress ja logi siis sisse.",
+        "failSignup": "Registreerumine ei õnnestunud.",
+        "successSignup": "Registreerumine õnnestus.",
+        "blockUser": "See kasutaja on blokeeritud.",
+        "unblockUser": "Selle kasutaja blokeerimine on eemaldatud.",
+        "purgeUser": "Selle kasutaja andmed on puhastatud.",
+        "settingsImport": "Seadistuste importimine õnnestus",
+        "userLoading": "Jätkuvalt laadin kasutajaandmeid…",
+        "settingsImportWarning": "Imporditavad seadistused ei tundu olema korrektsed. Kas sa kindlasti soovid neid importida?",
+        "lemmyDonate": "Sinu kasutajakonto serveri tarkvaraks on Lemmy ning arendajad soovivad nende rahalist toetamist. Tänu kasutajate suuremeelsusele on neil võimalik Lemmyt arendada avatud lähtekoodiga platvormina, mis on vaba jälgimisest ja reklaamidest.\n\nIgal aastal paluvad nad sul kaaluda annetuse tegemist, et toetada nende tööd ja võimaldada neil Lemmy hooldamist ja täiustamist jätkata.\n\n[Toeta rahaliselt](https://join-lemmy.org/donate)\n\n*Märkus: see on rahaline toetus Lemmyle, mitte Photonile.*",
+        "bannedUser": "Sa seadsid sellele kasutajale suhtluskeelu.",
+        "unbannedUser": "Sa eemaldasid sellelt kasutajalt suhtluskeelu.",
+        "failInstanceURL": "Nende seadistuste alusel ei õnnestud seda serveri võrguaadressi avada. Kas server ikka töötab?",
+        "resolveReport": "Lahendasid selle aruande/teatise.",
+        "unresolveReport": "Märkisid selle aruande/teatise mittelahendatud.",
+        "loginRefresh": "Sinu sisselogimine on uuendatud.",
+        "waitApplication": "Enne sisselogimist palun oota, et sinu registreerimistaotlus kiidetakse heaks."
+    },
+    "settings": {
+        "title": "Seadistused",
+        "navigation": {
+            "title": "Liikumine rakenduses",
+            "dockPos": {
+                "top": "ülemine",
+                "bottom": "Alumine",
+                "adaptive": "Adaptiivne"
+            },
+            "autoHide": {
+                "title": "Peida dokk automaatselt",
+                "description": "Mobiilivaates allapoole kerimisel peidetakse dokk automaateselt ning ülespoole kerimisel kuvatakse uuesti."
+            }
+        },
+        "app": {
+            "lang": {
+                "title": "Keel",
+                "": "Dont translate the below!",
+                "description": "Kasutajaliidese tekstide keel.",
+                "auto": "Automaatne",
+                "credits": "Tänuavaldused",
+                "useRtl": {
+                    "title": "Kasuta paremalt-vasakule tekstiasetust",
+                    "description": "Kasuta paremalt-vasakule tekstipaigutust keelte puhul, mis seda eeldavad."
+                }
+            },
+            "view": {
+                "title": "Postituse stiil",
+                "legacy": "Vana photoni nägemus.",
+                "cozy": "Näita postitusi, kus on suuri pilte, palju sissehitatud sisu ja pikk sisuosa.",
+                "compact": "Näita postitusi loendina ilma sisudeta ja väiksemate reavahedega."
+            },
+            "sort": {
+                "title": "Vaikimisi sorteerimine",
+                "description": "Sellega muudad uudisvoogude vaikimisi järjestamise viisi."
+            },
+            "postsInNewTab": {
+                "title": "Ava postitused uuel vahekaardil",
+                "description": "Postitused avatakse senise vahekaardi asemel eraldi vahekaardil."
+            },
+            "translation": {
+                "instance": "Domeen(server)"
+            },
+            "title": "Rakendus",
+            "limitLayoutWidth": {
+                "title": "Piira paigutuse laiust",
+                "description": "Paranda loetavust põhisisu laiuse vähendamise teel."
+            },
+            "placeholders": {
+                "title": "Juhuslikud kohatäitjad",
+                "description": "Näita erinevate sisendite puhul juhuslikke kohatäitjaid."
+            },
+            "absoluteDates": {
+                "title": "Absoluutsed ajatemplid",
+                "description": "Asendab suhtelised ajatemplid (3 tundi tagasi) absoluutsetega (15.02.2025)."
+            },
+            "titleOpensUrl": {
+                "title": "Pealkiri avab võrguaadressi",
+                "description": "Postituse pealkirja klõpsimisel avatakse pigem seotud võrguaadress, mitte aga kommentaaride vaade."
+            },
+            "theming": {
+                "title": "Kujundused",
+                "description": "Kohenda kasutajaliidese värve.",
+                "link": "Vaata kujundusi"
+            },
+            "duplicateTitles": {
+                "title": "Peida dubleeritud sisseehitatud sisu",
+                "description": "Kui sisseehitise sisu on sama pealkiri ja sisutekst, siis peida neist üks."
+            },
+            "thumbnailSide": {
+                "title": "Pisipildi joondumine",
+                "description": "Saad muuta pisipiltide asukoha kompaktses vaates.",
+                "left": "Vaskul",
+                "right": "Paremal"
+            },
+            "font": {
+                "title": "Kirjatüüp",
+                "description": "Kasutajaliideses tekstide kuvamiseks kasutatav kirjatüüp."
+            },
+            "voteRatioBar": {
+                "title": "Häälte jaotuse riba",
+                "description": "Kui postituse vastuolulisus ületab 15%, kuvatakse hääletusnuppude juures riba, mis aitab arvamuste jaotust visuaalselt esitleda."
+            },
+            "infiniteScroll": {
+                "title": "Lõputu kerimine",
+                "description": "Kerimise ajal laaditakse uusi postitusi ja lisatakse need uudisvoogu lõppu."
+            },
+            "displayName": {
+                "title": "Kasuta kuvatavat nime",
+                "description": "Pruugi tegelike kasutajanimede asemel kuvamiseks mõeldud nimesid."
+            },
+            "expandImages": {
+                "title": "Laiendatavad pisipildid",
+                "description": "Postituse pildi klõpsamisel kuvatakse pildi täisvaade ja ei näidata postituse lehte."
+            },
+            "titleTags": {
+                "title": "Otsi pealkirjast silte",
+                "description": "Võta [nurksulgudes] leiduv tekst ja muuda ta klikatavaks ja otsitavaks sildiks."
+            },
+            "reverseActions": {
+                "description": "Muudab postituste ja kommentaaride toimingute järjekorda.",
+                "title": "Pööratud toimingud"
+            }
+        },
+        "embeds": {
+            "clickToView": {
+                "title": "Nägemiseks klõpsa",
+                "description": "Laadi sisseehituste sisu alles peale nende klõpsamist."
+            },
+            "youtube": {
+                "description": "Interneti domeen YouTube'i videote sisseehituseks."
+            },
+            "instance": {
+                "invidious": "Invidiouse server",
+                "piped": "Pipedi server",
+                "description": "Server YouTube'i sisu sissehituseks."
+            },
+            "title": "Sisseehitused"
+        },
+        "lemmy": {
+            "instances": {
+                "title": "Näita serveritunnuseid",
+                "description": "Näitab servereid, kust mingi konkreetne sisu pärit on."
+            },
+            "showHiddenPosts": {
+                "title": "Näita peidetud postitusi",
+                "description": "Näitab postitusi, mille oled käsitsi peitnud."
+            },
+            "title": "Lemmy",
+            "nsfwBlur": {
+                "title": "Sobimatu sisu hägustamine",
+                "description": "Sobimatu sisuga postituse puhul hägustatakse pildid ja peidetakse tekst."
+            },
+            "markReadPosts": {
+                "title": "Märgi postitused automaatselt loetuks",
+                "description": "Postituse lugemisel märgitakse need automaatselt loetuks."
+            },
+            "fadeReadPosts": {
+                "title": "Peida loetud postitused",
+                "description": "Loetud postituste pealkiirjad peidetakse"
+            },
+            "crosspostMarker": {
+                "title": "Märgista ristpostitused",
+                "description": "Ristpostitusel lisa märge „ristpostitus allikast“ ja vastav link."
+            },
+            "hideSubmissions": {
+                "deleted": "Kustutatud kasutaja poolt",
+                "removed": "Moderaatori poolt eemaldatud",
+                "title": "Peida postitused",
+                "description": "Peida teatavat sorti postitused."
+            },
+            "contentFilter": {
+                "disabled": "Väljas",
+                "hide": "Peida",
+                "minimize": "Minimeeri",
+                "title": "Sisufiltrid",
+                "description": "Peida või minimeeri antud märksõnale vastavad postitused. Võid kasutada regulaaravaldisi.",
+                "minimized": "Sisu on sinu filtrite poolt peidetud"
+            },
+            "compactFeatured": {
+                "description": "Muudab esiletõstetud postitused kompaktsemaks.",
+                "title": "Kompaktsed esiletõstetud postitused"
+            }
+        },
+        "moderation": {
+            "replyPresets": {
+                "syntax": "Süntaks",
+                "title": "Eemaldamiste vastuste eelseadistused",
+                "description": "Valmis vastused sisu eemaldamise põhjendamiseks."
+            },
+            "title": "Modereerimine"
+        },
+        "other": {
+            "title": "Muu",
+            "debug": {
+                "title": "Veaotsingu teave",
+                "description": "Kuvab veaotsingusk ja silumiseks vajalikku teavet."
+            },
+            "virtualizeFeeds": {
+                "title": "Ära virtualiseeri uudisvooge",
+                "description": "Virtualiseerimine näitab ainult nähtavaid postitusi, mis parandab oluliselt jõudlust. Lülita virtualiseerimine välja, kui sul esineb sisu katkemise probleeme. See lülitab välja ka lõputu kerimise."
+            }
+        },
+        "beta": "Beeta",
+        "desktop": "Töölauaklient",
+        "tablet": "Tahvelarvuti",
+        "mobile": "Mobiiltelefon",
+        "export": "Ekspordi",
+        "import": "Impordi",
+        "reset": "Lähtesta",
+        "account": {
+            "title": "Kasutajakonto"
+        },
+        "donate": {
+            "description": "Photon saab alati olema saadaval tasuta ja põhinema avatud lähtekoodil ning seda arendatakse pidevalt edasi, et see oleks kasutajatele abiks. Kui sulle Photon meeldib ja soovid selle arendamist rahaliselt toetada, saad siin annetada."
+        }
+    },
+    "error": {
+        "invalid_password": "Vigane või vale salasõna.",
+        "passwords_do_not_match": "Sisestatud salasõna ja kontrollsalasõna ei klapi omavahel.",
+        "couldnt_find_community": "Seda kogukonda pole olemas.",
+        "language_not_allowed": "See keel pole antud kogukonnas lubatud. Eemalda valik ja saad kasutada kogukonna vaikimisi keelt.",
+        "incorrect_login": "Vigased kasutajanimi/salasõna. Palun proovi uuesti.",
+        "incorrect_login_2": "Vigased kasutajanimi/salasõna. Proovi uuesti.",
+        "incorrect_login_3": "Uuesti läks valesti. Proovi paar korda uuesti.",
+        "incorrect_login_4": "Küllap sul ikka õnnestub. Proovi veel natuke.",
+        "incorrect_login_5": "Palun vaata seekord mõttega oma klahvistiku peale.",
+        "incorrect_login_6": "No jaa, ma ikka usun sind.",
+        "incorrect_login_7": "Nüüd ikka on asjad päris sassis.",
+        "incorrect_login_8": "No, ei... ma loobun.",
+        "incorrect_login_12": "Kolmest punktist piisab…",
+        "incorrect_login_11": "Iga klahvivajutuse järel kulutatakse tuhandeid protsessori töötsükleid selleks, et töödelda päringut, mis ei õnnestu.",
+        "incorrect_login_10": "No mõtle nüüd nende vaeste süsteemihaldajate peale, kes peavad haldama servereid ja tagama, et saaksid neid mõttetuid päringuid teha.",
+        "incorrect_login_9": "Iga sinu tehtud päring edastab andmeid tänu hämmastavale tehnoloogiale. Aga sa kasutad seda ebaõnnestunud sisselogimiste jaoks.",
+        "email_already_exists": "Selle e-posti aadressiga juba on seotud üks kasutajakonto.",
+        "slurs": "Sinu postituses leidub sõna, mis on selles serveris keelatud.",
+        "captcha_incorrect": "Vigane robotilõksu vastus.",
+        "cant_block_local_instance": "Sa ei saa blokeerida serverit, mida aktiivselt kasutad.",
+        "invalid_vote_value": "Vabandust, aga Lemmy postituste juures sa ei saa hääletamispettust korraldada.",
+        "couldnt_find_person": "Sellist kasutajat pole olemas.",
+        "not_an_admin": "Sa pole selle serveri peakasutaja.",
+        "rate_limit_error": "Sa teed seda tegevust liiga kiiresti.",
+        "cant_find_object": "Seda sisu ei leidunud sinu koduserveris.",
+        "token_not_found": "See e-posti aadressi kinnitamise link on aegunud või seda polnud olemaski.",
+        "not_live_supported": "Selle serveri tarkvara pole toetatud või server pole võrgus.",
+        "unsupported": "See funktsionaalsus pole sinu kasutajakonto koduserveri tarkvara poolt toetatud.",
+        "unimplemented": "See sinu kasutajakonto koduserveri funktsionaalsus pole Photoni poolt toetatud.",
+        "downvotes_are_disabled": "Eitavad hääletused pole selles serveris toetatud.",
+        "honeypot_failed": "Kas sa oled robot? Pimdi, pamdi. pumm. Kui sa pole, siis meie meepurgi test ei toiminud korralikult.",
+        "email_not_verified": "Sinu kasutajakonto e-posti aadress pole kinnitatud.",
+        "cant_block_yourself": "Sa ei saa iseennast blokeerida. Tegelikult sa isegi ei peaks seda tegema, oled ju (ilmselt) tore tegelane!",
+        "couldnt_find_post": "Seda postitust pole olemas, ta ei leidu antud serveris või ta on eemaldatud.",
+        "registration_application_is_pending": "Selle kasutajakonto registreerimistaotlus pole veel kinnitatud."
+    },
+    "aria": {
+        "element": {
+            "pageHeader": "Lehe päis"
+        },
+        "postDecor": {
+            "openImage": "Ava pilt: {{default}}",
+            "openLink": "Ava link: {{default}}",
+            "openPost": "Ava postitus: {{default}}"
+        },
+        "comments": {
+            "children": "{{childCount}} järglast"
+        },
+        "sidebar": {
+            "title": "Külgriba",
+            "accounts": "Kasutajakontode valija"
+        },
+        "loading": "Laadin",
+        "vote": {
+            "score": "Tulemused: {{default}}",
+            "downvotes": "{{default}} vastuhäält",
+            "upvotes": "{{default}} poolthäält",
+            "group": "Postituse hääletamine"
+        },
+        "pagination": {
+            "current": "Praegune leht",
+            "nav": "Lehtedeks jagamine"
+        }
+    },
+    "stats": {
+        "joined": "Liitunud",
+        "created": "Loodud"
+    },
+    "placeholders": {
+        "title": "Sisesta postituse pealkiri",
+        "body": "Mida sul on öelda?",
+        "comments": "Liitu vestlusega"
+    },
+    "class": {
+        "moderator": "Moderaator",
+        "admin": "Peakasutaja"
+    },
+    "message": {
+        "success": "Õnnestus",
+        "error": "Viga",
+        "retry": "Proovi uuesti"
+    }
+}

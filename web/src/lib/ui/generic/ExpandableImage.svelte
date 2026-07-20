@@ -1,0 +1,96 @@
+<script lang="ts" module>
+  import { pushState } from '$app/navigation'
+  import { page } from '$app/state'
+  import { t } from '$lib/app/i18n'
+  import { Button, Material, toast } from 'mono-svelte'
+  import { Share, XMark } from 'svelte-hero-icons/dist'
+  import { backOut } from 'svelte/easing'
+  import { fade, scale } from 'svelte/transition'
+  import { trapFocus } from 'trap-focus-svelte'
+
+  export function showImage(url: string) {
+    pushState('', {
+      openImage: url,
+    })
+  }
+</script>
+
+<script lang="ts">
+  interface Props {
+    /**
+     * The full-resolution image URL
+     */
+    alt?: string
+  }
+
+  let { alt = '' }: Props = $props()
+
+  async function share() {
+    if (navigator.share != undefined && page.state.openImage != null) {
+      const url = page.state.openImage
+      const blob = await fetch(url).then((i) => i.blob())
+      const file = new File([blob], url.substring(url.lastIndexOf('/') + 1), {
+        type: blob.type,
+      })
+      navigator.share({
+        files: [file],
+      })
+    } else {
+      navigator.clipboard.writeText(page.state.openImage ?? '')
+      toast({
+        content: $t('toast.copied'),
+      })
+    }
+  }
+</script>
+
+{#if page.state.openImage || '' != ''}
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div
+    class="fixed top-0 left-0 w-screen h-svh overflow-auto bg-white/50 dark:bg-black/50
+    flex flex-col z-100 backdrop-blur-xs"
+    transition:fade={{ duration: 150 }}
+    onclick={() => history.back()}
+    onkeydown={(e) => {
+      if (e.key == 'Escape') history.back()
+    }}
+    use:trapFocus
+  >
+    <img
+      width={800}
+      height={800}
+      src={page.state.openImage}
+      class={[
+        'max-w-full mx-auto my-auto overscroll-contain bg-white dark:bg-zinc-900',
+      ]}
+      transition:scale={{ start: 1.04, easing: backOut, duration: 250 }}
+      {alt}
+    />
+    <div class="sticky z-10 bottom-4 left-1/2 -translate-x-1/2 w-max">
+      <Material
+        class="gap-1 p-0.5 px-1 flex flex-row items-center"
+        rounding="full"
+        padding="none"
+        color="distinct"
+        onclick={(e) => e.stopPropagation()}
+      >
+        <Button
+          onclick={share}
+          color="tertiary"
+          size="square-lg"
+          rounding="pill"
+          aria-label={$t('post.actions.more.share')}
+          icon={Share}
+        />
+        <Button
+          onclick={() => history.back()}
+          color="tertiary"
+          size="square-lg"
+          rounding="pill"
+          aria-label={$t('common.back')}
+          icon={XMark}
+        />
+      </Material>
+    </div>
+  </div>
+{/if}

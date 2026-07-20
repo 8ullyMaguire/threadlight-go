@@ -1,0 +1,579 @@
+{
+    "filter": {
+        "unread": "לא נקרא",
+        "location": {
+            "label": "מיקום",
+            "all": "הכל",
+            "local": "מקומי",
+            "subscribed": "מנויים",
+            "moderator": "מנהל",
+            "global": "גלובלי"
+        },
+        "sort": {
+            "label": "מיון",
+            "active": "פעיל",
+            "hot": "חם",
+            "top": {
+                "time": {
+                    "label": "זמן",
+                    "all": "הכל",
+                    "9months": "9 חודשים",
+                    "6months": "6 חודשים",
+                    "3months": "3 חודשים",
+                    "month": "חודש",
+                    "week": "שבוע",
+                    "day": "יום",
+                    "12hours": "12 שעות",
+                    "6hours": "6 שעות",
+                    "hour": "שעה"
+                },
+                "label": "הטובים ביותר"
+            },
+            "new": "חדש",
+            "old": "ישן",
+            "controversial": "שנוי במחלוקת",
+            "mostcomments": "רוב התגובות",
+            "newcomments": "תגובות חדשות",
+            "scaled": "מטפסים"
+        },
+        "view": {
+            "label": "פריסה",
+            "cozy": "נוח",
+            "list": "רשימה",
+            "compact": "דחוס",
+            "legacy": "ישן"
+        },
+        "type": "סוג",
+        "filter": "סינון",
+        "inbox": {
+            "messages": "הודעות",
+            "replies": "תגובות",
+            "mentions": "אזכורים"
+        }
+    },
+    "form": {
+        "profile": {
+            "showBots": "הצגת בוטים",
+            "2fa": {
+                "paste": "נא להדביק את זה באפליקציית ה-authenticator שלך.",
+                "totp": "TOTP",
+                "2fa": "2FA"
+            },
+            "displayName": "כינוי",
+            "bio": "אודות",
+            "avatar": "תמונת פרופיל",
+            "banner": "באנר",
+            "email": "אימייל",
+            "matrix": "משתמש Matrix",
+            "showNSFW": "הצגת תוכן למבוגרים",
+            "bot": "חשבון בוט",
+            "currentPassword": "סיסמה נוכחית",
+            "newPassword": "סיסמה חדשה",
+            "verifyNewPassword": "אימות סיסמה חדשה",
+            "deleteAccount": {
+                "label": "מחיקת חשבון",
+                "deleteContent": "מחיקת תוכן",
+                "warning": "פעולה זו תמחק את כל התוכן שלך."
+            },
+            "scores": "הצגת הצבעות",
+            "showRead": "תצוגת פוסטים שנקראו",
+            "languages": {
+                "title": "שפות",
+                "description": "אם מוגדרים, יוצג רק תוכן שסומן במפורש בשפה זו. רוב התוכן, שאינו מתויג, נופל תחת הקטגוריה 'לא מוגדר'."
+            }
+        },
+        "confirmPassword": "אישור סיסמה",
+        "post": {
+            "title": "כותרת",
+            "altText": "טקסט חלופי",
+            "create": "יצירת פוסט",
+            "edit": "עריכת פוסט",
+            "community": "קהילה",
+            "url": "קישור",
+            "body": "גוף",
+            "nsfw": "תוכן למבוגרים",
+            "generateTitle": "יצירת כותרת",
+            "uploadImage": "העלאת תמונה",
+            "selectFile": "בחירת קובץ",
+            "addUrl": "הוספת קישור",
+            "setLanguage": "הגדרת שפה",
+            "unset": "לא מוגדר",
+            "readMore": "המשכת קריאה"
+        },
+        "signup": {
+            "application": {
+                "info": "כדי להצטרף לשרת זה, חובה למלא את בקשת ההצטרפות ולחכות לקבלה. ישלח אימייל כאשר בקשתך התקבלה.",
+                "label": "בקשה להצטרפות",
+                "notice": "ההרשמה שלך כעת ממתינה. לאחר שאדמין יבדוק אותה, יתקבל אימייל אם היא התקבלה. לאחר מכן יהיה ניתן להתחבר."
+            },
+            "title": "הרשמה",
+            "description": "נא לבחור שרת שמעניין אותך, או לכתוב קישור באופן ידני.",
+            "chooseInstance": "בחירת שרת",
+            "closed": {
+                "title": "רישומים סגורים",
+                "description": "בשרת זה הרישומים סגורים. נא למצוא שרת אחר.",
+                "anotherInstance": "מציאת שרת אחר"
+            },
+            "info": "השרת הוא היכן שחשבונך שמור, אך עדיין ניתן לגשת לתוכן משרתים נוספים.",
+            "verify": {
+                "title": "אימות אימייל"
+            }
+        },
+        "email": "אימייל",
+        "description": "תיאור",
+        "username": "שם משתמש",
+        "name": "שם",
+        "password": "סיסמה",
+        "2fa": "קוד 2FA",
+        "forgotpassword": "שכחתי את הסיסמה",
+        "submit": "שליחה",
+        "edit": "עריכה",
+        "preview": "תצוגה מקדימה",
+        "instance": "קישור לשרת",
+        "setup": "הגדרה",
+        "time": {
+            "duration": "משך הזמן",
+            "minutes": "דקות",
+            "hours": "שעות",
+            "days": "ימים",
+            "months": "חודשים",
+            "years": "שנים",
+            "permanent": "קבוע"
+        }
+    },
+    "profile": {
+        "profile": "פרופיל",
+        "inbox": "דואר נכנס",
+        "saved": "שמורים",
+        "subscribed": "הרשמות"
+    },
+    "routes": {
+        "frontpage": {
+            "footer": "{{users:number}} {{users; 1:משתמש; default:משתמשים;}} {{users; 1:פעיל; default:פעילים;}}",
+            "title": "דף הבית",
+            "endFeed": "הגעת לסוף של {{community_name; undefined:הפיד; default:{{community_name}}}."
+        },
+        "modlog": {
+            "title": "יומן פעולות",
+            "filters": "סינון"
+        },
+        "instances": "שרתים",
+        "legal": {
+            "title": "משפטי",
+            "noLegal": "לשרת זה אין מידע משפטי."
+        },
+        "profile": {
+            "user": "משתמש",
+            "settings": "הגדרות",
+            "credentials": "פרטי חשבון חשובים",
+            "moderates": "ניהול",
+            "favorites": "אהובים",
+            "media": {
+                "title": "מדיה",
+                "download": "הורדה"
+            },
+            "logins": "התחברויות",
+            "delete": {
+                "title": "מחיקת חשבון",
+                "warning": "לא ניתן לבטל פעולה זו. האם זה רצונך?"
+            },
+            "blocks": {
+                "title": "חסום",
+                "empty": {
+                    "description": "כל דבר חסום לא יופיע בפידים שלך.",
+                    "title": "אין גופים חסומים"
+                }
+            },
+            "upvoted": "הוצבע בעד",
+            "downvoted": "הוצבע נגד",
+            "welcome": "שלום, {{default}}!",
+            "overview": "סקירה",
+            "submissions": "הגשות"
+        },
+        "translators": "מתרגמים",
+        "accounts": "חשבונות",
+        "communities": {
+            "title": "קהילות",
+            "search": {
+                "placeholder": "חיפוש לקהילה חדשה"
+            },
+            "trending": "פופולרי"
+        },
+        "search": {
+            "title": "חיפוש",
+            "noResults": {
+                "title": "אין תוצאות",
+                "description": "אין תוצאות שתואמות את מילות המפתח שלך. מומלץ לעדכן את חיפושך.",
+                "alt": "חיפוש ברחבי הפדיורס"
+            },
+            "query": "חיפוש",
+            "federating": "מתבצע חיפוש...",
+            "top": "התוצאות המובילות",
+            "other": "תוצאות אחרות"
+        },
+        "admin": {
+            "config": {
+                "captcha": {
+                    "enabled": "CAPTCHA מופעלת"
+                },
+                "federation": "פדרציה מופעלת",
+                "title": "הגדרות",
+                "sidebar": "סרגל צידי",
+                "icon": "סמל",
+                "banner": "באנר",
+                "downvotesEnabled": "הפעלת הצבעות נגד",
+                "nsfwEnabled": "הפעלת תוכן למבוגרים",
+                "registration": {
+                    "label": "מצב רישום",
+                    "open": "פתוח",
+                    "application": "חייב בקשה",
+                    "closed": "סגור"
+                },
+                "applicationQuestion": "שאלת בקשה",
+                "adminCommunityOnly": "רק מנהלים גבוהים יכולים ליצור קהילות",
+                "requireVerifyEmail": "חייב אימות על ידי אימייל",
+                "emailAdminsOnApplication": "שליחות אימייל למנהלים גבוהים בעת קבלת בקשות חדשות",
+                "emailAdminsOnReport": "שליחת אימייל למנהלים גבוהים בעת קבלת דיווחים חדשים",
+                "listingType": {
+                    "label": "סוג רישום",
+                    "all": "הכל",
+                    "local": "מקומי"
+                },
+                "private": "שרת פרטי",
+                "slurFilter": "סינון קללות regex",
+                "federationDebug": "מצב דיבוג פדרציה",
+                "hideModlogModNames": "הסתרת שמות מנהלים ביומן ההנהלה"
+            },
+            "title": "מנהל גבוה",
+            "applications": {
+                "title": "בקשות",
+                "empty": {
+                    "title": "אין בקשות חדשות",
+                    "description": "בקשות להצטרפות השרת יופיעו פה."
+                },
+                "application": "בקשה",
+                "approved": "מאושרת",
+                "denied": "נדחתה",
+                "user": "משתמש",
+                "deny": "לדחות",
+                "approve": "לאשר",
+                "reason": "סיבה",
+                "modalTitle": "דחיית בקשה"
+            },
+            "taglines": {
+                "title": "שורות תיוג",
+                "add": "הוספת שורת תיוג",
+                "empty": {
+                    "title": "אין שורות תיוג",
+                    "description": "שורת תיוג אקראית תופיע על כרטיס האתר כאשר משתמשים יבקרו בשרתך."
+                }
+            },
+            "team": {
+                "title": "מנהלים גבוהים",
+                "empty": {
+                    "title": "אין מנהלים גבוהים",
+                    "description": "איכשהו אין מנהלים גבוהים לאתר זה. איך??"
+                }
+            },
+            "federation": {
+                "title": "פדרציה",
+                "csv": "העלאת CSV",
+                "block": "חסימה",
+                "blockplaceholder": "חסימת שרת...",
+                "blocked": "שרתים חסומים",
+                "allowed": "שרתים מורשים",
+                "allow": "מורשים",
+                "allowplaceholder": "הרשאת שרת",
+                "emptyBlock": {
+                    "description": "חסימת שרת תחביא תוכן חדש מהשרת.",
+                    "title": "אין שרתים חסומים"
+                },
+                "emptyAllow": {
+                    "title": "אין שרתים מורשים",
+                    "description": "הרשאת שרת תחסום כל שרת אחר."
+                }
+            },
+            "media": {
+                "title": "מדיה"
+            }
+        },
+        "saved": "שמורים",
+        "createPost": "יצירת פוסט",
+        "createCommunity": "יצירת קהילה",
+        "post": {
+            "commentCount": "תגובות",
+            "addComment": "הוספת תגובה",
+            "scrollToTop": "גלילה לתחילת העמוד",
+            "instanceWarning": "הפוסט הזה מבוקש משרת השונה משל חשבונך. פעולות רבות יכשלו.",
+            "remoteView": "תצוגה מרחוק",
+            "localView": "תצוגה מקומית",
+            "thread": {
+                "single": "מוצג שרשור בודד.",
+                "allComments": "כל התגובות",
+                "part": "מוצג חלק משרשור",
+                "context": "תצוגת הקשר"
+            },
+            "crosspostCount": "פוסטים משותפים",
+            "emptyComments": {
+                "description": "התחילו את השיחה!",
+                "title": "אין תגובות"
+            },
+            "commented": "התגובה שלך פורסמה.",
+            "loadComments": "טען תגובות"
+        },
+        "inbox": {
+            "title": "דואר נכנס",
+            "markAsRead": "סימון הכל כנקרא",
+            "empty": {
+                "title": "אין הודעות חדשות",
+                "description": "הודעות, תגובות, ואזכורים יופיעו פה."
+            },
+            "item": {
+                "reply": "{{user}} ענו לך ב-{{post}}",
+                "mention": "{{user}} ציינו אותך ב-{{post}}",
+                "message": "{{user}} כתבו ל-{{recipient}}"
+            },
+            "messages": {
+                "start": "התחלת צ'אט",
+                "conversation": "זו תחילת השיחה שלך עם {{user}}",
+                "indicator": "כתיבה ל-{{user}}"
+            }
+        },
+        "moderation": {
+            "title": "מנהל",
+            "empty": {
+                "title": "אין דיווחים חדשים",
+                "description": "כאשר תוכן מדווח, ניתן לפעול בנידון כאן."
+            },
+            "reason": "סיבה",
+            "resolve": "פתירה",
+            "unresolve": "הסרת פתירה",
+            "resolved": "פתור",
+            "resolvedBy": "פתור על ידי",
+            "markAll": "סימון עמוד כפתור",
+            "markAllComplete": "הפעולות בוצעו בהצלחה."
+        },
+        "theme": {
+            "preset": {
+                "title": "לא ניתן לשינוי",
+                "delete": {
+                    "title": "מחיקת סגנון",
+                    "confirm": "אישור"
+                },
+                "default": "ברירת מחדל",
+                "classic": "קלאסי",
+                "imported": "הסגנון שלך",
+                "new": "סגנון חדש",
+                "description": "זה סגנון המוגדר כברירת מחדל, ולא ניתן לשנותו.",
+                "presets": "קבועים מראש"
+            },
+            "title": "סגנון",
+            "import": "ייבוא",
+            "export": "ייצוא",
+            "reset": "איפוס",
+            "resetWarning": {
+                "title": "איפוס סגנון",
+                "description": "פעולה זו תאפס את כל הצבעים לברירת המחדל. מומלץ לייצא את הסגנון שלך לפני זה."
+            },
+            "accent": "דגש"
+        },
+        "community": {
+            "settings": {
+                "team": "צוות",
+                "settings": "הגדרות",
+                "manage": "ניהול"
+            },
+            "languageWarning": "התוכן בקהילה זו הוא בשפות שלא בחרת. ייתכן שחלק מהפוסטים או כולם חסרים."
+        },
+        "verifyEmail": {
+            "message": "האימייל שלך מאומת. כעת ניתן לסגור את החלון הזה.",
+            "error": "אימות האימייל שלך נכשל."
+        },
+        "passwordChange": {
+            "title": "שינוי סיסמה",
+            "description": "בחירת סיסמה חדשה.",
+            "instance": "באיזה שרת מאוחסן החשבון שלך?"
+        },
+        "resetLogin": {
+            "title": "איפוס סיסמה",
+            "description": "לאחר הזנת האימייל של חשבונך, יישלח קישור לאיפוס הסיסמה. אם לחשבונך אין אימייל, ניתן ליצור קשר עם אדמיני השרת."
+        },
+        "postRedirect": {
+            "actions": {
+                "fetch": "איתור הפוסט ב-{{homeInstance}}",
+                "switch": "מעבר לחשבון ב-{{destInstance}}",
+                "back": "חזרה אחורה"
+            },
+            "title": "שרת לא תואם",
+            "description": "קישור זה מוביל לפוסט שאינו נמצא בשרת של החשבון שלך, {{homeInstance}}."
+        }
+    },
+    "nav": {
+        "home": "בית",
+        "admin": "מנהל גבוה",
+        "moderation": "מנהל",
+        "communities": "קהילות",
+        "search": "חיפוש",
+        "create": {
+            "label": "יצירה",
+            "community": "קהילה",
+            "logingate": "חובה עליך להתחבר כדי ליצור תוכן.",
+            "post": "פוסט"
+        },
+        "menu": {
+            "label": "פרופיל",
+            "app": "אפליקציה",
+            "settings": "הגדרות",
+            "colorscheme": {
+                "label": "צבעים",
+                "system": "מערכת",
+                "dark": "כהה",
+                "light": "בהיר"
+            },
+            "theme": "סגנון",
+            "about": "אודות",
+            "source": "מקור",
+            "donate": "תרומה",
+            "instance": "שרת"
+        },
+        "commands": {
+            "prompt": "לוח פקודות",
+            "recents": "אחרונים",
+            "content": "תוכן",
+            "search": "חיפוש אחרי {{default}}",
+            "main": "ראשי",
+            "setView": "הגדרת תצוגה",
+            "setViewTo": "הגדרת תצוגה ל-{{default}}",
+            "setTheme": "הגדרת סגנון",
+            "setThemeTo": "הגדרת סגנון ל-{{default}}",
+            "setColor": "הגדרת צבעים",
+            "feeds": "פידים",
+            "downloading": "פעולות הורדה",
+            "setColorTo": "הגדרת צבעים ל{{default}}",
+            "contextual": "בעמוד הזה"
+        },
+        "notifications": "התראות"
+    },
+    "account": {
+        "login": "התחברות",
+        "logout": "התנתקות",
+        "signup": "הרשמה",
+        "accounts": "חשבונות",
+        "changeinstance": "שינוי שרת",
+        "resetColor": "איפוס צבעים",
+        "addGuest": "הוספת אורח",
+        "moveUp": "הזזה למעלה",
+        "moveDown": "הזזה למטה",
+        "guest": "אורח",
+        "versionGate": "הגרסה הזו של Photon תומכת בשרתים המריצים {{version}} או גרסה עדכנית יותר."
+    },
+    "cards": {
+        "site": {
+            "stats": "סטטיסטיקה",
+            "admins": "אדמינים",
+            "about": "אודות"
+        },
+        "community": {
+            "members": "חברי הקהילה",
+            "moderators": "מנהלים",
+            "subscribe": "הרשמה למינוי",
+            "subscribed": "נרשמת כמנוי",
+            "modlog": "מודלוג",
+            "block": "חסימה",
+            "unblock": "ביטול חסימה",
+            "blockInstance": "חסימת שרת",
+            "favorite": "העדפה",
+            "unfavorite": "הסרת העדפה",
+            "activeDay": "פעיל היום"
+        }
+    },
+    "content": {
+        "communities": "קהילות",
+        "users": "משתמשים",
+        "all": "הכל",
+        "posts": "פוסטים",
+        "comments": "תגובות",
+        "instances": "שרתים",
+        "message": "הודעה"
+    },
+    "post": {
+        "actions": {
+            "more": {
+                "actions": "פעולות",
+                "markRead": "סימון כנקרא",
+                "translate": "תרגום",
+                "mediaBias": "הטיה תקשורתית",
+                "share": "שיתוף",
+                "edit": "עריכה",
+                "unhide": "הסרת הסתרה",
+                "creator": "יוצר",
+                "restore": "שחזור",
+                "label": "פעולות נוספות",
+                "markUnread": "הסרת סימון כנקרא",
+                "hide": "הסתרה",
+                "delete": "מחיקה",
+                "crosspost": "פרסום פוסט משותף"
+            },
+            "mediaBias": {
+                "description": "תיאור",
+                "credibility": "אמינות",
+                "reporting": "דיווח עובדתי",
+                "noData": {
+                    "title": "אין מידע",
+                    "description": "אין מידע לגבי ההטיה של אתר זה."
+                },
+                "downloading": "מוריד מידע",
+                "loading": "טוען מקור"
+            },
+            "link": {
+                "title": "קישורים נוספים",
+                "actions": "פעולות קישור"
+            },
+            "comments": "תגובות",
+            "save": "שמירה",
+            "unsave": "הסרת שמירה",
+            "vote": {
+                "score": "ציון"
+            }
+        },
+        "meta": {
+            "lastEdited": "נערך לאחרונה {{default}}",
+            "created": "נוצר {{default}}"
+        },
+        "badges": {
+            "nsfw": "תוכן לא הולם",
+            "locked": "נעול",
+            "featured": "מובלט",
+            "removed": "הוסר",
+            "deleted": "מחוק",
+            "saved": "שמור"
+        },
+        "image": {
+            "zoomIn": "זום פנימה",
+            "zoomOut": "זום החוצה",
+            "close": "סגירה"
+        }
+    },
+    "admin": {
+        "purge": "טיהור",
+        "instance": "שרת",
+        "purgeCommunity": {
+            "title": "טיהור קהילה",
+            "warning": "זה ימחק את כל הפוסטים. האם אתם בטוחים? (הכפתור יופעל אחרי שלוש שניות.)"
+        },
+        "label": "אדמיניסטרציה"
+    },
+    "comment": {
+        "actions": {
+            "label": "פעולות",
+            "link": "העתקת קישור"
+        },
+        "reply": "תגובה",
+        "locked": "הפוסט נעול.",
+        "banned": "נחסמת מהקהילה הזו.",
+        "more": "עוד {{comments:number}}"
+    },
+    "moderation": {
+        "report": "דיווח"
+    }
+}
