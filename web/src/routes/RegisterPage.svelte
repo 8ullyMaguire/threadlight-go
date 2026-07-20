@@ -1,0 +1,138 @@
+<script>
+  import { createEventDispatcher } from 'svelte';
+  import { register } from '../lib/stores/auth';
+
+  const dispatch = createEventDispatcher();
+
+  let username = '';
+  let email = '';
+  let password = '';
+  let inviteCode = '';
+  let error = '';
+  let submitting = false;
+
+  async function handleSubmit() {
+    error = '';
+    submitting = true;
+    try {
+      await register(username, email, password, inviteCode);
+      dispatch('register');
+    } catch (e) {
+      error = e.message || 'Registration failed';
+    } finally {
+      submitting = false;
+    }
+  }
+</script>
+
+<div class="auth-page">
+  <form class="auth-card" on:submit|preventDefault={handleSubmit}>
+    <h1>Join Threadlight</h1>
+    <p class="subtitle">Create your account</p>
+    {#if error}
+      <div class="error">{error}</div>
+    {/if}
+    <label>
+      Username
+      <input type="text" bind:value={username} required placeholder="polaris_user" />
+    </label>
+    <label>
+      Email
+      <input type="email" bind:value={email} required placeholder="you@example.com" />
+    </label>
+    <label>
+      Password
+      <input type="password" bind:value={password} required placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" />
+    </label>
+    <label>
+      Invite Code
+      <input type="text" bind:value={inviteCode} placeholder="Optional" />
+    </label>
+    <button type="submit" disabled={submitting}>
+      {submitting ? 'Creating account...' : 'Create account'}
+    </button>
+    <p class="switch">
+      Already have an account?
+      <button type="button" class="link" on:click={() => dispatch('nav', { page: 'login' })}>Sign in</button>
+    </p>
+  </form>
+</div>
+
+<style>
+  .auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100svh;
+    padding: 1rem;
+  }
+  .auth-card {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  h1 {
+    margin: 0;
+  }
+  .subtitle {
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  .error {
+    padding: 0.5rem;
+    background: #fef2f2;
+    color: #dc2626;
+    border-radius: 6px;
+    font-size: 0.875rem;
+  }
+  label {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--text-h);
+  }
+  input {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 1rem;
+    background: var(--bg);
+    color: var(--text-h);
+  }
+  input:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -1px;
+  }
+  button[type="submit"] {
+    padding: 0.625rem;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  button[type="submit"]:disabled {
+    opacity: 0.6;
+  }
+  button[type="submit"]:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+  .switch {
+    text-align: center;
+    font-size: 0.875rem;
+  }
+  .link {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-size: inherit;
+    padding: 0;
+    text-decoration: underline;
+  }
+</style>
