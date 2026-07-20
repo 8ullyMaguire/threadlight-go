@@ -35,7 +35,7 @@
             const path_to_root = "../";
             const default_light_theme = "ayu";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-5012247d.js";
+            window.path_to_searchindex_js = "../searchindex-e5648516.js";
         </script>
         <!-- Start loading toc.js asap -->
         <script src="../toc-330e0aa9.js"></script>
@@ -180,68 +180,72 @@
 
                 <div id="mdbook-content" class="content">
                     <main>
-                        <h1 id="feeds-circles-search-and-the-positive-algorithm"><a class="header" href="#feeds-circles-search-and-the-positive-algorithm">Feeds, Circles, Search, and The Positive Algorithm</a></h1>
-<p>This page explains how Threadlight decides what to show you and how to find what you’re
-looking for.</p>
+                        <h1 id="feeds-circles-and-search"><a class="header" href="#feeds-circles-and-search">Feeds, Circles, and Search</a></h1>
+<p>This page explains how Threadlight decides what to show you and how to find things you
+are interested in.</p>
 <h2 id="the-positive-algorithm"><a class="header" href="#the-positive-algorithm">The Positive Algorithm</a></h2>
-<p>Most platforms optimize for engagement — time spent, clicks, reactions. These algorithms
-learn that anger and outrage produce the most engagement, so they show you things that make
-you angry.</p>
-<p>Threadlight’s feed algorithm is different. It is called <strong>The Positive Algorithm</strong>, and it
-optimizes for substance and connection:</p>
+<p>Most social networks use an algorithm that decides what you see. The problem is that these
+algorithms learn that anger and outrage get the most attention. So they show you things
+that make you angry, because an angry person scrolls more, and a person who scrolls more
+sees more ads.</p>
+<p>Threadlight does not have ads, so it does not need to make you angry.</p>
+<p>Our feed system is called <strong>The Positive Algorithm.</strong> It ranks content based on substance
+and connection, not outrage:</p>
 <ul>
-<li>Content from people you trust is ranked higher</li>
-<li>Content rated “insightful” or “interesting” by moderators is ranked higher</li>
-<li>Content rated “misleading” or “troll” is ranked lower</li>
-<li>Repeatedly flagged content from a user reduces that user’s visibility</li>
-<li>Recency is balanced against quality</li>
+<li>Posts from people you trust appear higher</li>
+<li>Posts that other people found insightful or interesting appear higher</li>
+<li>Posts that were rated misleading or trolling appear lower</li>
+<li>People who get flagged a lot have their posts shown less</li>
+<li>Recent posts are balanced against quality</li>
 </ul>
 <h3 id="why-this-post"><a class="header" href="#why-this-post">Why This Post?</a></h3>
-<p>Every post in your feed has a <strong>“Why this post?”</strong> button. Click it to see exactly why the
-algorithm surfaced that specific piece of content — “because you follow @user,” “because
-this community matches your tags,” “because this is trending in your circles.” This makes
-the algorithm fully transparent.</p>
-<h3 id="outrage-downranking"><a class="header" href="#outrage-downranking">Outrage Downranking</a></h3>
-<p>Content that generates high interaction but low trust-weighted quality scores (heated
-arguments, trolling, bad-faith engagement) is automatically downranked. The algorithm
-prefers posts that generate thoughtful reactions over posts that generate angry ones.</p>
+<p>Every post in your feed has a <strong>“Why this post?”</strong> button. Click it to see exactly why
+that post appeared. You will see something like “because you follow @username” or “because
+this is trending in your circles.” There is no secret sauce. The algorithm is completely
+transparent.</p>
+<h3 id="what-gets-deprioritized"><a class="header" href="#what-gets-deprioritized">What Gets Deprioritized</a></h3>
+<p>Posts that get a lot of attention from angry or bad-faith reactions are automatically
+shown to fewer people. The system prefers conversations that make people think over
+conversations that make people fight.</p>
 <h2 id="custom-feeds"><a class="header" href="#custom-feeds">Custom Feeds</a></h2>
-<p>You can create custom feeds that combine different sources:</p>
+<p>You can create your own custom feeds that mix together different sources:</p>
 <ul>
 <li>Posts from specific communities</li>
 <li>Posts with specific tags</li>
 <li>Posts from specific people</li>
-<li>Any combination of the above</li>
+<li>Any combination you want</li>
 </ul>
-<p>Each custom feed can be exported as <strong>RSS/Atom</strong> — subscribe in any RSS reader. Feeds are
-also available for any tag, community, or collection.</p>
-<h2 id="trending-topics"><a class="header" href="#trending-topics">Trending Topics</a></h2>
-<p>Threadlight detects trending topics from <strong>post content</strong>, not hashtags. The system analyzes
-the text of posts that are receiving disproportionate attention in a time window and surfaces
-the emerging themes. This prevents hashtag spam and catches trends the community hasn’t named
-yet.</p>
-<p>Trending is scoped to your communities and circles — you see what matters to the people you
-care about, not a global feed.</p>
-<h2 id="advanced-search"><a class="header" href="#advanced-search">Advanced Search</a></h2>
-<p>Search across posts, users, communities, and tags with:</p>
+<p>Each custom feed can be exported as RSS. You can subscribe to it in any RSS reader
+(some email programs and news readers support RSS).</p>
+<h2 id="trending"><a class="header" href="#trending">Trending</a></h2>
+<p>Threadlight detects trending topics by reading what people are posting about, not by
+counting hashtags. The system analyzes the text of posts that are getting a lot of
+attention and surfaces the themes that are emerging.</p>
+<p>Trending is scoped to your communities and circles. You see what is popular among the
+people you care about, not what is popular globally.</p>
+<h2 id="search"><a class="header" href="#search">Search</a></h2>
+<p>You can search for posts, people, communities, and tags. Threadlight’s search supports:</p>
 <ul>
-<li><strong>Boolean operators</strong>: <code>cats AND dogs</code>, <code>cats OR dogs</code>, <code>cats NOT dogs</code></li>
-<li><strong>Fielded search</strong>: <code>author:username</code>, <code>community:name</code>, <code>tag:tagname</code></li>
-<li><strong>Date range</strong>: <code>after:2025-01-01 before:2025-06-01</code></li>
-<li><strong>Saved searches</strong>: Save frequently used searches for quick access</li>
+<li><strong>Boolean operators:</strong> You can search for “cats AND dogs” to find posts about both, or
+“cats NOT dogs” to find posts about cats that are not about dogs.</li>
+<li><strong>Fielded search:</strong> You can search within specific fields like <code>author:username</code>,
+<code>community:name</code>, or <code>tag:tagname</code>.</li>
+<li><strong>Date range:</strong> You can filter by date using <code>after:2025-01-01 before:2025-06-01</code>.</li>
+<li><strong>Saved searches:</strong> You can save a search you use a lot for quick access later.</li>
 </ul>
 <h2 id="circles"><a class="header" href="#circles">Circles</a></h2>
-<p>Circles are auto-generated groups of people who share your interests and are near you.
-Unlike communities, circles are discovery-focused. The system proposes circles based on
-overlapping tag subscriptions and interaction patterns.</p>
-<p>Circles use one-way location hashing — you can find people nearby without revealing your
-exact location. Browse a circle’s trending topics and active members, follow interesting
-people, and move on.</p>
+<p>Circles are groups of people who share your interests and are near you. The system
+automatically suggests circles based on the topics you follow and where you are located.</p>
+<p>Circles are different from communities. You do not have to join a circle. It is just
+a way to discover new people. Browse the circle, find someone interesting, follow them,
+move on.</p>
+<p>Circles are designed to protect your privacy. You can find people nearby without ever
+revealing your exact address.</p>
 <h2 id="shared-blocklist"><a class="header" href="#shared-blocklist">Shared Blocklist</a></h2>
-<p>For federation-ready instances, a <strong>shared blocklist</strong> in JSON format lists domains, IPs,
-and server fingerprints that the instance blocks. The blocklist is publicly exportable so
-other instance admins can import it. This is defensive infrastructure — it exists for
-federation readiness even if no federation code is active yet.</p>
+<p>The server maintains a shared blocklist of domains and IP addresses that are known to be
+problematic. This list can be exported as a JSON file so that other server administrators
+can import it. It is defensive infrastructure — it does not do anything visible to regular
+users, but it helps keep the platform safe.</p>
 
                     </main>
 
