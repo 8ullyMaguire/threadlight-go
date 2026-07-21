@@ -32,6 +32,7 @@ type SiteConfig struct {
 	MinTrustLevelForCommunityCreate int16 `json:"min_trust_level_for_community_create"`
 	MinTrustLevelForCurator       int16 `json:"min_trust_level_for_curator"`
 	AdminUsers             []string  `json:"admin_users,omitempty"`
+	CreditActionCosts      *string   `json:"credit_action_costs,omitempty"`
 	UpdatedAt              time.Time `json:"updated_at"`
 }
 
@@ -71,6 +72,7 @@ type UpdateConfigRequest struct {
 	MinTrustLevelForReviewVoting  *int16 `json:"min_trust_level_for_review_voting,omitempty"`
 	MinTrustLevelForCommunityCreate *int16 `json:"min_trust_level_for_community_create,omitempty"`
 	MinTrustLevelForCurator       *int16 `json:"min_trust_level_for_curator,omitempty"`
+	CreditActionCosts             *string `json:"credit_action_costs,omitempty"`
 }
 
 type AboutResponse struct {

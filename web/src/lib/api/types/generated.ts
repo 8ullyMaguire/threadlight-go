@@ -864,6 +864,7 @@ export interface EditSite {
   min_trust_level_for_review_voting?: number
   min_trust_level_for_community_create?: number
   min_trust_level_for_curator?: number
+  credit_action_costs?: string
 }
 
 export interface FeaturePost {

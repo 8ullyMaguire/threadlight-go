@@ -347,3 +347,25 @@ func (h *CommunityHandler) CheckInviteStatus(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"can_join": true})
 }
+
+// GetTreasuryBalance returns the community's credit treasury balance.
+func (h *CommunityHandler) GetTreasuryBalance(c *gin.Context) {
+	slug := c.Param("slug")
+
+	community, err := h.svc.GetCommunityBySlug(c.Request.Context(), slug)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "community not found"})
+		return
+	}
+
+	balance, err := h.svc.GetTreasuryBalance(c.Request.Context(), community.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"slug":           slug,
+		"credit_balance": balance,
+	})
+}

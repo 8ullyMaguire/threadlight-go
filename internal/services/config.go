@@ -35,7 +35,8 @@ func (s *ConfigService) Get(ctx context.Context) (*model.SiteConfig, error) {
 			COALESCE(unfair_min_reviews, 5), COALESCE(unfair_penalty_cooldown_hrs, 24),
 			COALESCE(min_trust_level_for_review_voting, 1),
 			COALESCE(min_trust_level_for_community_create, 0),
-			COALESCE(min_trust_level_for_curator, 1), updated_at
+			COALESCE(min_trust_level_for_curator, 1),
+			COALESCE(credit_action_costs::text, '{}'), updated_at
 		FROM site_config WHERE id = 1`,
 	).Scan(&cfg.ID, &cfg.RegistrationMode,
 		&cfg.InviteLimitThreshold0, &cfg.InviteLimitThreshold1, &cfg.InviteLimitThreshold2,
@@ -48,7 +49,7 @@ func (s *ConfigService) Get(ctx context.Context) (*model.SiteConfig, error) {
 		&cfg.UnfairThresholdPct, &cfg.UnfairPenaltyAmount,
 		&cfg.UnfairMinReviews, &cfg.UnfairPenaltyCooldownHrs,
 		&cfg.MinTrustLevelForReviewVoting, &cfg.MinTrustLevelForCommunityCreate,
-		&cfg.MinTrustLevelForCurator, &cfg.UpdatedAt)
+		&cfg.MinTrustLevelForCurator, &cfg.CreditActionCosts, &cfg.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -184,6 +185,9 @@ func (s *ConfigService) Update(ctx context.Context, req model.UpdateConfigReques
 	}
 	if req.MinTrustLevelForCurator != nil {
 		addField("min_trust_level_for_curator", *req.MinTrustLevelForCurator)
+	}
+	if req.CreditActionCosts != nil {
+		addField("credit_action_costs", *req.CreditActionCosts)
 	}
 
 	query += ` WHERE id = 1`

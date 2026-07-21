@@ -349,3 +349,52 @@ func (s *CommunityService) ForkCommunity(ctx context.Context, sourceID, initiate
 func (s *CommunityService) GetUserTrustLevel(ctx context.Context, userID int64, level *int16) error {
 	return s.pg.QueryRow(ctx, `SELECT trust_level FROM users WHERE id = $1`, userID).Scan(level)
 }
+
+// ── Community Treasury Methods ─────────────────────────────────────────────
+
+// AwardCommunityCredits adds credits to the community's treasury.
+func (s *CommunityService) AwardCommunityCredits(ctx context.Context, communityID int64, amount int64, reason string) error {
+	if amount <= 0 {
+		return nil
+	}
+	_, err := s.pg.Exec(ctx,
+		`UPDATE communities SET credit_balance = COALESCE(credit_balance, 0) + $1 WHERE id = $2`,
+		amount, communityID)
+	return err
+}
+
+// SpendCommunityCredits deducts credits from a community's treasury.
+// Requires the caller to be a curator of the community.
+func (s *CommunityService) SpendCommunityCredits(ctx context.Context, communityID, curatorID int64, amount int64, reason string) error {
+	if amount <= 0 {
+		return nil
+	}
+
+	// Verify curator status
+	var count int
+	err := s.pg.QueryRow(ctx,
+		`SELECT COUNT(*) FROM curators WHERE community_id = $1 AND user_id = $2`,
+		communityID, curatorID).Scan(&count)
+	if err != nil {
+		return err
+	}
+	if count == 0 {
+		return model.ErrForbidden
+	}
+
+	_, err = s.pg.Exec(ctx,
+		`UPDATE communities SET credit_balance = GREATEST(0, COALESCE(credit_balance, 0) - $1) WHERE id = $2`,
+		amount, communityID)
+	return err
+}
+
+// GetTreasuryBalance reads the credit_balance from a community.
+func (s *CommunityService) GetTreasuryBalance(ctx context.Context, communityID int64) (int64, error) {
+	var balance int64
+	err := s.pg.QueryRow(ctx,
+		`SELECT COALESCE(credit_balance, 0) FROM communities WHERE id = $1`, communityID).Scan(&balance)
+	if err != nil {
+		return 0, err
+	}
+	return balance, nil
+}

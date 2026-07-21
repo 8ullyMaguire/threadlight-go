@@ -1,6 +1,9 @@
 <script lang="ts">
   import { site } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
+  import { client } from '$lib/api/client.svelte'
+  import { ThreadlightClient } from '$lib/api/threadlight/adapter'
+  import type { CreditBalance } from '$lib/api/threadlight/types'
 
   import { LINKED_INSTANCE_URL } from '$lib/app/instance.svelte'
   import { Menu, Spinner } from 'mono-svelte'
@@ -27,6 +30,22 @@
   }
 
   let { style = '', class: clazz = '' }: Props = $props()
+
+  let creditBalance = $state<CreditBalance | null>(null)
+  let creditLoading = $state(false)
+
+  $effect(() => {
+    if (profile.current?.user && !creditLoading && creditBalance === null) {
+      creditLoading = true
+      const tl = client() as unknown as ThreadlightClient
+      tl.getCreditBalance().then((b) => {
+        creditBalance = b
+        creditLoading = false
+      }).catch(() => {
+        creditLoading = false
+      })
+    }
+  })
 </script>
 
 <CommandsWrapper />
@@ -119,6 +138,23 @@
   />
   <Menu placement="bottom">
     {#snippet target(attachment)}
+      {#if creditBalance && profile.current?.user}
+        <a
+          href="/settings/credits"
+          class={[
+            'flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium',
+            'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400',
+            'hover:bg-amber-100 dark:hover:bg-amber-950/50 transition-colors',
+            'order-4 mr-1',
+          ].join(' ')}
+          title={`${creditBalance.credits} credits`}
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10 1a9 9 0 100 18 9 9 0 000-18zM8.5 5.5a1.5 1.5 0 013 0v.5h1a1 1 0 010 2h-1v1h1a1 1 0 010 2h-4a1 1 0 010-2h1v-1h-1a1.5 1.5 0 010-3h1v-.5z"/>
+          </svg>
+          <span>{creditBalance.credits}</span>
+        </a>
+      {/if}
       <button
         {@attach attachment}
         class={[

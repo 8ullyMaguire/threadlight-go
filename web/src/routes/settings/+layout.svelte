@@ -10,6 +10,7 @@
       ArrowUpTray,
       AtSymbol,
       Cog,
+      CurrencyDollar,
       EllipsisHorizontal,
       Heart,
       ListBullet,
@@ -85,6 +86,11 @@
       href: '/settings/moderation',
       name:'Moderation',
       icon: ShieldCheck,
+    },
+    {
+      href: '/settings/credits',
+      name:'Credits',
+      icon: CurrencyDollar,
     },
     {
       href: '/settings/other',

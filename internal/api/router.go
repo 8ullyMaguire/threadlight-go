@@ -28,6 +28,10 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	collectionSvc := services.NewCollectionService(pg)
 	communitySvc := services.NewCommunityService(pg, affAcc)
 	creditSvc := services.NewCreditService(pg)
+
+	// Wire credit economy hooks
+	postSvc.SetCreditService(creditSvc)
+	tagSvc.SetCreditService(creditSvc)
 	filterSvc := services.NewFilterService(pg)
 	configSvc := services.NewConfigService(pg)
 	moderationSvc := services.NewModerationService(pg)
@@ -58,7 +62,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	circleHandler := handlers.NewCircleHandler(circleSvc)
 	collectionHandler := handlers.NewCollectionHandler(collectionSvc)
 	communityHandler := handlers.NewCommunityHandler(communitySvc, configSvc)
-	creditHandler := handlers.NewCreditHandler(creditSvc)
+	creditHandler := handlers.NewCreditHandler(creditSvc, configSvc)
 	filterHandler := handlers.NewFilterHandler(filterSvc)
 	configHandler := handlers.NewConfigHandler(configSvc)
 	moderationHandler := handlers.NewModerationHandler(moderationSvc)
@@ -218,6 +222,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			communities.POST("/:slug/trust", communityHandler.CreateTrustConnection)
 			communities.GET("/:slug/trust/score", communityHandler.GetCommunityTrustScore)
 			communities.GET("/:slug/join/check", communityHandler.CheckInviteStatus)
+			communities.GET("/:slug/balance", communityHandler.GetTreasuryBalance)
 		}
 
 		credits := apiV1.Group("/credits")
@@ -230,6 +235,9 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			credits.POST("/bounties", creditHandler.CreateBounty)
 			credits.GET("/bounties/:id", creditHandler.GetBounty)
 			credits.POST("/bounties/:id/award", creditHandler.AwardBounty)
+			credits.GET("/balance", creditHandler.GetBalance)
+			credits.POST("/quest/complete", creditHandler.CompleteQuest)
+			credits.GET("/costs", creditHandler.GetCosts)
 		}
 
 		filters := apiV1.Group("/filters")

@@ -643,3 +643,54 @@ export interface ModerationActionResponse {
 export interface ResolveReportResponse {
   message: string
 }
+
+// ── Credit Economy types ─────────────────────────────────────
+
+export interface DailyQuest {
+  quest_type: string
+  description: string
+  completed: boolean
+  progress: number
+  target: number
+  reward: number
+}
+
+export interface CreditBalance {
+  credits: number
+  lifetime_credits: number
+  streak: number
+  quests: DailyQuest[]
+}
+
+export interface CreditTransaction {
+  id: number
+  user_id: number
+  amount: number
+  balance_after: number
+  reason: string
+  reference_type: string | null
+  reference_id: number | null
+  created_at: string
+}
+
+export interface CreditTransactionsResponse {
+  transactions: CreditTransaction[]
+  total: number
+  page: number
+  limit: number
+}
+
+export interface CreditCosts {
+  post_creation: number
+  image_upload: number
+  search: number
+  private_message: number
+  reaction: number
+}
+
+export interface CommunityBalance {
+  community_slug: string
+  balance: number
+  total_earned: number
+  total_spent: number
+}

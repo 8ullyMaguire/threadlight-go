@@ -31,6 +31,13 @@
           ...data.site.site_view.local_site,
           ...data.site.site_view.site,
           discussion_languages: data.site.discussion_languages,
+          credit_action_costs: (data.site.site_view.local_site as Record<string, unknown>)?.credit_action_costs as string ?? JSON.stringify({
+            post_creation: 2,
+            image_upload: 10,
+            search: 0,
+            private_message: 1,
+            reaction: 0,
+          }),
         }
       : undefined,
   )
@@ -59,6 +66,14 @@
   }
 
   let saving = $state(false)
+
+  function parseCreditCosts(json: string): Record<string, number> {
+    try {
+      return JSON.parse(json)
+    } catch {
+      return {}
+    }
+  }
 </script>
 
 <svelte:head>
@@ -235,6 +250,58 @@
       max="3"
       step="1"
     />
+
+    <hr class="my-4 border-zinc-700" />
+    <h2 class="text-lg font-semibold mt-2 mb-2">Credit Action Costs</h2>
+    <p class="text-sm text-zinc-500 mb-2">
+      Define how many credits each action costs. Set to 0 to make an action free.
+    </p>
+
+    {#if formData.credit_action_costs}
+      {@const parsed = parseCreditCosts(formData.credit_action_costs)}
+      <TextInput
+        bind:value={() => String(parsed.post_creation ?? 2), (v) => { parsed.post_creation = Number(v); formData.credit_action_costs = JSON.stringify(parsed) }}
+        label="Post creation cost"
+        type="number"
+        min="0"
+        max="100"
+        step="1"
+      />
+      <TextInput
+        bind:value={() => String(parsed.image_upload ?? 10), (v) => { parsed.image_upload = Number(v); formData.credit_action_costs = JSON.stringify(parsed) }}
+        label="Image upload cost"
+        type="number"
+        min="0"
+        max="100"
+        step="1"
+      />
+      <TextInput
+        bind:value={() => String(parsed.search ?? 0), (v) => { parsed.search = Number(v); formData.credit_action_costs = JSON.stringify(parsed) }}
+        label="Search cost"
+        type="number"
+        min="0"
+        max="100"
+        step="1"
+      />
+      <TextInput
+        bind:value={() => String(parsed.private_message ?? 1), (v) => { parsed.private_message = Number(v); formData.credit_action_costs = JSON.stringify(parsed) }}
+        label="Private message cost"
+        type="number"
+        min="0"
+        max="100"
+        step="1"
+      />
+      <TextInput
+        bind:value={() => String(parsed.reaction ?? 0), (v) => { parsed.reaction = Number(v); formData.credit_action_costs = JSON.stringify(parsed) }}
+        label="Reaction cost"
+        type="number"
+        min="0"
+        max="100"
+        step="1"
+      />
+    {:else}
+      <p class="text-sm text-zinc-500 italic">No credit costs configured yet. Save the form with defaults to initialize.</p>
+    {/if}
 
     <div class="space-y-1">
       <Label>Languages</Label>

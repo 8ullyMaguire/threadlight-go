@@ -812,3 +812,39 @@ ALTER TABLE site_config ADD COLUMN IF NOT EXISTS min_trust_level_for_curator    
 -- trust_score so that EvaluateUnfairPenalty can weigh votes by trust.
 ALTER TABLE mod_decision_reviews ADD COLUMN IF NOT EXISTS voter_trust_score REAL DEFAULT 1.0;
 
+
+-- >> Source: 002_voter_trust.sql
+-- Voter Trust Score for Weighted Review Voting
+-- When a user casts a vote on a moderation action, we store their current
+-- trust_score so that EvaluateUnfairPenalty can weigh votes by trust.
+ALTER TABLE mod_decision_reviews ADD COLUMN IF NOT EXISTS voter_trust_score REAL DEFAULT 1.0;
+
+-- >> Source: 003_credit_economy.sql
+-- Credit Economy Expansion
+-- Action costs, community treasury, daily quests, streak tracking
+
+-- Action cost config (stored as JSONB in site_config)
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS credit_action_costs JSONB DEFAULT '{}';
+
+-- Community treasury
+ALTER TABLE communities ADD COLUMN IF NOT EXISTS credit_balance BIGINT DEFAULT 0;
+
+-- Daily quests tracking
+CREATE TABLE IF NOT EXISTS daily_quests (
+    id          BIGSERIAL PRIMARY KEY,
+    user_id     BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    date        DATE NOT NULL,
+    quest_type  SMALLINT NOT NULL, -- 1=tag_vote, 2=reaction, 3=tag_post, 4=note_vote
+    completed   BOOLEAN DEFAULT FALSE,
+    created_at  TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(user_id, date, quest_type)
+);
+
+-- Credit streak tracking
+ALTER TABLE users ADD COLUMN IF NOT EXISTS credit_streak INTEGER DEFAULT 0;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS last_credit_action_date DATE;
+
+-- Action metadata on transactions
+ALTER TABLE credit_transactions ADD COLUMN IF NOT EXISTS action_type VARCHAR(50);
+ALTER TABLE credit_transactions ADD COLUMN IF NOT EXISTS metadata JSONB;
+

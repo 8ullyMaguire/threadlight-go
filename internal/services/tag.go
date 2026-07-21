@@ -9,11 +9,17 @@ import (
 )
 
 type TagService struct {
-	pg *pgxpool.Pool
+	pg        *pgxpool.Pool
+	creditSvc *CreditService
 }
 
 func NewTagService(pg *pgxpool.Pool) *TagService {
 	return &TagService{pg: pg}
+}
+
+// SetCreditService sets the credit service for earning hooks.
+func (s *TagService) SetCreditService(cs *CreditService) {
+	s.creditSvc = cs
 }
 
 func (s *TagService) CreateTag(ctx context.Context, req model.Tag) (*model.Tag, error) {
@@ -131,7 +137,18 @@ func (s *TagService) VoteTag(ctx context.Context, tagID, userID int64, vote int)
 		 VALUES ($1, $2, $3)
 		 ON CONFLICT (tag_id, user_id) DO UPDATE SET vote = $3`,
 		tagID, userID, vote)
-	return err
+	if err != nil {
+		return err
+	}
+
+	// Award 1 credit for tag vote (earning hook)
+	if s.creditSvc != nil {
+		s.creditSvc.AwardCredits(ctx, userID, 1, "tag_vote", "Tag vote")
+		// Also try to mark quest progress
+		s.creditSvc.CompleteQuest(ctx, userID, 1) // quest_type 1 = tag_vote
+	}
+
+	return nil
 }
 
 func (s *TagService) GetTagVoteCount(ctx context.Context, tagID int64) (int, error) {

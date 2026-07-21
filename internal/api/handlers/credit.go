@@ -11,10 +11,11 @@ import (
 
 type CreditHandler struct {
 	creditSvc *services.CreditService
+	configSvc *services.ConfigService
 }
 
-func NewCreditHandler(creditSvc *services.CreditService) *CreditHandler {
-	return &CreditHandler{creditSvc: creditSvc}
+func NewCreditHandler(creditSvc *services.CreditService, configSvc *services.ConfigService) *CreditHandler {
+	return &CreditHandler{creditSvc: creditSvc, configSvc: configSvc}
 }
 
 func (h *CreditHandler) TransferCredits(c *gin.Context) {
@@ -119,4 +120,63 @@ func (h *CreditHandler) AwardBounty(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "bounty awarded"})
+}
+
+// ── New Credit Economy Endpoints ──────────────────────────────────────────
+
+// GetBalance returns the user's credit balance, streak, and today's quests.
+func (h *CreditHandler) GetBalance(c *gin.Context) {
+	userID := c.GetInt64("user_id")
+	ctx := c.Request.Context()
+
+	balance, err := h.creditSvc.GetBalance(ctx, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	streak, err := h.creditSvc.GetStreak(ctx, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	quests, err := h.creditSvc.GetDailyQuests(ctx, userID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"balance": balance,
+		"streak":  streak,
+		"quests":  quests,
+	})
+}
+
+// CompleteQuest marks a daily quest as completed.
+func (h *CreditHandler) CompleteQuest(c *gin.Context) {
+	userID := c.GetInt64("user_id")
+	var req struct {
+		QuestType int16 `json:"quest_type" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := h.creditSvc.CompleteQuest(c.Request.Context(), userID, req.QuestType); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "quest completed"})
+}
+
+// GetCosts returns the credit action cost configuration.
+func (h *CreditHandler) GetCosts(c *gin.Context) {
+	cfg, err := h.configSvc.Get(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"credit_action_costs": cfg.CreditActionCosts})
 }

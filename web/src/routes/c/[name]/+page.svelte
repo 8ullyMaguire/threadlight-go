@@ -1,6 +1,7 @@
 <script lang="ts">
   import { browser } from '$app/environment'
   import { navigating, page } from '$app/state'
+  import { client } from '$lib/api/client.svelte'
   import { site } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
 
@@ -8,13 +9,23 @@
   import CommunityHeader from '$lib/feature/community/CommunityHeader.svelte'
   import { resumables } from '$lib/feature/legacy/item'
   import { PostListShell } from '$lib/ui/layout'
-  import { Badge, Button, Note } from 'mono-svelte'
+  import { Badge, Button, Note, Spinner } from 'mono-svelte'
   import { onDestroy, onMount } from 'svelte'
-  import { ArrowRight, Icon, Plus } from 'svelte-hero-icons/dist'
+  import { ArrowRight, CurrencyDollar, Icon, Plus } from 'svelte-hero-icons/dist'
 
   let { data } = $props()
 
-  onMount(() => {
+  let communityBalance = $state<number | null>(null)
+  let balanceLoading = $state(false)
+
+  let isModOrCurator = $derived(
+    profile.current?.user && data.community?.moderators?.some(
+      (m: { moderator?: { id: number }; person?: { id: number } }) =>
+        (m.moderator?.id ?? m.person?.id) === profile.current?.user?.local_user_view?.person?.id,
+    ),
+  )
+
+  onMount(async () => {
     if (browser)
       setSessionStorage('lastSeenCommunity', data.community.community_view)
 
@@ -24,6 +35,19 @@
       url: page.url.toString(),
       avatar: data.community.community_view.community.icon,
     })
+
+    if (isModOrCurator && browser) {
+      balanceLoading = true
+      try {
+        const tl = client() as unknown as import('$lib/api/threadlight/adapter').ThreadlightClient
+        const bal = await tl.getCommunityBalance(data.community.community_view.community.name)
+        communityBalance = bal.balance
+      } catch {
+        // non-threadlight backend or not available
+      } finally {
+        balanceLoading = false
+      }
+    }
   })
 
   onDestroy(() => {
@@ -70,6 +94,19 @@
       compact="lg"
       avatarCircle={false}
     />
+    {#if isModOrCurator}
+      {#if balanceLoading}
+        <div class="flex items-center gap-1 text-xs text-zinc-500 px-2 py-1">
+          <Spinner width={12} />
+          <span>Treasury...</span>
+        </div>
+      {:else if communityBalance !== null}
+        <div class="flex items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/20 rounded-lg px-3 py-1.5 w-fit mb-2">
+          <Icon src={CurrencyDollar} size="14" micro />
+          <span>Treasury: <strong>{communityBalance}</strong> credits</span>
+        </div>
+      {/if}
+    {/if}
     {#if data.community.community_view.blocked}
       <Note>You've blocked this community.</Note>
     {/if}

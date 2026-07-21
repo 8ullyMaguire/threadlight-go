@@ -1629,6 +1629,7 @@ export class ThreadlightClient extends BaseClient {
         min_trust_level_for_review_voting: form.min_trust_level_for_review_voting,
         min_trust_level_for_community_create: form.min_trust_level_for_community_create,
         min_trust_level_for_curator: form.min_trust_level_for_curator,
+        credit_action_costs: form.credit_action_costs,
       },
     })
     return {} as Lemmy.SiteResponse
@@ -1935,5 +1936,60 @@ export class ThreadlightClient extends BaseClient {
     if (params.offset) apiParams['offset'] = params.offset.toString()
     if (params.status !== undefined) apiParams['status'] = params.status.toString()
     return this.#api<{ reports: import('./types').Report[]; total: number }>('/reports', { params: apiParams })
+  }
+
+  // ── Credit Economy API methods ─────────────────────────────
+
+  /**
+   * Get the current user's credit balance, streak, and daily quests.
+   */
+  async getCreditBalance(): Promise<import('./types').CreditBalance> {
+    try {
+      return await this.#api<import('./types').CreditBalance>('/credits/balance')
+    } catch {
+      return { credits: 0, lifetime_credits: 0, streak: 0, quests: [] }
+    }
+  }
+
+  /**
+   * Get the configured credit action costs.
+   */
+  async getCreditCosts(): Promise<import('./types').CreditCosts> {
+    try {
+      return await this.#api<import('./types').CreditCosts>('/credits/costs')
+    } catch {
+      return { post_creation: 2, image_upload: 10, search: 0, private_message: 1, reaction: 0 }
+    }
+  }
+
+  /**
+   * Complete a daily quest by type.
+   */
+  async completeQuest(questType: string): Promise<{ message: string }> {
+    return this.#api<{ message: string }>('/credits/quests/complete', {
+      method: 'POST',
+      body: { quest_type: questType },
+    })
+  }
+
+  /**
+   * Get treasury balance for a community (curator/moderator only).
+   */
+  async getCommunityBalance(slug: string): Promise<import('./types').CommunityBalance> {
+    try {
+      return await this.#api<import('./types').CommunityBalance>(`/communities/${slug}/balance`)
+    } catch {
+      return { community_slug: slug, balance: 0, total_earned: 0, total_spent: 0 }
+    }
+  }
+
+  /**
+   * Get recent credit transactions for the current user.
+   */
+  async getCreditTransactions(params: { page?: number; limit?: number } = {}): Promise<import('./types').CreditTransactionsResponse> {
+    const apiParams: Record<string, string> = {}
+    if (params.page) apiParams['page'] = params.page.toString()
+    if (params.limit) apiParams['limit'] = params.limit.toString()
+    return this.#api<import('./types').CreditTransactionsResponse>('/credits/transactions', { params: apiParams })
   }
 }

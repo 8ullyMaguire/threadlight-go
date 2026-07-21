@@ -10,11 +10,17 @@ import (
 )
 
 type PostService struct {
-	pg *pgxpool.Pool
+	pg        *pgxpool.Pool
+	creditSvc *CreditService
 }
 
 func NewPostService(pg *pgxpool.Pool) *PostService {
 	return &PostService{pg: pg}
+}
+
+// SetCreditService sets the credit service for cost deduction hooks.
+func (s *PostService) SetCreditService(cs *CreditService) {
+	s.creditSvc = cs
 }
 
 func (s *PostService) CreatePost(ctx context.Context, authorID int64, req model.CreatePostRequest) (*model.PostResponse, error) {
@@ -30,6 +36,11 @@ func (s *PostService) CreatePost(ctx context.Context, authorID int64, req model.
 		&post.InteractionCount, &post.CumulativeInteractions, &post.Status, &post.IsDeleted, &post.CreatedAt, &post.UpdatedAt)
 	if err != nil {
 		return nil, err
+	}
+
+	// Deduct credits for creating a post (earning hook)
+	if s.creditSvc != nil {
+		s.creditSvc.DeductCredits(ctx, authorID, 2, "post_create", nil)
 	}
 
 	return &model.PostResponse{Post: *post, Message: "post created"}, nil
