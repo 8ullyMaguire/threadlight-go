@@ -41,6 +41,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	algorithmicSvc := services.NewAlgorithmicListService(pg)
 	affinitySvc := services.NewUserAffinityService(pg)
 	feedPluginSvc := services.NewFeedPluginService(pg)
+	modDecisionSvc := services.NewModDecisionReviewsService(pg)
 
 	authMw := middleware.NewAuthMiddleware(authSvc)
 
@@ -71,6 +72,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	affinityHandler := handlers.NewAffinityHandler(affinitySvc)
 	feedPluginHandler := handlers.NewFeedPluginHandler(feedPluginSvc)
 	aboutHandler := handlers.NewAboutHandler(configSvc)
+	modDecisionHandler := handlers.NewModDecisionHandler(modDecisionSvc)
 
 	r.GET("/health", healthHandler.Health)
 
@@ -249,6 +251,16 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			moderation.POST("/actions/:id/jurors", moderationHandler.AddJuror)
 			moderation.POST("/actions/:id/resolve", moderationHandler.ResolveJury)
 			moderation.POST("/jurors/:panel_id/vote", moderationHandler.VoteJury)
+		}
+
+		// ── Mod Log (Public Reviews) ─────────────────────────────
+		modlog := apiV1.Group("/modlog")
+		modlog.Use(authMw.RequireAuth())
+		{
+			modlog.GET("/controversial", modDecisionHandler.GetControversial)
+			modlog.POST("/:id/review", modDecisionHandler.CastVote)
+			modlog.GET("/:id/reviews", modDecisionHandler.GetActionReviews)
+			modlog.GET("/:id/my-review", modDecisionHandler.GetMyVote)
 		}
 
 		notes := apiV1.Group("/notes")

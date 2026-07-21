@@ -164,3 +164,26 @@ type UserListWithMeta struct {
 	IsSubscribed bool `json:"is_subscribed"`
 	MemberCount  int  `json:"member_count"`
 }
+
+// ── Mod Decision Reviews ──────────────────────────────────────────
+
+type ModDecisionReview struct {
+	ID                 int64     `json:"id"`
+	UserID             int64     `json:"user_id"`
+	ModerationActionID int64     `json:"moderation_action_id"`
+	Vote               int16     `json:"vote"`
+	CreatedAt          time.Time `json:"created_at"`
+}
+
+type ModDecisionReviewCounts struct {
+	ActionID int64 `json:"action_id"`
+	Fair     int   `json:"fair"`
+	Unfair   int   `json:"unfair"`
+	Total    int   `json:"total"`
+}
+
+type ControversialDecision struct {
+	Action       ModerationAction        `json:"action"`
+	ReviewCounts ModDecisionReviewCounts `json:"review_counts"`
+	Controversy   float64                 `json:"controversy_score"`
+}

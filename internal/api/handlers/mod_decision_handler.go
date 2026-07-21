@@ -1,0 +1,107 @@
+package handlers
+
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/opencode-ai/polaris/internal/model"
+	"github.com/opencode-ai/polaris/internal/services"
+)
+
+type ModDecisionHandler struct {
+	svc *services.ModDecisionReviewsService
+}
+
+func NewModDecisionHandler(svc *services.ModDecisionReviewsService) *ModDecisionHandler {
+	return &ModDecisionHandler{svc: svc}
+}
+
+// CastVote   POST /api/v1/modlog/:id/review
+func (h *ModDecisionHandler) CastVote(c *gin.Context) {
+	userID := c.GetInt64("user_id")
+	actionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid action id"})
+		return
+	}
+	var req struct {
+		Vote int16 `json:"vote"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid request"})
+		return
+	}
+	review, err := h.svc.CastVote(c.Request.Context(), userID, actionID, req.Vote)
+	if err == model.ErrValidation {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "vote must be 1 (fair) or -1 (unfair)"})
+		return
+	}
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, review)
+}
+
+// GetActionReviews   GET /api/v1/modlog/:id/reviews
+func (h *ModDecisionHandler) GetActionReviews(c *gin.Context) {
+	actionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid action id"})
+		return
+	}
+	reviews, err := h.svc.GetActionReviews(c.Request.Context(), actionID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	counts, err := h.svc.GetReviewCounts(c.Request.Context(), actionID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"reviews": reviews,
+		"counts":  counts,
+	})
+}
+
+// GetMyVote   GET /api/v1/modlog/:id/my-review
+func (h *ModDecisionHandler) GetMyVote(c *gin.Context) {
+	userID := c.GetInt64("user_id")
+	actionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid action id"})
+		return
+	}
+	vote, err := h.svc.GetUserVote(c.Request.Context(), userID, actionID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"vote": vote})
+}
+
+// GetControversial   GET /api/v1/modlog/controversial
+func (h *ModDecisionHandler) GetControversial(c *gin.Context) {
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
+	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))
+	if limit > 100 {
+		limit = 100
+	}
+
+	decisions, err := h.svc.GetControversial(c.Request.Context(), limit, offset)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	if decisions == nil {
+		decisions = []model.ControversialDecision{}
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"decisions": decisions,
+		"limit":     limit,
+		"offset":    offset,
+	})
+}
