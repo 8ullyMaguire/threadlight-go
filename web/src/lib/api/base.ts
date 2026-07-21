@@ -7,15 +7,20 @@ export type ClientType =
   | { name: 'threadlight'; baseUrl: '/api/v1' }
 
 export const DEFAULT_CLIENT_TYPE: ClientType =
-  env.PUBLIC_INSTANCE_TYPE == 'piefedalpha'
+  env.PUBLIC_INSTANCE_TYPE == 'lemmy'
     ? {
-        name: 'piefed',
-        baseUrl: '/api/alpha',
-      }
-    : {
         name: 'lemmy',
         baseUrl: '/api/v3',
       }
+    : env.PUBLIC_INSTANCE_TYPE == 'piefedalpha'
+      ? {
+          name: 'piefed',
+          baseUrl: '/api/alpha',
+        }
+      : {
+          name: 'threadlight',
+          baseUrl: '/api/v1',
+        }
 
 export abstract class BaseClient {
   abstract type: ClientType
