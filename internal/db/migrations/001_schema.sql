@@ -1,5 +1,8 @@
-BEGIN;
+-- Threadlight Full Schema
+-- Merged from 7 migrations into one file for simpler deployment.
+-- All statements use IF NOT EXISTS / IF NOT EXISTS for idempotency.
 
+-- >> Source: 001_initial.sql
 CREATE TABLE IF NOT EXISTS users (
     id               BIGSERIAL PRIMARY KEY,
     username         VARCHAR(30) UNIQUE NOT NULL,
@@ -583,4 +586,223 @@ ALTER TABLE site_config ADD COLUMN IF NOT EXISTS prune_age_days INTEGER DEFAULT 
 ALTER TABLE site_config ADD COLUMN IF NOT EXISTS prune_min_interactions INTEGER DEFAULT 3;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS is_admin BOOLEAN DEFAULT FALSE;
 
-COMMIT;
+-- >> Source: 002_tag_votes.sql
+-- Tag voting for collaborative curation
+CREATE TABLE IF NOT EXISTS tag_votes (
+    id BIGSERIAL PRIMARY KEY,
+    tag_id BIGINT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    vote SMALLINT NOT NULL DEFAULT 1 CHECK (vote IN (-1, 1)),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(tag_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_tag_votes_tag_id ON tag_votes(tag_id);
+CREATE INDEX IF NOT EXISTS idx_tag_votes_user_id ON tag_votes(user_id);
+
+-- >> Source: 003_features.sql
+-- User Lists (private, collaborative, algorithmic)
+CREATE TABLE IF NOT EXISTS user_lists (
+    id          BIGSERIAL PRIMARY KEY,
+    owner_id    BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name        VARCHAR(100) NOT NULL,
+    description TEXT DEFAULT '',
+    list_type   SMALLINT NOT NULL DEFAULT 0, -- 0=follow, 1=block
+    visibility  SMALLINT NOT NULL DEFAULT 0, -- 0=private, 1=public, 2=shared (editable with invite)
+    is_algorithmic BOOLEAN DEFAULT FALSE,
+    criteria_json JSONB,                     -- rules for algorithmic lists
+    scope       SMALLINT DEFAULT 0,          -- 0=global, 1=per-tag
+    tag_id      BIGINT REFERENCES tags(id) ON DELETE SET NULL,
+    refresh_interval TEXT DEFAULT '24h',
+    last_refreshed_at TIMESTAMPTZ,
+    created_at  TIMESTAMPTZ DEFAULT NOW(),
+    updated_at  TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_user_lists_owner ON user_lists(owner_id);
+CREATE INDEX IF NOT EXISTS idx_user_lists_type ON user_lists(list_type);
+CREATE INDEX IF NOT EXISTS idx_user_lists_visibility ON user_lists(visibility);
+
+CREATE TABLE IF NOT EXISTS list_members (
+    id            BIGSERIAL PRIMARY KEY,
+    list_id       BIGINT NOT NULL REFERENCES user_lists(id) ON DELETE CASCADE,
+    target_user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    added_by      BIGINT NOT NULL REFERENCES users(id),
+    added_at      TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(list_id, target_user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_list_members_list ON list_members(list_id);
+CREATE INDEX IF NOT EXISTS idx_list_members_target ON list_members(target_user_id);
+
+CREATE TABLE IF NOT EXISTS list_subscriptions (
+    id         BIGSERIAL PRIMARY KEY,
+    list_id    BIGINT NOT NULL REFERENCES user_lists(id) ON DELETE CASCADE,
+    user_id    BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    action     SMALLINT NOT NULL DEFAULT 0, -- 0=follow, 1=block
+    active     BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(list_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_list_subs_user ON list_subscriptions(user_id);
+CREATE INDEX IF NOT EXISTS idx_list_subs_list ON list_subscriptions(list_id);
+
+CREATE TABLE IF NOT EXISTS list_collaborators (
+    id          BIGSERIAL PRIMARY KEY,
+    list_id     BIGINT NOT NULL REFERENCES user_lists(id) ON DELETE CASCADE,
+    user_id     BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    role        SMALLINT NOT NULL DEFAULT 0, -- 0=viewer, 1=editor
+    invited_by  BIGINT NOT NULL REFERENCES users(id),
+    accepted_at TIMESTAMPTZ,
+    created_at  TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(list_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_list_collab_list ON list_collaborators(list_id);
+CREATE INDEX IF NOT EXISTS idx_list_collab_user ON list_collaborators(user_id);
+
+-- User Affinity
+CREATE TABLE IF NOT EXISTS user_affinities (
+    user_a_id      BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    user_b_id      BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    affinity_score REAL DEFAULT 0,
+    recency_factor REAL DEFAULT 1.0,
+    breakdown      JSONB,                    -- component scores (tag_overlap, co_community, reaction_agreement, trust_distance)
+    computed_at    TIMESTAMPTZ DEFAULT NOW(),
+    PRIMARY KEY (user_a_id, user_b_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_affinity_a ON user_affinities(user_a_id);
+CREATE INDEX IF NOT EXISTS idx_affinity_b ON user_affinities(user_b_id);
+CREATE INDEX IF NOT EXISTS idx_affinity_score ON user_affinities(affinity_score DESC);
+
+-- Feed Plugins (Custom Feeds Marketplace)
+CREATE TABLE IF NOT EXISTS feed_plugins (
+    id             BIGSERIAL PRIMARY KEY,
+    name           VARCHAR(100) NOT NULL,
+    description    TEXT DEFAULT '',
+    author_id      BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    wasm_bytes     BYTEA,                     -- compiled WASM plugin binary
+    wasm_sha256    VARCHAR(64),               -- integrity hash
+    version        VARCHAR(20) DEFAULT '1.0.0',
+    plugin_type    SMALLINT DEFAULT 0,        -- 0=rank, 1=filter, 2=hybrid
+    price_credits  BIGINT DEFAULT 0,          -- 0 = free
+    rating         REAL DEFAULT 0,
+    install_count  BIGINT DEFAULT 0,
+    enabled        BOOLEAN DEFAULT TRUE,
+    reviewed       BOOLEAN DEFAULT FALSE,     -- reviewed by admin before publishing
+    created_at     TIMESTAMPTZ DEFAULT NOW(),
+    updated_at     TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_feed_plugins_author ON feed_plugins(author_id);
+CREATE INDEX IF NOT EXISTS idx_feed_plugins_rating ON feed_plugins(rating DESC);
+CREATE INDEX IF NOT EXISTS idx_feed_plugins_reviewed ON feed_plugins(reviewed);
+
+CREATE TABLE IF NOT EXISTS feed_plugin_installs (
+    id         BIGSERIAL PRIMARY KEY,
+    plugin_id  BIGINT NOT NULL REFERENCES feed_plugins(id) ON DELETE CASCADE,
+    user_id    BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    config_json JSONB,
+    enabled    BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(plugin_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_plugin_installs_user ON feed_plugin_installs(user_id);
+
+CREATE TABLE IF NOT EXISTS feed_plugin_reviews (
+    id         BIGSERIAL PRIMARY KEY,
+    plugin_id  BIGINT NOT NULL REFERENCES feed_plugins(id) ON DELETE CASCADE,
+    user_id    BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    rating     SMALLINT NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    review     TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE(plugin_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_plugin_reviews_plugin ON feed_plugin_reviews(plugin_id);
+
+-- User follows (for batch follow via ApplyListAction)
+CREATE TABLE IF NOT EXISTS user_follows (
+    id          BIGSERIAL PRIMARY KEY,
+    follower_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    followee_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at  TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (follower_id, followee_id)
+);
+CREATE INDEX IF NOT EXISTS idx_user_follows_follower ON user_follows(follower_id);
+CREATE INDEX IF NOT EXISTS idx_user_follows_followee ON user_follows(followee_id);
+
+-- >> Source: 004_mod_decision_reviews.sql
+-- Mod Decision Reviews
+-- Every logged-in user can vote "Fair" or "Unfair" on moderation actions.
+-- A controversy score surfaces the most debated decisions.
+CREATE TABLE IF NOT EXISTS mod_decision_reviews (
+    id                  BIGSERIAL PRIMARY KEY,
+    user_id             BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    moderation_action_id BIGINT NOT NULL REFERENCES moderation_actions(id) ON DELETE CASCADE,
+    vote                SMALLINT NOT NULL CHECK (vote IN (1, -1)), -- 1=Fair, -1=Unfair
+    created_at          TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (user_id, moderation_action_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_mod_reviews_action ON mod_decision_reviews(moderation_action_id);
+CREATE INDEX IF NOT EXISTS idx_mod_reviews_user ON mod_decision_reviews(user_id);
+
+-- >> Source: 005_search.sql
+-- Enable pg_trgm extension
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+-- Add search_vector column to posts
+ALTER TABLE posts ADD COLUMN IF NOT EXISTS search_vector tsvector;
+
+-- Create update function for post search vector
+CREATE OR REPLACE FUNCTION update_post_search_vector() RETURNS trigger AS $$
+BEGIN
+  NEW.search_vector :=
+    setweight(to_tsvector('english', coalesce(NEW.title, '')), 'A') ||
+    setweight(to_tsvector('english', coalesce(NEW.body, '')), 'B');
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Drop trigger if exists, then create
+DROP TRIGGER IF EXISTS trg_post_search_vector ON posts;
+CREATE TRIGGER trg_post_search_vector
+  BEFORE INSERT OR UPDATE ON posts
+  FOR EACH ROW EXECUTE FUNCTION update_post_search_vector();
+
+-- GIN index on search_vector
+CREATE INDEX IF NOT EXISTS idx_posts_search ON posts USING GIN(search_vector);
+
+-- Trigram indexes for users and communities
+CREATE INDEX IF NOT EXISTS idx_users_username_trgm ON users USING GIN(username gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_users_display_name_trgm ON users USING GIN(display_name gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_communities_name_trgm ON communities USING GIN(name gin_trgm_ops);
+CREATE INDEX IF NOT EXISTS idx_communities_slug_trgm ON communities USING GIN(slug gin_trgm_ops);
+
+-- >> Source: 006_trust_unfair_penalty.sql
+-- Trust Penalty for Unfair Moderation Actions
+-- When a moderation action receives enough "unfair" votes from the community,
+-- the moderator who took the action loses trust. All parameters are
+-- configurable via site_config so each community can set its own tolerance.
+
+ALTER TABLE moderation_actions ADD COLUMN IF NOT EXISTS trust_penalty_applied BOOLEAN DEFAULT FALSE;
+
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS unfair_threshold_pct      REAL    DEFAULT 0.70;
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS unfair_penalty_amount     REAL    DEFAULT 15.0;
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS unfair_min_reviews        INTEGER DEFAULT 5;
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS unfair_penalty_cooldown_hrs INTEGER DEFAULT 24;
+
+-- >> Source: 007_trust_level_privileges.sql
+-- Trust-Level Privilege Thresholds
+-- Each privilege in the platform can require a minimum trust level.
+-- All values are configurable via site_config so admins can tune
+-- participation requirements for their community.
+
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS min_trust_level_for_review_voting   SMALLINT DEFAULT 1;
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS min_trust_level_for_community_create SMALLINT DEFAULT 0;
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS min_trust_level_for_curator           SMALLINT DEFAULT 1;
+
