@@ -172,6 +172,7 @@ type ModDecisionReview struct {
 	UserID             int64     `json:"user_id"`
 	ModerationActionID int64     `json:"moderation_action_id"`
 	Vote               int16     `json:"vote"`
+	VoterTrustScore    float64   `json:"voter_trust_score"`
 	CreatedAt          time.Time `json:"created_at"`
 }
 

@@ -2,11 +2,8 @@ import { BaseClient } from '$lib/api/base'
 import type * as Lemmy from 'lemmy-js-client'
 import { instance } from '$lib/app/instance.svelte'
 import { instanceToURL } from '$lib/app/util.svelte'
-import type { MyUserInfo } from '$lib/api/types'
+import type { MyUserInfo, EditSite } from '$lib/api/types'
 import {
-  type AboutResponse,
-  type UserProfile,
-  type PostResponse,
   type Community,
   type Tag,
   type TagVote,
@@ -35,6 +32,13 @@ import {
   type PostReportItem,
   type BlockedUser,
   type Interaction,
+  type ControversialDecision,
+  type ControversialDecisionsResponse,
+  type CastVoteResponse,
+  type ReviewListResponse,
+  type ReviewVote,
+  type ModerationActionResponse,
+  type ResolveReportResponse,
 } from './types'
 
 function mapUser(u: User): Lemmy.PersonView {
@@ -1265,8 +1269,13 @@ export class ThreadlightClient extends BaseClient {
     return { comment_reports: [] } as Lemmy.ListCommentReportsResponse
   }
 
-  async resolvePostReport(form: Lemmy.ResolvePostReport): Promise<Lemmy.ResolvePostReportResponse> {
-    return { post_report_view: undefined as unknown as Lemmy.PostReportView } as Lemmy.ResolvePostReportResponse
+  async resolvePostReport(form: Lemmy.ResolvePostReport): Promise<Lemmy.PostReportResponse> {
+    // Call the Threadlight backend to resolve the report
+    await this.#api<{ message: string }>(`/reports/${form.report_id}/resolve`, {
+      method: 'PUT',
+      body: { resolved: form.resolved ?? true },
+    })
+    return {} as Lemmy.PostReportResponse
   }
 
   async resolveCommentReport(form: Lemmy.ResolveCommentReport): Promise<Lemmy.ResolveCommentReportResponse> {
@@ -1605,7 +1614,7 @@ export class ThreadlightClient extends BaseClient {
     return { jwt: '' } as Lemmy.LoginResponse
   }
 
-  async editSite(form: Lemmy.EditSite): Promise<Lemmy.SiteResponse> {
+  async editSite(form: EditSite): Promise<Lemmy.SiteResponse> {
     await this.#api('/admin/config', {
       method: 'PUT',
       body: {
@@ -1613,6 +1622,13 @@ export class ThreadlightClient extends BaseClient {
         description: form.description ?? form.sidebar ?? '',
         invite_only: form.registration_mode === 'RequireApplication',
         registration_open: form.registration_mode !== 'Closed',
+        unfair_threshold_pct: form.unfair_threshold_pct,
+        unfair_penalty_amount: form.unfair_penalty_amount,
+        unfair_min_reviews: form.unfair_min_reviews,
+        unfair_penalty_cooldown_hrs: form.unfair_penalty_cooldown_hrs,
+        min_trust_level_for_review_voting: form.min_trust_level_for_review_voting,
+        min_trust_level_for_community_create: form.min_trust_level_for_community_create,
+        min_trust_level_for_curator: form.min_trust_level_for_curator,
       },
     })
     return {} as Lemmy.SiteResponse
@@ -1845,5 +1861,79 @@ export class ThreadlightClient extends BaseClient {
       method: 'POST',
       body: data,
     })
+  }
+
+  // ── Modlog / Review API methods ───────────────────────────
+
+  /**
+   * Fetch controversial modlog decisions with review counts
+   */
+  async getControversialDecisions(
+    params: { limit?: number; offset?: number } = {},
+  ): Promise<ControversialDecisionsResponse> {
+    const apiParams: Record<string, string> = {}
+    if (params.limit) apiParams['limit'] = params.limit.toString()
+    if (params.offset) apiParams['offset'] = params.offset.toString()
+    return this.#api<ControversialDecisionsResponse>('/modlog/controversial', { params: apiParams })
+  }
+
+  /**
+   * Cast a fair/unfair review on a modlog action
+   */
+  async castReview(actionId: number, vote: number): Promise<CastVoteResponse> {
+    return this.#api<CastVoteResponse>(`/modlog/${actionId}/review`, {
+      method: 'POST',
+      body: { vote },
+    })
+  }
+
+  /**
+   * Get all reviews for a modlog action
+   */
+  async getReviews(actionId: number): Promise<ReviewListResponse> {
+    return this.#api<ReviewListResponse>(`/modlog/${actionId}/reviews`)
+  }
+
+  /**
+   * Get the current user's review for a modlog action
+   */
+  async getMyReview(actionId: number): Promise<ReviewVote | null> {
+    try {
+      return await this.#api<ReviewVote>(`/modlog/${actionId}/my-review`)
+    } catch {
+      return null
+    }
+  }
+
+  // ── Moderation API methods ────────────────────────────────
+
+  /**
+   * Fetch all moderation actions
+   */
+  async getModerationActions(params: { limit?: number; offset?: number } = {}): Promise<ModerationActionResponse> {
+    const apiParams: Record<string, string> = {}
+    if (params.limit) apiParams['limit'] = params.limit.toString()
+    if (params.offset) apiParams['offset'] = params.offset.toString()
+    return this.#api<ModerationActionResponse>('/moderation/actions', { params: apiParams })
+  }
+
+  /**
+   * Resolve a report using the Threadlight-native endpoint
+   */
+  async resolveReport(reportId: number): Promise<ResolveReportResponse> {
+    return this.#api<ResolveReportResponse>(`/reports/${reportId}/resolve`, {
+      method: 'PUT',
+    })
+  }
+
+  /**
+   * Fetch reports from the Threadlight backend
+   */
+  async getReports(params: { limit?: number; offset?: number; status?: number } = {}): Promise<{ reports: import('./types').Report[]; total: number }> {
+    const apiParams: Record<string, string> = {}
+    if (params.limit) apiParams['limit'] = params.limit.toString()
+    if (params.offset) apiParams['offset'] = params.offset.toString()
+    if (params.status !== undefined) apiParams['status'] = params.status.toString()
+    return this.#api<{ reports: import('./types').Report[]; total: number }>('/reports', { params: apiParams })
   }
 }

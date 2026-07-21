@@ -806,3 +806,9 @@ ALTER TABLE site_config ADD COLUMN IF NOT EXISTS min_trust_level_for_review_voti
 ALTER TABLE site_config ADD COLUMN IF NOT EXISTS min_trust_level_for_community_create SMALLINT DEFAULT 0;
 ALTER TABLE site_config ADD COLUMN IF NOT EXISTS min_trust_level_for_curator           SMALLINT DEFAULT 1;
 
+-- >> Source: 008_voter_trust.sql
+-- Voter Trust Score for Weighted Review Voting
+-- When a user casts a vote on a moderation action, we store their current
+-- trust_score so that EvaluateUnfairPenalty can weigh votes by trust.
+ALTER TABLE mod_decision_reviews ADD COLUMN IF NOT EXISTS voter_trust_score REAL DEFAULT 1.0;
+

@@ -1,4 +1,6 @@
 import { client } from '$lib/api/client.svelte'
+import { ThreadlightClient } from '$lib/api/threadlight/adapter'
+import type { ControversialDecision } from '$lib/api/threadlight/types'
 import type {
   AdminPurgeCommentView,
   AdminPurgeCommunityView,
@@ -57,6 +59,7 @@ type ModAction =
   | ModAddView
 
 export interface ModLog {
+  id?: number
   reason?: string
   moderatee?: Person
   content?: string
@@ -77,6 +80,7 @@ export const _toModLog = (item: ModAction): ModLog => {
       ? `until ${new Date(item.mod_ban_from_community.expires).toLocaleString()}`
       : 'permanently'
     return {
+      id: item.mod_ban_from_community.id,
       moderator: item.moderator,
       moderatee: item.banned_person,
       community: item.community,
@@ -88,6 +92,7 @@ export const _toModLog = (item: ModAction): ModLog => {
     }
   } else if ('mod_remove_comment' in item) {
     return {
+      id: item.mod_remove_comment.id,
       actionName: item.mod_remove_comment.removed
         ? 'commentRemoval'
         : 'commentRestore',
@@ -101,6 +106,7 @@ export const _toModLog = (item: ModAction): ModLog => {
     }
   } else if ('mod_remove_post' in item) {
     return {
+      id: item.mod_remove_post.id,
       actionName: item.mod_remove_post.removed ? 'postRemoval' : 'postRestore',
       community: item.community,
       content: item.post.name,
@@ -111,6 +117,7 @@ export const _toModLog = (item: ModAction): ModLog => {
     }
   } else if ('mod_add_community' in item) {
     return {
+      id: item.mod_add_community.id,
       actionName: item.mod_add_community.removed ? 'modRemove' : 'modAdd',
       community: item.community,
       timestamp: timestamp(item.mod_add_community.when_),
@@ -119,6 +126,7 @@ export const _toModLog = (item: ModAction): ModLog => {
     }
   } else if ('mod_feature_post' in item) {
     return {
+      id: item.mod_feature_post.id,
       actionName: item.mod_feature_post.featured
         ? 'postFeature'
         : 'postUnfeature',
@@ -130,6 +138,7 @@ export const _toModLog = (item: ModAction): ModLog => {
     }
   } else if ('mod_lock_post' in item) {
     return {
+      id: item.mod_lock_post.id,
       actionName: item.mod_lock_post.locked ? 'postLock' : 'postUnlock',
       timestamp: timestamp(item.mod_lock_post.when_),
       community: item.community,
@@ -139,6 +148,7 @@ export const _toModLog = (item: ModAction): ModLog => {
     }
   } else if ('mod_transfer_community' in item) {
     return {
+      id: item.mod_transfer_community.id,
       actionName: 'Unknown',
       timestamp: timestamp(item.mod_transfer_community.when_),
       moderator: item.moderator,
@@ -147,6 +157,7 @@ export const _toModLog = (item: ModAction): ModLog => {
     }
   } else if ('admin_purge_post' in item) {
     return {
+      id: item.admin_purge_post.id,
       actionName: 'purge',
       timestamp: timestamp(item.admin_purge_post.when_),
       moderator: item.admin,
@@ -156,6 +167,7 @@ export const _toModLog = (item: ModAction): ModLog => {
     }
   } else if ('admin_purge_comment' in item) {
     return {
+      id: item.admin_purge_comment.id,
       actionName: 'purge',
       timestamp: timestamp(item.admin_purge_comment.when_),
       moderator: item.admin,
@@ -164,6 +176,7 @@ export const _toModLog = (item: ModAction): ModLog => {
     }
   } else if ('admin_purge_community' in item) {
     return {
+      id: item.admin_purge_community.id,
       actionName: 'purge',
       timestamp: timestamp(item.admin_purge_community.when_),
       moderator: item.admin,
@@ -172,6 +185,7 @@ export const _toModLog = (item: ModAction): ModLog => {
     }
   } else if ('admin_purge_person' in item) {
     return {
+      id: item.admin_purge_person.id,
       actionName: 'purge',
       timestamp: timestamp(item.admin_purge_person.when_),
       moderator: item.admin,
@@ -184,6 +198,7 @@ export const _toModLog = (item: ModAction): ModLog => {
       : 'permanently'
 
     return {
+      id: item.mod_ban.id,
       actionName: item.mod_ban.banned ? 'ban' : 'unban',
       timestamp: timestamp(item.mod_ban.when_),
       moderator: item.moderator,
@@ -196,6 +211,7 @@ export const _toModLog = (item: ModAction): ModLog => {
     }
   } else if ('mod_add' in item) {
     return {
+      id: item.mod_add.id,
       actionName: item.mod_add.removed ? 'adminRemove' : 'adminAdd',
       timestamp: timestamp(item.mod_add.when_),
       moderator: item.moderator,
@@ -220,18 +236,22 @@ export async function load({ url, fetch }) {
   const type: ModlogActionType =
     (url.searchParams.get('type') as ModlogActionType) || 'All'
 
-  const results = await client({
-    func: fetch,
-  }).getModlog({
-    community_id: community,
-    limit: 20,
-    type_: type,
-    page: page,
-    mod_person_id: modId,
-    other_person_id: user,
-    post_id: postId,
-    comment_id: commentId,
-  })
+  const apiClient = client({ func: fetch }) as unknown as ThreadlightClient
+
+  // Fetch both the modlog entries and the raw controversial decisions
+  const [results, controversyData] = await Promise.all([
+    apiClient.getModlog({
+      community_id: community,
+      limit: 20,
+      type_: type,
+      page: page,
+      mod_person_id: modId,
+      other_person_id: user,
+      post_id: postId,
+      comment_id: commentId,
+    }),
+    apiClient.getControversialDecisions({ limit: 20, offset: (page - 1) * 20 }).catch(() => null),
+  ])
 
   const moderation = [
     ...results.banned_from_community,
@@ -258,10 +278,19 @@ export async function load({ url, fetch }) {
     .map(_toModLog)
     .sort((a, b) => b.timestamp - a.timestamp)
 
+  // Build a lookup map of action_id -> ControversialDecision
+  const decisionsById: Record<number, ControversialDecision> = {}
+  if (controversyData) {
+    for (const decision of controversyData.decisions) {
+      decisionsById[decision.action_id] = decision
+    }
+  }
+
   return {
     page: page,
     type: type,
     modlog: moderationActions,
+    decisionsById,
     filters: {
       user: user ? moderationActions[0]?.moderatee?.name : undefined,
       community: community ? moderationActions[0]?.community?.title : undefined,

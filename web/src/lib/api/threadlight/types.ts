@@ -578,3 +578,68 @@ export interface CreatePluginReviewRequest {
   rating: number
   review: string
 }
+
+// ── Modlog / Moderation types (Threadlight-native) ──────────
+
+export interface ModAction {
+  id: number
+  moderator_id: number
+  action_type: number
+  reason: string
+  target_post_id: number | null
+  target_comment_id: number | null
+  target_user_id: number | null
+  target_community_id: number | null
+  created_at: string
+}
+
+export interface ControversialDecision {
+  id: number
+  action_id: number
+  action: ModAction
+  reviews_fair: number
+  reviews_unfair: number
+  reviews_total: number
+  controversy_score: number
+  moderator?: User
+  community?: Community
+  target_user?: User
+  target_post?: Post
+  created_at: string
+}
+
+export interface ControversialDecisionsResponse {
+  decisions: ControversialDecision[]
+  total: number
+  limit: number
+  offset: number
+}
+
+export interface ReviewVote {
+  id: number
+  user_id: number
+  action_id: number
+  vote: number // 1 = fair, -1 = unfair
+  trust_penalty: number | null
+  created_at: string
+}
+
+export interface CastVoteResponse {
+  review: ReviewVote
+  trust_penalty?: number
+  message: string
+}
+
+export interface ReviewListResponse {
+  reviews: ReviewVote[]
+  total: number
+}
+
+export interface ModerationActionResponse {
+  actions: ModAction[]
+  total: number
+}
+
+export interface ResolveReportResponse {
+  message: string
+}

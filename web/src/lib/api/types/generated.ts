@@ -857,6 +857,13 @@ export interface EditSite {
   reports_email_admins?: boolean
   content_warning?: string
   default_post_listing_mode?: PostListingMode
+  unfair_threshold_pct?: number
+  unfair_penalty_amount?: number
+  unfair_min_reviews?: number
+  unfair_penalty_cooldown_hrs?: number
+  min_trust_level_for_review_voting?: number
+  min_trust_level_for_community_create?: number
+  min_trust_level_for_curator?: number
 }
 
 export interface FeaturePost {

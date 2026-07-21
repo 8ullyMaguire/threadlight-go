@@ -2,7 +2,9 @@
   import { browser } from '$app/environment'
   import { page } from '$app/state'
   import { client } from '$lib/api/client.svelte'
+  import { ThreadlightClient } from '$lib/api/threadlight/adapter'
   import { profile } from '$lib/app/auth'
+  import { errorMessage } from '$lib/app/error'
 
   import { settings } from '$lib/app/settings.svelte'
   import { searchParam } from '$lib/app/util.svelte'
@@ -13,16 +15,21 @@
   import ObjectAutocomplete from '$lib/ui/form/ObjectAutocomplete.svelte'
   import Placeholder from '$lib/ui/info/Placeholder.svelte'
   import { Header, Pageination } from '$lib/ui/layout'
-  import { Button, Option, Select, Spinner } from 'mono-svelte'
+  import { Button, Option, Select, Spinner, toast } from 'mono-svelte'
   import {
     Bars3BottomRight,
+    CheckCircle,
+    HandThumbDown,
+    HandThumbUp,
     Icon,
     MagnifyingGlass,
     ViewColumns,
+    XCircle,
     XMark,
   } from 'svelte-hero-icons/dist'
   import ModlogItemCard from './item/ModlogItemCard.svelte'
   import ModlogItemTable from './item/ModlogItemTable.svelte'
+  import type { ModLog } from './+page'
 
   let { data = $bindable() } = $props()
 
@@ -38,6 +45,40 @@
     settings.modlogCardView =
       view == 'true' ? true : view == 'false' ? false : undefined
   })
+
+  // ── Voting state ─────────────────────────────────────────
+  let votingState = $state<Record<number, 'idle' | 'voting' | 'done' | 'error'>>({})
+  let voteMessages = $state<Record<number, string>>({})
+  let trustPenalties = $state<Record<number, number>>({})
+  let userVotes = $state<Record<number, number>>({})
+
+  async function castVote(actionId: number, vote: number) {
+    if (!profile.current?.jwt) {
+      toast({ content: 'You must be logged in to vote.', type: 'warning' })
+      return
+    }
+    votingState[actionId] = 'voting'
+    try {
+      const apiClient = client() as unknown as ThreadlightClient
+      const res = await apiClient.castReview(actionId, vote)
+      votingState[actionId] = 'done'
+      userVotes[actionId] = vote
+      if (res.trust_penalty) {
+        trustPenalties[actionId] = res.trust_penalty
+      }
+      voteMessages[actionId] = res.message || 'Vote recorded.'
+      toast({ content: res.message || 'Vote recorded.', type: 'success' })
+    } catch (err) {
+      votingState[actionId] = 'error'
+      voteMessages[actionId] = errorMessage(err as string)
+      toast({ content: errorMessage(err as string), type: 'error' })
+    }
+  }
+
+  function getDecision(actionId: number | undefined) {
+    if (actionId === undefined || actionId === null) return null
+    return data.decisionsById?.[actionId] ?? null
+  }
 </script>
 
 <svelte:head>
@@ -229,7 +270,68 @@
     {#if settings.modlogCardView ?? !window.matchMedia('(min-width: 1600px)').matches}
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {#each data.modlog as modlog (modlog)}
-          <ModlogItemCard item={modlog} />
+          {@const decision = getDecision(modlog.id)}
+          <div class="flex flex-col gap-2">
+            <ModlogItemCard item={modlog} />
+            {#if decision}
+              <div
+                class="flex flex-row items-center gap-3 px-3 py-2 text-xs rounded-xl bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800"
+              >
+                <span class="font-medium text-slate-500 dark:text-zinc-400">
+                  Reviews:
+                </span>
+                <span class="flex items-center gap-1 text-green-600 dark:text-green-400">
+                  <Icon src={HandThumbUp} size="14" mini />
+                  {decision.reviews_fair}
+                </span>
+                <span class="flex items-center gap-1 text-red-600 dark:text-red-400">
+                  <Icon src={HandThumbDown} size="14" mini />
+                  {decision.reviews_unfair}
+                </span>
+                <span class="text-slate-400 dark:text-zinc-500">|</span>
+                <span class="flex items-center gap-1">
+                  <span class="font-medium">Score:</span>
+                  <span class={decision.controversy_score > 0 ? 'text-orange-500' : 'text-slate-500'}>
+                    {decision.controversy_score.toFixed(2)}
+                  </span>
+                </span>
+                <div class="flex-1"></div>
+                {#if profile.current?.jwt}
+                  {#if userVotes[decision.action_id]}
+                    <span class="text-xs text-slate-500 dark:text-zinc-400">
+                      {userVotes[decision.action_id] === 1 ? '✓ Voted Fair' : '✗ Voted Unfair'}
+                    </span>
+                  {:else if votingState[decision.action_id] === 'voting'}
+                    <Spinner width={16} />
+                  {:else if votingState[decision.action_id] === 'done'}
+                    <span class="text-xs text-green-600 dark:text-green-400">Voted</span>
+                  {:else}
+                    <button
+                      onclick={() => castVote(decision.action_id, 1)}
+                      class="cursor-pointer hover:text-green-500 transition-colors"
+                      title="Vote Fair"
+                    >
+                      <Icon src={CheckCircle} size="16" mini />
+                    </button>
+                    <button
+                      onclick={() => castVote(decision.action_id, -1)}
+                      class="cursor-pointer hover:text-red-500 transition-colors"
+                      title="Vote Unfair"
+                    >
+                      <Icon src={XCircle} size="16" mini />
+                    </button>
+                  {/if}
+                {/if}
+              </div>
+            {/if}
+            {#if trustPenalties[modlog.id ?? 0]}
+              <div
+                class="px-3 py-1.5 text-xs rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300"
+              >
+                Trust penalty applied: {trustPenalties[modlog.id ?? 0]}
+              </div>
+            {/if}
+          </div>
         {/each}
       </div>
     {:else}
@@ -239,11 +341,13 @@
         >
           <colgroup>
             <col style="width: 10.6%;" />
-            <col style="width: 16.6%;" />
-            <col style="width: 16.6%;" />
-            <col style="width: 16.6%;" />
-            <col style="width: 16.6%;" />
-            <col style="width: 16.6%;" />
+            <col style="width: 12%;" />
+            <col style="width: 12%;" />
+            <col style="width: 12%;" />
+            <col style="width: 12%;" />
+            <col style="width: 12%;" />
+            <col style="width: 14%;" />
+            <col style="width: 15.4%;" />
           </colgroup>
           <thead class="text-left">
             <tr class="rounded-t-lg overflow-hidden">
@@ -253,11 +357,21 @@
               <th>Action</th>
               <th>Reason</th>
               <th align="right">Content</th>
+              <th align="center">Reviews</th>
+              <th align="center">Vote</th>
             </tr>
           </thead>
           <tbody class="text-sm divide-y divide-slate-200 dark:divide-zinc-800">
             {#each data.modlog as modlog (modlog)}
-              <ModlogItemTable item={modlog} />
+              {@const decision = getDecision(modlog.id)}
+              <ModlogItemTable
+                item={modlog}
+                decision={decision}
+                userVote={decision ? userVotes[decision.action_id] : undefined}
+                voting={decision ? votingState[decision.action_id] === 'voting' : false}
+                trustPenalty={modlog.id ? trustPenalties[modlog.id] : undefined}
+                onvote={(vote: number) => decision && castVote(decision.action_id, vote)}
+              />
             {/each}
           </tbody>
         </table>

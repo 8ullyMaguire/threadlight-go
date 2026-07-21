@@ -29,13 +29,13 @@ func (s *ModDecisionReviewsService) CastVote(ctx context.Context, userID, action
 	}
 	review := &model.ModDecisionReview{}
 	err := s.pg.QueryRow(ctx,
-		`INSERT INTO mod_decision_reviews (user_id, moderation_action_id, vote)
-		 VALUES ($1, $2, $3)
+		`INSERT INTO mod_decision_reviews (user_id, moderation_action_id, vote, voter_trust_score)
+		 VALUES ($1, $2, $3, (SELECT COALESCE(trust_score, 1.0) FROM users WHERE id = $1))
 		 ON CONFLICT (user_id, moderation_action_id)
-		 DO UPDATE SET vote = EXCLUDED.vote, created_at = NOW()
-		 RETURNING id, user_id, moderation_action_id, vote, created_at`,
+		 DO UPDATE SET vote = EXCLUDED.vote, created_at = NOW(), voter_trust_score = EXCLUDED.voter_trust_score
+		 RETURNING id, user_id, moderation_action_id, vote, voter_trust_score, created_at`,
 		userID, actionID, vote,
-	).Scan(&review.ID, &review.UserID, &review.ModerationActionID, &review.Vote, &review.CreatedAt)
+	).Scan(&review.ID, &review.UserID, &review.ModerationActionID, &review.Vote, &review.VoterTrustScore, &review.CreatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("cast vote: %w", err)
 	}
@@ -61,7 +61,7 @@ func (s *ModDecisionReviewsService) GetUserVote(ctx context.Context, userID, act
 // GetActionReviews returns all reviews for a single moderation action.
 func (s *ModDecisionReviewsService) GetActionReviews(ctx context.Context, actionID int64) ([]model.ModDecisionReview, error) {
 	rows, err := s.pg.Query(ctx,
-		`SELECT id, user_id, moderation_action_id, vote, created_at
+		`SELECT id, user_id, moderation_action_id, vote, voter_trust_score, created_at
 		 FROM mod_decision_reviews WHERE moderation_action_id = $1
 		 ORDER BY created_at DESC`, actionID)
 	if err != nil {
@@ -72,7 +72,7 @@ func (s *ModDecisionReviewsService) GetActionReviews(ctx context.Context, action
 	var reviews []model.ModDecisionReview
 	for rows.Next() {
 		var r model.ModDecisionReview
-		if err := rows.Scan(&r.ID, &r.UserID, &r.ModerationActionID, &r.Vote, &r.CreatedAt); err != nil {
+		if err := rows.Scan(&r.ID, &r.UserID, &r.ModerationActionID, &r.Vote, &r.VoterTrustScore, &r.CreatedAt); err != nil {
 			return reviews, err
 		}
 		reviews = append(reviews, r)
@@ -225,19 +225,32 @@ func (s *ModDecisionReviewsService) EvaluateUnfairPenalty(ctx context.Context, a
 		return "", fmt.Errorf("load config: %w", err)
 	}
 
-	// 3. Get review counts
-	counts, err := s.GetReviewCounts(ctx, actionID)
+	// 3. Get weighted review counts (trust-score-weighted)
+	var unfairWeighted, totalWeighted float64
+	err = s.pg.QueryRow(ctx,
+		`SELECT
+		   COALESCE(SUM(voter_trust_score) FILTER (WHERE vote = -1), 0),
+		   COALESCE(SUM(voter_trust_score), 0)
+		 FROM mod_decision_reviews WHERE moderation_action_id = $1`, actionID,
+	).Scan(&unfairWeighted, &totalWeighted)
 	if err != nil {
-		return "", fmt.Errorf("get counts: %w", err)
+		return "", fmt.Errorf("get weighted counts: %w", err)
 	}
 
-	// 4. Check minimum reviews
-	if counts.Total < minReviews {
+	// 4. Check minimum reviews (using raw count for the min threshold)
+	var totalReviews int
+	err = s.pg.QueryRow(ctx,
+		`SELECT COUNT(*) FROM mod_decision_reviews WHERE moderation_action_id = $1`, actionID,
+	).Scan(&totalReviews)
+	if err != nil {
+		return "", fmt.Errorf("get review count: %w", err)
+	}
+	if totalReviews < minReviews {
 		return "", nil
 	}
 
-	// 5. Check unfair ratio
-	unfairRatio := float64(counts.Unfair) / float64(counts.Total)
+	// 5. Check weighted unfair ratio
+	unfairRatio := unfairWeighted / totalWeighted
 	if unfairRatio < thresholdPct {
 		return "", nil
 	}
@@ -287,9 +300,15 @@ func (s *ModDecisionReviewsService) EvaluateUnfairPenalty(ctx context.Context, a
 		return "", fmt.Errorf("commit: %w", err)
 	}
 
+	// Get raw unfair count for the reason string
+	var rawUnfair int
+	s.pg.QueryRow(ctx,
+		`SELECT COUNT(*) FROM mod_decision_reviews WHERE moderation_action_id = $1 AND vote = -1`, actionID,
+	).Scan(&rawUnfair)
+
 	reason := fmt.Sprintf(
-		"Trust penalty applied: moderator %d lost %.1f trust because action %d was voted %.0f%% unfair (%d/%d reviews).",
-		moderatorID, penaltyAmount, actionID, unfairRatio*100, counts.Unfair, counts.Total)
+		"Trust penalty applied: moderator %d lost %.1f trust because action %d was voted %.0f%% unfair (%d/%d reviews, weighted).",
+		moderatorID, penaltyAmount, actionID, unfairRatio*100, rawUnfair, totalReviews)
 
 	return reason, nil
 }

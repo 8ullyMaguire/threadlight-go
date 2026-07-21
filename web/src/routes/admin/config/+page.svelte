@@ -176,6 +176,66 @@
       CAPTCHA enabled
     </Switch>
 
+    <hr class="my-4 border-zinc-700" />
+    <h2 class="text-lg font-semibold mt-2 mb-2">Moderation &amp; Trust Privileges</h2>
+
+    <TextInput
+      bind:value={formData.unfair_threshold_pct}
+      label="Unfair threshold (%)"
+      type="number"
+      min="0"
+      max="1"
+      step="0.05"
+    />
+    <TextInput
+      bind:value={formData.unfair_penalty_amount}
+      label="Unfair penalty amount"
+      type="number"
+      min="0"
+      max="100"
+      step="1"
+    />
+    <TextInput
+      bind:value={formData.unfair_min_reviews}
+      label="Unfair min reviews"
+      type="number"
+      min="1"
+      max="100"
+      step="1"
+    />
+    <TextInput
+      bind:value={formData.unfair_penalty_cooldown_hrs}
+      label="Unfair penalty cooldown (hours)"
+      type="number"
+      min="0"
+      max="720"
+      step="1"
+    />
+    <TextInput
+      bind:value={formData.min_trust_level_for_review_voting}
+      label="Min trust level for review voting"
+      type="number"
+      min="0"
+      max="3"
+      step="1"
+    />
+    <TextInput
+      bind:value={formData.min_trust_level_for_community_create}
+      label="Min trust level for community create"
+      type="number"
+      min="0"
+      max="3"
+      step="1"
+    />
+    <TextInput
+      bind:value={formData.min_trust_level_for_curator}
+      label="Min trust level for curator"
+      type="number"
+      min="0"
+      max="3"
+      step="1"
+    />
+
     <div class="space-y-1">
       <Label>Languages</Label>
       <p>If any are set, you will only see content explicitly tagged as that language. Most content, untagged, falls under 'Undetermined'.</p>

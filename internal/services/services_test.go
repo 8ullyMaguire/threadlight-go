@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 	"time"
 
@@ -1811,5 +1812,265 @@ func TestAchievementService_ListAndUnlock(t *testing.T) {
 	}
 	if len(userAch) < 1 {
 		t.Errorf("expected at least 1 user achievement, got %d", len(userAch))
+	}
+}
+
+// ---------------------------------------------------------------------------
+// ModDecisionReviewsService — EvaluateUnfairPenalty
+// ---------------------------------------------------------------------------
+
+func insertModAction(t *testing.T, pg *pgxpool.Pool, moderatorID int64, alreadyApplied bool) int64 {
+	t.Helper()
+	ctx := context.Background()
+	var actionID int64
+	err := pg.QueryRow(ctx,
+		`INSERT INTO moderation_actions (action_type, moderator_id, reason, trust_penalty_applied)
+		 VALUES (1, $1, 'test moderation', $2) RETURNING id`,
+		moderatorID, alreadyApplied,
+	).Scan(&actionID)
+	if err != nil {
+		t.Fatalf("insert moderation action: %v", err)
+	}
+	return actionID
+}
+
+func insertReview(t *testing.T, pg *pgxpool.Pool, userID, actionID int64, vote int16, trustScore float64) {
+	t.Helper()
+	ctx := context.Background()
+	_, err := pg.Exec(ctx,
+		`INSERT INTO mod_decision_reviews (user_id, moderation_action_id, vote, voter_trust_score)
+		 VALUES ($1, $2, $3, $4)`,
+		userID, actionID, vote, trustScore,
+	)
+	if err != nil {
+		t.Fatalf("insert review: %v", err)
+	}
+}
+
+func setUserTrustScore(t *testing.T, pg *pgxpool.Pool, userID int64, score float64) {
+	t.Helper()
+	ctx := context.Background()
+	_, err := pg.Exec(ctx, `UPDATE users SET trust_score = $1 WHERE id = $2`, score, userID)
+	if err != nil {
+		t.Fatalf("set trust_score: %v", err)
+	}
+}
+
+// TestEvaluateUnfairPenalty_NotEnoughReviews: penalty does NOT trigger when total reviews < min_reviews.
+func TestEvaluateUnfairPenalty_NotEnoughReviews(t *testing.T) {
+	cleanTables(testPG)
+	ctx := context.Background()
+	svc := services.NewModDecisionReviewsService(testPG)
+
+	mod := newUser(t, testPG,
+		fmt.Sprintf("pen_mod_%d", time.Now().UnixNano()),
+		fmt.Sprintf("pen_mod_%d@test.com", time.Now().UnixNano()))
+	actionID := insertModAction(t, testPG, mod.ID, false)
+
+	// Insert only 3 reviews (all unfair) — below default min_reviews of 5
+	for i := 0; i < 3; i++ {
+		voter := newUser(t, testPG,
+			fmt.Sprintf("penv1_%d_%d", time.Now().UnixNano(), i),
+			fmt.Sprintf("penv1_%d_%d@test.com", time.Now().UnixNano(), i))
+		setUserTrustScore(t, testPG, voter.ID, 10.0)
+		insertReview(t, testPG, voter.ID, actionID, -1, 10.0)
+	}
+
+	reason, err := svc.EvaluateUnfairPenalty(ctx, actionID)
+	if err != nil {
+		t.Fatalf("EvaluateUnfairPenalty: %v", err)
+	}
+	if reason != "" {
+		t.Errorf("expected no penalty (not enough reviews), got: %q", reason)
+	}
+}
+
+// TestEvaluateUnfairPenalty_LowRatio: penalty does NOT trigger when unfair ratio < threshold.
+func TestEvaluateUnfairPenalty_LowRatio(t *testing.T) {
+	cleanTables(testPG)
+	ctx := context.Background()
+	svc := services.NewModDecisionReviewsService(testPG)
+
+	mod := newUser(t, testPG,
+		fmt.Sprintf("pen_rat_%d", time.Now().UnixNano()),
+		fmt.Sprintf("pen_rat_%d@test.com", time.Now().UnixNano()))
+	actionID := insertModAction(t, testPG, mod.ID, false)
+
+	// 5 total reviews — 2 unfair (40%), 3 fair (60%) — below threshold of 70%
+	for i := 0; i < 5; i++ {
+		voter := newUser(t, testPG,
+			fmt.Sprintf("penvr_%d_%d", time.Now().UnixNano(), i),
+			fmt.Sprintf("penvr_%d_%d@test.com", time.Now().UnixNano(), i))
+		vote := int16(1) // fair
+		if i < 2 {
+			vote = -1 // unfair
+		}
+		insertReview(t, testPG, voter.ID, actionID, vote, 1.0)
+	}
+
+	reason, err := svc.EvaluateUnfairPenalty(ctx, actionID)
+	if err != nil {
+		t.Fatalf("EvaluateUnfairPenalty: %v", err)
+	}
+	if reason != "" {
+		t.Errorf("expected no penalty (ratio too low), got: %q", reason)
+	}
+}
+
+// TestEvaluateUnfairPenalty_AlreadyApplied: penalty does NOT trigger when already applied.
+func TestEvaluateUnfairPenalty_AlreadyApplied(t *testing.T) {
+	cleanTables(testPG)
+	ctx := context.Background()
+	svc := services.NewModDecisionReviewsService(testPG)
+
+	mod := newUser(t, testPG,
+		fmt.Sprintf("pen_alr_%d", time.Now().UnixNano()),
+		fmt.Sprintf("pen_alr_%d@test.com", time.Now().UnixNano()))
+	actionID := insertModAction(t, testPG, mod.ID, true) // alreadyApplied = true
+
+	// 5 unfair reviews with high trust
+	for i := 0; i < 5; i++ {
+		voter := newUser(t, testPG,
+			fmt.Sprintf("penva_%d_%d", time.Now().UnixNano(), i),
+			fmt.Sprintf("penva_%d_%d@test.com", time.Now().UnixNano(), i))
+		insertReview(t, testPG, voter.ID, actionID, -1, 10.0)
+	}
+
+	reason, err := svc.EvaluateUnfairPenalty(ctx, actionID)
+	if err != nil {
+		t.Fatalf("EvaluateUnfairPenalty: %v", err)
+	}
+	if reason != "" {
+		t.Errorf("expected no penalty (already applied), got: %q", reason)
+	}
+}
+
+// TestEvaluateUnfairPenalty_Triggers: penalty DOES trigger when all conditions met.
+func TestEvaluateUnfairPenalty_Triggers(t *testing.T) {
+	cleanTables(testPG)
+	ctx := context.Background()
+	svc := services.NewModDecisionReviewsService(testPG)
+
+	mod := newUser(t, testPG,
+		fmt.Sprintf("pen_trg_%d", time.Now().UnixNano()),
+		fmt.Sprintf("pen_trg_%d@test.com", time.Now().UnixNano()))
+	actionID := insertModAction(t, testPG, mod.ID, false)
+
+	// 7 reviews — 5 unfair (71.4%) > 70% threshold, 2 fair
+	for i := 0; i < 7; i++ {
+		voter := newUser(t, testPG,
+			fmt.Sprintf("penvt_%d_%d", time.Now().UnixNano(), i),
+			fmt.Sprintf("penvt_%d_%d@test.com", time.Now().UnixNano(), i))
+		vote := int16(-1) // unfair
+		if i >= 5 {
+			vote = 1 // fair
+		}
+		insertReview(t, testPG, voter.ID, actionID, vote, 1.0)
+	}
+
+	reason, err := svc.EvaluateUnfairPenalty(ctx, actionID)
+	if err != nil {
+		t.Fatalf("EvaluateUnfairPenalty: %v", err)
+	}
+	if reason == "" {
+		t.Fatal("expected penalty to be applied, got empty reason")
+	}
+	if !strings.Contains(reason, "Trust penalty applied") {
+		t.Errorf("reason should mention 'Trust penalty applied', got: %q", reason)
+	}
+
+	// Verify the trust_penalty_applied flag was set
+	var applied bool
+	err = testPG.QueryRow(ctx,
+		`SELECT COALESCE(trust_penalty_applied, false) FROM moderation_actions WHERE id = $1`, actionID,
+	).Scan(&applied)
+	if err != nil {
+		t.Fatalf("verify penalty flag: %v", err)
+	}
+	if !applied {
+		t.Error("expected trust_penalty_applied to be true after penalty")
+	}
+}
+
+// TestEvaluateUnfairPenalty_WeightedVotes: verify trust-score-weighted voting matters.
+// High-trust unfair votes should count more than low-trust fair votes.
+func TestEvaluateUnfairPenalty_WeightedVotes(t *testing.T) {
+	cleanTables(testPG)
+	ctx := context.Background()
+	svc := services.NewModDecisionReviewsService(testPG)
+
+	mod := newUser(t, testPG,
+		fmt.Sprintf("pen_wgt_%d", time.Now().UnixNano()),
+		fmt.Sprintf("pen_wgt_%d@test.com", time.Now().UnixNano()))
+	actionID := insertModAction(t, testPG, mod.ID, false)
+
+	// 5 reviews total:
+	// - 3 unfair votes with trust_score 10 each (weighted sum = 30)
+	// - 2 fair votes with trust_score 1 each (weighted sum = 2)
+	// Weighted unfair ratio = 30 / 32 = 93.75% > 70% → should trigger
+	for i := 0; i < 3; i++ {
+		voter := newUser(t, testPG,
+			fmt.Sprintf("penw_%d_u%d", time.Now().UnixNano(), i),
+			fmt.Sprintf("penw_%d_u%d@test.com", time.Now().UnixNano(), i))
+		setUserTrustScore(t, testPG, voter.ID, 10.0)
+		insertReview(t, testPG, voter.ID, actionID, -1, 10.0)
+	}
+	for i := 0; i < 2; i++ {
+		voter := newUser(t, testPG,
+			fmt.Sprintf("penw_%d_f%d", time.Now().UnixNano(), i),
+			fmt.Sprintf("penw_%d_f%d@test.com", time.Now().UnixNano(), i))
+		setUserTrustScore(t, testPG, voter.ID, 1.0)
+		insertReview(t, testPG, voter.ID, actionID, 1, 1.0)
+	}
+
+	reason, err := svc.EvaluateUnfairPenalty(ctx, actionID)
+	if err != nil {
+		t.Fatalf("EvaluateUnfairPenalty: %v", err)
+	}
+	if reason == "" {
+		t.Fatal("expected penalty with weighted voting (high-trust unfair should dominate)")
+	}
+}
+
+// TestEvaluateUnfairPenalty_Cooldown: cooldown blocks a second penalty for the same moderator.
+func TestEvaluateUnfairPenalty_Cooldown(t *testing.T) {
+	cleanTables(testPG)
+	ctx := context.Background()
+	svc := services.NewModDecisionReviewsService(testPG)
+
+	mod := newUser(t, testPG,
+		fmt.Sprintf("pen_cool_%d", time.Now().UnixNano()),
+		fmt.Sprintf("pen_cool_%d@test.com", time.Now().UnixNano()))
+
+	// Action 1 — should get penalized (no cooldown issue since it's the first)
+	action1 := insertModAction(t, testPG, mod.ID, false)
+	for i := 0; i < 5; i++ {
+		voter := newUser(t, testPG,
+			fmt.Sprintf("penvc1_%d_%d", time.Now().UnixNano(), i),
+			fmt.Sprintf("penvc1_%d_%d@test.com", time.Now().UnixNano(), i))
+		insertReview(t, testPG, voter.ID, action1, -1, 1.0)
+	}
+	reason1, err := svc.EvaluateUnfairPenalty(ctx, action1)
+	if err != nil {
+		t.Fatalf("EvaluateUnfairPenalty (action1): %v", err)
+	}
+	if reason1 == "" {
+		t.Fatal("expected first action to be penalized")
+	}
+
+	// Action 2 — same moderator, should be blocked by cooldown
+	action2 := insertModAction(t, testPG, mod.ID, false)
+	for i := 0; i < 5; i++ {
+		voter := newUser(t, testPG,
+			fmt.Sprintf("penvc2_%d_%d", time.Now().UnixNano(), i),
+			fmt.Sprintf("penvc2_%d_%d@test.com", time.Now().UnixNano(), i))
+		insertReview(t, testPG, voter.ID, action2, -1, 1.0)
+	}
+	reason2, err := svc.EvaluateUnfairPenalty(ctx, action2)
+	if err != nil {
+		t.Fatalf("EvaluateUnfairPenalty (action2): %v", err)
+	}
+	if reason2 != "" {
+		t.Errorf("expected cooldown to block second penalty, got: %q", reason2)
 	}
 }

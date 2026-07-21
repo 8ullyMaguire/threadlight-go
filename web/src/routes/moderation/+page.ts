@@ -1,4 +1,5 @@
 import { getClient } from '$lib/api/client.svelte'
+import { ThreadlightClient } from '$lib/api/threadlight/adapter'
 import { profile } from '$lib/app/auth'
 import { ReactiveState } from '$lib/app/util.svelte'
 import { isCommentView, isPostView } from '$lib/feature/legacy/item'
@@ -8,6 +9,7 @@ import {
   generalizePrivateMessageReport,
   type ReportView,
 } from '$lib/feature/moderation/report'
+import type { ModAction } from '$lib/api/threadlight/types'
 import { error } from '@sveltejs/kit'
 
 type ReportListType = 'unread' | 'all'
@@ -29,7 +31,7 @@ export async function load({ url, fetch }) {
     community_id: community,
   }
 
-  const [posts, comments, messages] = await Promise.all([
+  const [posts, comments, messages, moderationActions] = await Promise.all([
     client.listPostReports({
       ...params,
     }),
@@ -39,6 +41,7 @@ export async function load({ url, fetch }) {
     profile.isAdmin
       ? client.listPrivateMessageReports({ ...params })
       : undefined,
+    (client as unknown as ThreadlightClient).getModerationActions({ limit: 10, offset: 0 }).catch(() => null),
   ])
 
   const everything = [
@@ -69,6 +72,7 @@ export async function load({ url, fetch }) {
     type: new ReactiveState(type),
     page: page,
     items: new ReactiveState(Object.values(grouped)),
+    moderationActions: moderationActions?.actions ?? [],
     filters: {
       community: community,
     },
