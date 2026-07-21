@@ -36,6 +36,10 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	blockSvc := services.NewBlockService(pg)
 	reportSvc := services.NewReportService(pg)
 	notifSvc := services.NewNotificationService(pg)
+	userlistSvc := services.NewUserListService(pg)
+	algorithmicSvc := services.NewAlgorithmicListService(pg)
+	affinitySvc := services.NewUserAffinityService(pg)
+	feedPluginSvc := services.NewFeedPluginService(pg)
 
 	authMw := middleware.NewAuthMiddleware(authSvc)
 
@@ -62,6 +66,9 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	blockHandler := handlers.NewBlockHandler(blockSvc)
 	reportHandler := handlers.NewReportHandler(reportSvc)
 	notifHandler := handlers.NewNotificationHandler(notifSvc)
+	userlistHandler := handlers.NewUserListHandler(userlistSvc, algorithmicSvc)
+	affinityHandler := handlers.NewAffinityHandler(affinitySvc)
+	feedPluginHandler := handlers.NewFeedPluginHandler(feedPluginSvc)
 	aboutHandler := handlers.NewAboutHandler(configSvc)
 
 	r.GET("/health", healthHandler.Health)
@@ -70,11 +77,11 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	{
 		auth := apiV1.Group("/auth")
 		{
-	auth.POST("/register", authHandler.Register)
-	auth.POST("/login", authHandler.Login)
-	auth.POST("/forgot", authHandler.ForgotPassword)
-	auth.POST("/reset", authHandler.ResetPassword)
-	auth.POST("/logout", authMw.RequireAuth(), authHandler.Logout)
+			auth.POST("/register", authHandler.Register)
+			auth.POST("/login", authHandler.Login)
+			auth.POST("/forgot", authHandler.ForgotPassword)
+			auth.POST("/reset", authHandler.ResetPassword)
+			auth.POST("/logout", authMw.RequireAuth(), authHandler.Logout)
 			auth.GET("/session", authMw.RequireAuth(), authHandler.Session)
 		}
 
@@ -89,7 +96,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			posts.PUT("/:id", postHandler.Update)
 			posts.DELETE("/:id", postHandler.Delete)
 			posts.POST("/:id/archive", postHandler.Archive)
-	posts.POST("/:id/remove", postHandler.ModRemove)
+			posts.POST("/:id/remove", postHandler.ModRemove)
 		}
 
 		tags := apiV1.Group("/tags")
@@ -99,9 +106,9 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			tags.GET("", tagHandler.List)
 			tags.GET("/:id", tagHandler.GetByID)
 			tags.PUT("/:id", tagHandler.Update)
-	tags.DELETE("/:id", tagHandler.Delete)
-	tags.POST("/:id/vote", tagHandler.VoteTag)
-	tags.POST("/posts/:post_id/tags/:tag_id", tagHandler.TagPost)
+			tags.DELETE("/:id", tagHandler.Delete)
+			tags.POST("/:id/vote", tagHandler.VoteTag)
+			tags.POST("/posts/:post_id/tags/:tag_id", tagHandler.TagPost)
 			tags.DELETE("/posts/:post_id/tags/:tag_id", tagHandler.UntagPost)
 			tags.GET("/posts/:post_id/tags", tagHandler.GetPostTags)
 		}
@@ -193,21 +200,21 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 		communities := apiV1.Group("/communities")
 		communities.Use(authMw.RequireAuth())
 		{
-	communities.POST("", communityHandler.Create)
-	communities.GET("", communityHandler.List)
-	communities.GET("/:slug", communityHandler.GetBySlug)
-	communities.PUT("/:slug", communityHandler.Update)
-	communities.DELETE("/:slug", communityHandler.Archive)
-	communities.POST("/:slug/join", communityHandler.Join)
-	communities.POST("/:slug/leave", communityHandler.Leave)
-	communities.GET("/:slug/members", communityHandler.Members)
-	communities.POST("/:slug/curators", communityHandler.AddCurator)
-	communities.DELETE("/:slug/curators/:user_id", communityHandler.RemoveCurator)
-	communities.POST("/:slug/fork", communityHandler.Fork)
-	communities.GET("/:slug/trust", communityHandler.GetTrustGraph)
-	communities.POST("/:slug/trust", communityHandler.CreateTrustConnection)
-	communities.GET("/:slug/trust/score", communityHandler.GetCommunityTrustScore)
-	communities.GET("/:slug/join/check", communityHandler.CheckInviteStatus)
+			communities.POST("", communityHandler.Create)
+			communities.GET("", communityHandler.List)
+			communities.GET("/:slug", communityHandler.GetBySlug)
+			communities.PUT("/:slug", communityHandler.Update)
+			communities.DELETE("/:slug", communityHandler.Archive)
+			communities.POST("/:slug/join", communityHandler.Join)
+			communities.POST("/:slug/leave", communityHandler.Leave)
+			communities.GET("/:slug/members", communityHandler.Members)
+			communities.POST("/:slug/curators", communityHandler.AddCurator)
+			communities.DELETE("/:slug/curators/:user_id", communityHandler.RemoveCurator)
+			communities.POST("/:slug/fork", communityHandler.Fork)
+			communities.GET("/:slug/trust", communityHandler.GetTrustGraph)
+			communities.POST("/:slug/trust", communityHandler.CreateTrustConnection)
+			communities.GET("/:slug/trust/score", communityHandler.GetCommunityTrustScore)
+			communities.GET("/:slug/join/check", communityHandler.CheckInviteStatus)
 		}
 
 		credits := apiV1.Group("/credits")
@@ -266,8 +273,8 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 				authed.POST("/@me/banner", userHandler.UploadBanner)
 				authed.GET("/@me/notifications", userHandler.GetNotifications)
 				authed.PUT("/notifications/:id/read", userHandler.MarkNotificationRead)
-			authed.POST("/:id/block", userHandler.BlockUser)
-			authed.DELETE("/:id/block", userHandler.UnblockUser)
+				authed.POST("/:id/block", userHandler.BlockUser)
+				authed.DELETE("/:id/block", userHandler.UnblockUser)
 				authed.GET("/@me/blocks", userHandler.ListBlockedUsers)
 			}
 		}
@@ -304,6 +311,56 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			notifications.PUT("/:id/read", notifHandler.MarkRead)
 			notifications.PUT("/read-all", notifHandler.MarkAllRead)
 			notifications.GET("/unread-count", notifHandler.UnreadCount)
+		}
+
+		// ── User Lists ─────────────────────────────────────────
+		lists := apiV1.Group("/lists")
+		lists.Use(authMw.RequireAuth())
+		{
+			lists.POST("", userlistHandler.Create)
+			lists.GET("", userlistHandler.List)
+			lists.GET("/:id", userlistHandler.Get)
+			lists.PUT("/:id", userlistHandler.Update)
+			lists.DELETE("/:id", userlistHandler.Delete)
+
+			lists.POST("/:id/members", userlistHandler.AddMember)
+			lists.DELETE("/:id/members/:user_id", userlistHandler.RemoveMember)
+			lists.GET("/:id/members", userlistHandler.ListMembers)
+
+			lists.POST("/:id/subscribe", userlistHandler.Subscribe)
+			lists.POST("/:id/unsubscribe", userlistHandler.Unsubscribe)
+			lists.GET("/:id/subscribers", userlistHandler.ListSubscribers)
+			lists.GET("/subscriptions", userlistHandler.MySubscriptions)
+
+			lists.POST("/:id/collaborators", userlistHandler.InviteCollaborator)
+			lists.POST("/:id/collaborators/accept", userlistHandler.AcceptInvite)
+			lists.DELETE("/:id/collaborators/:user_id", userlistHandler.RemoveCollaborator)
+			lists.GET("/:id/collaborators", userlistHandler.ListCollaborators)
+
+			lists.POST("/algorithmic", userlistHandler.CreateAlgorithmic)
+			lists.POST("/:id/evaluate", userlistHandler.EvaluateAlgorithmic)
+		}
+
+		// ── User Affinity ──────────────────────────────────────
+		affinity := apiV1.Group("/affinity")
+		affinity.Use(authMw.RequireAuth())
+		{
+			affinity.GET("", affinityHandler.GetAffinities)
+			affinity.GET("/similar", affinityHandler.GetSimilarUsers)
+		}
+
+		// ── Feed Plugins Marketplace ───────────────────────────
+		plugins := apiV1.Group("/feed-plugins")
+		plugins.Use(authMw.RequireAuth())
+		{
+			plugins.POST("", feedPluginHandler.Create)
+			plugins.GET("", feedPluginHandler.List)
+			plugins.GET("/:id", feedPluginHandler.Get)
+			plugins.POST("/:id/install", feedPluginHandler.Install)
+			plugins.POST("/:id/uninstall", feedPluginHandler.Uninstall)
+			plugins.GET("/installs", feedPluginHandler.ListInstalls)
+			plugins.POST("/:id/review", feedPluginHandler.Review)
+			plugins.POST("/:id/execute", feedPluginHandler.Execute)
 		}
 
 		config := apiV1.Group("/admin")

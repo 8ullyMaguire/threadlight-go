@@ -41,6 +41,16 @@ func (s *Scheduler) Start(ctx context.Context) {
 		{"community-notes", 15 * time.Minute, func(c context.Context) { RunCommunityNotesProcessor(c, s.pg) }},
 		{"active-stats", 5 * time.Minute, func(c context.Context) { RunActiveStatsUpdater(c, s.pg, s.rdb) }},
   {"prune", 1 * time.Hour, func(c context.Context) { RunPrune(c, s.pg) }},
+  {"affinity-computation", 1 * time.Hour, func(c context.Context) {
+  	if err := RunAffinityComputation(c, s.pg); err != nil {
+  		log.Printf("scheduler: affinity-computation error: %v", err)
+  	}
+  }},
+  {"algorithmic-list-refresh", 30 * time.Minute, func(c context.Context) {
+  	if err := RunAlgorithmicListRefresh(c, s.pg); err != nil {
+  		log.Printf("scheduler: algorithmic-list-refresh error: %v", err)
+  	}
+  }},
 	}
 
 	for _, w := range workers {
