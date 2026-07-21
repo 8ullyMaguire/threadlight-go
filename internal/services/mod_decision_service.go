@@ -155,3 +155,121 @@ func (s *ModDecisionReviewsService) GetControversial(ctx context.Context, limit,
 	}
 	return decisions, nil
 }
+
+// ── Trust Penalty for Unfair Moderation ─────────────────────────────
+
+// EvaluateUnfairPenalty checks whether a moderation action has crossed the
+// community's fairness threshold and, if so, deducts trust from the moderator.
+//
+// Conditions (all must be met):
+//  1. The action has NOT already had its penalty applied.
+//  2. Total review votes >= min_reviews (configurable, default 5).
+//  3. Unfair ratio >= threshold_pct (configurable, default 0.70).
+//  4. The moderator has NOT been penalized within the cooldown period
+//     (configurable, default 24 hours).
+//
+// Returns a human-readable reason if a penalty was applied, or empty string
+// if no penalty was warranted. This is not an error — callers should log
+// the reason for transparency.
+//
+// Safe to call repeatedly — the trust_penalty_applied flag ensures idempotency.
+func (s *ModDecisionReviewsService) EvaluateUnfairPenalty(ctx context.Context, actionID int64) (string, error) {
+	// 1. Load the action and check the applied flag
+	var moderatorID int64
+	var alreadyApplied bool
+	err := s.pg.QueryRow(ctx,
+		`SELECT moderator_id, COALESCE(trust_penalty_applied, false)
+		 FROM moderation_actions WHERE id = $1`, actionID,
+	).Scan(&moderatorID, &alreadyApplied)
+	if err == pgx.ErrNoRows {
+		return "", model.ErrNotFound
+	}
+	if err != nil {
+		return "", fmt.Errorf("load action: %w", err)
+	}
+	if alreadyApplied {
+		return "", nil // already penalized, nothing to do
+	}
+
+	// 2. Load site config for thresholds
+	var thresholdPct, penaltyAmount float64
+	var minReviews, cooldownHrs int
+	err = s.pg.QueryRow(ctx,
+		`SELECT COALESCE(unfair_threshold_pct, 0.70),
+		        COALESCE(unfair_penalty_amount, 15.0),
+		        COALESCE(unfair_min_reviews, 5),
+		        COALESCE(unfair_penalty_cooldown_hrs, 24)
+		 FROM site_config WHERE id = 1`,
+	).Scan(&thresholdPct, &penaltyAmount, &minReviews, &cooldownHrs)
+	if err != nil {
+		return "", fmt.Errorf("load config: %w", err)
+	}
+
+	// 3. Get review counts
+	counts, err := s.GetReviewCounts(ctx, actionID)
+	if err != nil {
+		return "", fmt.Errorf("get counts: %w", err)
+	}
+
+	// 4. Check minimum reviews
+	if counts.Total < minReviews {
+		return "", nil
+	}
+
+	// 5. Check unfair ratio
+	unfairRatio := float64(counts.Unfair) / float64(counts.Total)
+	if unfairRatio < thresholdPct {
+		return "", nil
+	}
+
+	// 6. Check cooldown — has this moderator been penalized recently?
+	if cooldownHrs > 0 {
+		var recentPenalties int
+		err = s.pg.QueryRow(ctx,
+			`SELECT COUNT(*) FROM moderation_actions
+			 WHERE moderator_id = $1
+			   AND trust_penalty_applied = TRUE
+			   AND created_at > NOW() - make_interval(hours => $2)`,
+			moderatorID, cooldownHrs,
+		).Scan(&recentPenalties)
+		if err != nil {
+			return "", fmt.Errorf("check cooldown: %w", err)
+		}
+		if recentPenalties > 0 {
+			return "", nil
+		}
+	}
+
+	// 7. All conditions met — apply the penalty inside a transaction
+	tx, err := s.pg.Begin(ctx)
+	if err != nil {
+		return "", fmt.Errorf("begin tx: %w", err)
+	}
+	defer tx.Rollback(ctx) //nolint:errcheck
+
+	// Deduct trust from the moderator (floor at 0)
+	_, err = tx.Exec(ctx,
+		`UPDATE users
+		 SET trust_score = GREATEST(0.0, trust_score - $1)
+		 WHERE id = $2`, penaltyAmount, moderatorID)
+	if err != nil {
+		return "", fmt.Errorf("deduct trust: %w", err)
+	}
+
+	// Mark the action as penalized
+	_, err = tx.Exec(ctx,
+		`UPDATE moderation_actions SET trust_penalty_applied = TRUE WHERE id = $1`, actionID)
+	if err != nil {
+		return "", fmt.Errorf("mark applied: %w", err)
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return "", fmt.Errorf("commit: %w", err)
+	}
+
+	reason := fmt.Sprintf(
+		"Trust penalty applied: moderator %d lost %.1f trust because action %d was voted %.0f%% unfair (%d/%d reviews).",
+		moderatorID, penaltyAmount, actionID, unfairRatio*100, counts.Unfair, counts.Total)
+
+	return reason, nil
+}

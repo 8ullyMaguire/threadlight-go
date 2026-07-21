@@ -51,10 +51,13 @@ func (s *Scheduler) Start(ctx context.Context) {
   		log.Printf("scheduler: affinity-computation error: %v", err)
   	}
   }},
-  {"algorithmic-list-refresh", 30 * time.Minute, func(c context.Context) {
+  {"algorithmic-list-refresh", 1 * time.Hour, func(c context.Context) {
   	if err := RunAlgorithmicListRefresh(c, s.pg); err != nil {
   		log.Printf("scheduler: algorithmic-list-refresh error: %v", err)
   	}
+  }},
+  {"list-cleanup", 24 * time.Hour, func(c context.Context) {
+  	RunListCleanup(c, s.pg)
   }},
 	}
 

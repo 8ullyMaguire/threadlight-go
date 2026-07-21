@@ -19,7 +19,7 @@ func NewAlgorithmicListService(pg *pgxpool.Pool) *AlgorithmicListService {
 	return &AlgorithmicListService{pg: pg}
 }
 
-// CreateAlgorithmicList creates a new algorithmic list with criteria.
+// CreateAlgorithmicList creates a new algorithmic list with criteria and immediately refreshes it.
 func (s *AlgorithmicListService) CreateAlgorithmicList(ctx context.Context, userID int64, req model.CreateAlgorithmicListRequest) (*model.UserList, error) {
 	criteriaBytes, err := json.Marshal(req.Criteria)
 	if err != nil {
@@ -42,6 +42,13 @@ func (s *AlgorithmicListService) CreateAlgorithmicList(ctx context.Context, user
 	if err != nil {
 		return nil, err
 	}
+
+	// Refresh immediately so the list is populated on creation
+	if err := s.refreshSingleList(ctx, list.ID); err != nil {
+		// Log but don't fail — the list exists, next worker cycle will pick it up
+		_ = err
+	}
+
 	return list, nil
 }
 

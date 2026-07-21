@@ -41,6 +41,19 @@ func (h *ModDecisionHandler) CastVote(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	// After each vote, check if the action now meets the unfair penalty threshold.
+	// This is best-effort — a failure here does not block the vote itself.
+	penaltyReason, penErr := h.svc.EvaluateUnfairPenalty(c.Request.Context(), actionID)
+	if penErr == nil && penaltyReason != "" {
+		// Include the penalty info in the response so the UI can show it
+		c.JSON(http.StatusOK, gin.H{
+			"review":         review,
+			"trust_penalty":  penaltyReason,
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, review)
 }
 

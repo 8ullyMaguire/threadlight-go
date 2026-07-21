@@ -30,7 +30,9 @@ func (s *ConfigService) Get(ctx context.Context) (*model.SiteConfig, error) {
 			COALESCE(version, '0.1'),
 			COALESCE(privacy_policy_url, ''), COALESCE(terms_url, ''), COALESCE(code_of_conduct_url, ''),
 			COALESCE(defederation_policy_url, ''), COALESCE(donation_url, ''), COALESCE(donate_text, ''),
-			COALESCE(prune_age_days, 180), COALESCE(prune_min_interactions, 3), updated_at
+			COALESCE(prune_age_days, 180), COALESCE(prune_min_interactions, 3),
+			COALESCE(unfair_threshold_pct, 0.70), COALESCE(unfair_penalty_amount, 15.0),
+			COALESCE(unfair_min_reviews, 5), COALESCE(unfair_penalty_cooldown_hrs, 24), updated_at
 		FROM site_config WHERE id = 1`,
 	).Scan(&cfg.ID, &cfg.RegistrationMode,
 		&cfg.InviteLimitThreshold0, &cfg.InviteLimitThreshold1, &cfg.InviteLimitThreshold2,
@@ -39,7 +41,9 @@ func (s *ConfigService) Get(ctx context.Context) (*model.SiteConfig, error) {
 		&cfg.Version,
 		&cfg.PrivacyPolicyURL, &cfg.TermsURL, &cfg.CodeOfConductURL,
 		&cfg.DefederationPolicyURL, &cfg.DonationURL, &cfg.DonateText,
-		&cfg.PruneAgeDays, &cfg.PruneMinInteractions, &cfg.UpdatedAt)
+		&cfg.PruneAgeDays, &cfg.PruneMinInteractions,
+		&cfg.UnfairThresholdPct, &cfg.UnfairPenaltyAmount,
+		&cfg.UnfairMinReviews, &cfg.UnfairPenaltyCooldownHrs, &cfg.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -154,6 +158,18 @@ func (s *ConfigService) Update(ctx context.Context, req model.UpdateConfigReques
 	}
 	if req.PruneMinInteractions != nil {
 		addField("prune_min_interactions", *req.PruneMinInteractions)
+	}
+	if req.UnfairThresholdPct != nil {
+		addField("unfair_threshold_pct", *req.UnfairThresholdPct)
+	}
+	if req.UnfairPenaltyAmount != nil {
+		addField("unfair_penalty_amount", *req.UnfairPenaltyAmount)
+	}
+	if req.UnfairMinReviews != nil {
+		addField("unfair_min_reviews", *req.UnfairMinReviews)
+	}
+	if req.UnfairPenaltyCooldownHrs != nil {
+		addField("unfair_penalty_cooldown_hrs", *req.UnfairPenaltyCooldownHrs)
 	}
 
 	query += ` WHERE id = 1`
