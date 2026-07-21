@@ -413,3 +413,96 @@ export interface ErrorResponse {
 export interface MessageResponse {
   message: string
 }
+
+// ── User List types ──────────────────────────────────────────
+export interface UserList {
+  id: number
+  name: string
+  description: string
+  list_type: 'follow' | 'block' | 'algorithmic'
+  visibility: 'private' | 'public'
+  owner_id: number
+  created_at: string
+  updated_at: string | null
+}
+
+export interface CreateListRequest {
+  name: string
+  description: string
+  list_type: 'follow' | 'block'
+  visibility: 'private' | 'public'
+}
+
+export interface CreateAlgorithmicListRequest {
+  name: string
+  description: string
+  list_type: 'follow' | 'block'
+  visibility: 'private' | 'public'
+  scope: string
+  criteria: string
+}
+
+export interface AddListMemberRequest {
+  target_user_id: number
+}
+
+export interface AddCollaboratorRequest {
+  user_id: number
+  role: string
+}
+
+export interface UserListMember {
+  id: number
+  list_id: number
+  user_id: number
+  created_at: string
+}
+
+export interface UserListCollaborator {
+  id: number
+  list_id: number
+  user_id: number
+  role: string
+  created_at: string
+}
+
+// ── Affinity types ──────────────────────────────────────────
+export interface AffinityEntry {
+  user_b_id: number
+  affinity_score: number
+  breakdown: string
+}
+
+export interface AffinitySimilarResponse {
+  user_ids: number[]
+}
+
+// ── Feed Plugin types ──────────────────────────────────────
+export interface FeedPlugin {
+  id: number
+  name: string
+  description: string
+  version: string
+  plugin_type: string
+  wasm_url: string
+  rating: number
+  install_count: number
+  reviewed: boolean
+  user_id: number
+  created_at: string
+  updated_at: string | null
+}
+
+export interface FeedPluginReview {
+  id: number
+  plugin_id: number
+  user_id: number
+  rating: number
+  review: string
+  created_at: string
+}
+
+export interface CreatePluginReviewRequest {
+  rating: number
+  review: string
+}

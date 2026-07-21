@@ -19,6 +19,16 @@ import {
   type SearchUsersParams,
   type SearchCommunitiesParams,
   type SearchSuggestResponse,
+  type UserList,
+  type CreateListRequest,
+  type CreateAlgorithmicListRequest,
+  type AddListMemberRequest,
+  type AddCollaboratorRequest,
+  type AffinityEntry,
+  type AffinitySimilarResponse,
+  type FeedPlugin,
+  type FeedPluginReview,
+  type CreatePluginReviewRequest,
 } from './types'
 
 function mapUser(u: User): Lemmy.PersonView {
@@ -1289,5 +1299,112 @@ export class ThreadlightClient extends BaseClient {
 
   async changePasswordFast(form: Lemmy.ChangePassword): Promise<Lemmy.LoginResponse> {
     return this.changePassword(form)
+  }
+
+  // ── User List API methods ─────────────────────────────────
+
+  async getLists(): Promise<UserList[]> {
+    return this.#api<UserList[]>('/lists')
+  }
+
+  async getList(id: number): Promise<UserList> {
+    return this.#api<UserList>(`/lists/${id}`)
+  }
+
+  async createList(data: CreateListRequest): Promise<UserList> {
+    return this.#api<UserList>('/lists', {
+      method: 'POST',
+      body: data,
+    })
+  }
+
+  async createAlgorithmicList(data: CreateAlgorithmicListRequest): Promise<UserList> {
+    return this.#api<UserList>('/lists/algorithmic', {
+      method: 'POST',
+      body: data,
+    })
+  }
+
+  async deleteList(id: number): Promise<void> {
+    await this.#api(`/lists/${id}`, { method: 'DELETE' })
+  }
+
+  async addListMember(listId: number, data: AddListMemberRequest): Promise<void> {
+    await this.#api(`/lists/${listId}/members`, {
+      method: 'POST',
+      body: data,
+    })
+  }
+
+  async removeListMember(listId: number, userId: number): Promise<void> {
+    await this.#api(`/lists/${listId}/members/${userId}`, { method: 'DELETE' })
+  }
+
+  async subscribeList(listId: number): Promise<void> {
+    await this.#api(`/lists/${listId}/subscribe`, { method: 'POST' })
+  }
+
+  async addCollaborator(listId: number, data: AddCollaboratorRequest): Promise<void> {
+    await this.#api(`/lists/${listId}/collaborators`, {
+      method: 'POST',
+      body: data,
+    })
+  }
+
+  async removeCollaborator(listId: number, userId: number): Promise<void> {
+    await this.#api(`/lists/${listId}/collaborators/${userId}`, { method: 'DELETE' })
+  }
+
+  // ── Affinity API methods ──────────────────────────────────
+
+  async getAffinities(): Promise<AffinityEntry[]> {
+    return this.#api<AffinityEntry[]>('/affinity')
+  }
+
+  async getSimilarUsers(minScore?: number): Promise<AffinitySimilarResponse> {
+    const params: Record<string, string> = {}
+    if (minScore !== undefined) params['min_score'] = minScore.toString()
+    return this.#api<AffinitySimilarResponse>('/affinity/similar', { params })
+  }
+
+  // ── Plugin API methods ────────────────────────────────────
+
+  async getPlugins(reviewed?: boolean): Promise<FeedPlugin[]> {
+    const params: Record<string, string> = {}
+    if (reviewed !== undefined) params['reviewed'] = reviewed.toString()
+    return this.#api<FeedPlugin[]>('/feed-plugins', { params })
+  }
+
+  async getPlugin(id: number): Promise<FeedPlugin> {
+    return this.#api<FeedPlugin>(`/feed-plugins/${id}`)
+  }
+
+  async uploadPlugin(formData: FormData): Promise<FeedPlugin> {
+    const url = `${this.#baseUrl.replace(/\/$/, '')}/api/v1/feed-plugins`
+    const res = await fetch(url, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    })
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '')
+      throw new Error(errBody || `HTTP ${res.status}`)
+    }
+    return (await res.json()) as FeedPlugin
+  }
+
+  async installPlugin(id: number): Promise<void> {
+    await this.#api(`/feed-plugins/${id}/install`, { method: 'POST' })
+  }
+
+  async uninstallPlugin(id: number): Promise<void> {
+    await this.#api(`/feed-plugins/${id}/uninstall`, { method: 'POST' })
+  }
+
+  async createPluginReview(id: number, data: CreatePluginReviewRequest): Promise<FeedPluginReview> {
+    return this.#api<FeedPluginReview>(`/feed-plugins/${id}/review`, {
+      method: 'POST',
+      body: data,
+    })
   }
 }
