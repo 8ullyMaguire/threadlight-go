@@ -1,172 +1,67 @@
-# User Lists
+# User Lists: Organizing Together
 
-User lists let you create curated groups of accounts. You can use them to batch-follow or batch-block people, share lists with others, or let the system build a list for you based on rules.
+On most social networks, you are alone. You choose who to follow, who to block, and what to see. If a wave of harassment hits your community, each person has to defend themselves one by one. If someone has spent years curating a list of excellent scientists to follow, you cannot benefit from their work — you start from zero.
 
-## What Are User Lists?
+User lists change that. They turn individual actions into shared tools. They are one of the simplest and most powerful ideas on Threadlight: a group of accounts, named and described, that anyone can use, share, and build together.
 
-A user list is a named group of accounts. Think of it like a playlist, but for people instead of songs. You can use lists to:
+## What a List Is
 
-- **Organize people** you want to keep track of
-- **Batch follow** a whole group at once
-- **Batch block** spammers or bad actors
-- **Share** a list so others can use it too
-- **Collaborate** with friends on a shared list
+A user list is just a collection of accounts with a name and a description. You might call one "climate scientists" or "known spammers on our instance" or "thoughtful writers about parenting." The name is for you and anyone you share it with.
 
-Lists come in three types: manual (you choose every member), algorithmic (the system fills based on rules), and collaborative (multiple people help curate).
+Every list has a **type** that says what happens when someone uses it:
+
+- A **follow list** contains accounts worth following. When someone subscribes to your follow list, the system follows every person on it for them.
+- A **block list** contains accounts that should be blocked. When someone subscribes, everyone on the list gets blocked for them.
+
+This is the difference between a recommendation and a protection. Follow lists help people find good voices. Block lists help people avoid harm.
+
+Every list also has a **visibility** that says who can see it:
+
+- **Private** — only you can see it. Good for personal organization.
+- **Public** — anyone can see it. Good for sharing your curation with the world.
+- **Shared** — people you invite can help edit it. Good for building a list together.
 
 ## Creating a List
 
-To create a list, go to your lists page and click Create List. You will be asked for:
+Go to your lists page and click Create List. Give it a name that tells people what it is for. "bad actors" is clear. "my list" is not. Choose the type — follow or block — and the visibility.
 
-- **Name** — a short label for your list (required, up to 100 characters)
-- **Description** — what this list is for (optional)
-- **Type** — Follow list or Block list
-- **Visibility** — who can see it:
-  - **Private** — only you can see the list
-  - **Public** — anyone can see the list
-  - **Shared** — people you invite can help edit the list
+Once created, you can add accounts to it. You add them one at a time by username. There is no limit to how many accounts a list can hold, though a list with thousands of members becomes hard to manage.
 
-Private lists are invisible to everyone except you. Public lists are visible to anyone but only you can edit them (unless you add collaborators).
+You can also delete a list. Deleting a list removes all memberships and subscriptions. Anyone who subscribed to it will no longer be following or blocking its members through that list.
 
-## Follow Lists vs Block Lists
+## Subscribing to a List
 
-Every list has a type that changes what happens when someone subscribes:
+When you find a public list that interests you, you can subscribe to it. Subscribing applies the list's action — follow or block — to every account on the list.
 
-### Follow Lists
+If the list grows later (someone adds new accounts), those new accounts are automatically followed or blocked for you. You do not need to check back. You also stay subscribed even if the list changes hands or becomes collaborative.
 
-A follow list contains accounts you recommend. When someone subscribes to your follow list, the system automatically follows every person on that list for them. This is useful for:
+You can unsubscribe at any time. Unsubscribing reverses the action for accounts that were added to the list after you subscribed — it does not unfollow or unblock accounts that were already on your personal list before.
 
-- New users who want a good starting set of people to follow
-- Topic-specific lists (e.g., "scientists to follow")
-- Community onboarding
+This makes lists useful for ongoing protection. Subscribe once to a well-maintained block list, and you are shielded from new bad actors without having to watch for them yourself.
 
-### Block Lists
+## Building Lists Together
 
-A block list contains accounts you have blocked or identified as problematic. When someone subscribes to your block list, everyone on that list gets blocked for them. This is useful for:
+A collaborative list is one where multiple people share the work of maintaining it. The person who created it is the owner. The owner can invite others as editors or viewers.
 
-- Sharing known spammers with your community
-- Coordinating blocks against coordinated harassment
-- Importing block lists from other instances
+**Editors** can add and remove accounts from the list. They cannot change the list's name, type, or visibility, and they cannot delete it. This makes them trusted curators who share the workload.
 
-You can tell whether a list is a follow list or a block list by its icon in the UI.
+**Viewers** can see the list and its members but cannot change anything. This is useful for transparency — a community might want everyone to see who is on a block list and why, even if only a few people maintain it.
 
-## Adding and Removing Members
+Collaboration turns a single person's effort into a community resource. A group of moderators from different communities can maintain a shared block list. A collective of science communicators can curate a follow list of accurate voices. The work is distributed, and everyone benefits.
 
-To add someone to a list:
+## Lists That Build Themselves
 
-1. Go to the list you want to edit.
-2. Click Add Members.
-3. Search for the person you want to add.
-4. Select them and confirm.
+An algorithmic list is one that fills itself based on rules. Instead of manually adding accounts, you tell the system what kinds of accounts you want, and it finds them.
 
-You can remove someone the same way — click Remove next to their name in the member list.
+The rules are simple:
 
-Only the list owner and editors can add or remove members. Viewers can see the list but cannot change it.
+- **Minimum trust level** — only include accounts above this trust level
+- **Minimum posts in the last 30 days** — skip inactive accounts
+- **Minimum reaction score** — only accounts whose posts get enough positive reactions
+- **Maximum negative reaction ratio** — skip accounts whose posts get too many negative reactions
+- **Tag score threshold** — boost accounts that contribute to a specific tag
+- **Maximum freshness in days** — only accounts that have posted recently
 
-## Subscribing to Shared Lists
+You might create an algorithmic follow list called "top rust contributors this month" that looks for accounts with at least ten posts tagged "rust" in the last 30 days, a high positive reaction rate, and a trust level above 1. The system evaluates this rule every 30 minutes and updates the list automatically.
 
-When someone shares a public list, you can subscribe to it:
-
-1. Find the list (browse public lists or get a direct link).
-2. Click Subscribe.
-3. The system will immediately follow (or block) every person on that list.
-
-Subscribing is a one-time action — it follows or blocks everyone currently on the list. If the list owner adds more people later, you will not automatically follow them. You can manually re-apply the list or use the Apply button to sync again.
-
-To stop using a list:
-
-1. Go to your subscriptions.
-2. Click Unsubscribe next to the list.
-
-Unsubscribing does **not** unfollow or unblock those people — it just stops the connection. You can unfollow or unblock them individually if you want to.
-
-## Collaborative Lists
-
-If you want to manage a list with other people, you can create a shared list and invite collaborators:
-
-1. Create a list with visibility set to Shared.
-2. Go to the Collaborators section.
-3. Click Invite and enter the person's username.
-4. Choose their role:
-   - **Editor** — can add and remove members, update the list description
-   - **Viewer** — can see the list and member list but cannot make changes
-
-The person you invited will receive a notification. They must accept the invitation before they can access the list.
-
-You can remove a collaborator at any time from the same page.
-
-## Algorithmic Lists
-
-Algorithmic lists automatically fill themselves based on rules you define. Instead of picking members one by one, you set criteria and the system finds matching accounts.
-
-### Creating an Algorithmic List
-
-1. Go to your lists page.
-2. Click Create Algorithmic List.
-3. Fill in the same name, type, and visibility settings as a regular list.
-4. Set criteria rules:
-
-| Criteria | What it does |
-|----------|-------------|
-| Minimum trust level | Only include users at this trust level or above |
-| Min posts in last 30 days | Exclude users who haven't posted enough recently |
-| Min reaction score | Only include users whose posts have a minimum total reaction count |
-| Min positive ratio | Users must have at least this fraction of positive interactions |
-| Max negative ratio | Users must have at most this fraction of negative interactions |
-| Max freshness days | Only include users active within this many days |
-| Tag score threshold | For per-tag lists, minimum vote score on the relevant tag |
-
-5. Choose the scope:
-   - **Global** — matches against all users
-   - **Per-tag** — only matches users who have posted about a specific tag
-
-6. Set a refresh interval (default: 24h).
-
-### How Algorithmic Lists Refresh
-
-The system runs a background worker every 30 minutes that checks every algorithmic list. If a list's `last_refreshed_at + refresh_interval` is in the past, the worker:
-
-1. Runs the criteria query against the user table
-2. Deletes all existing algorithmic members from the list
-3. Inserts the newly matching users
-4. Updates `last_refreshed_at` to now
-
-So if you set a refresh interval of 24 hours, the list updates once per day. If you need more frequent updates, you can set a shorter interval, but 30 minutes is the minimum (the worker's own interval).
-
-### Evaluating an Algorithmic List
-
-You can manually evaluate an algorithmic list to see who would match without actually changing the list. This is useful for tweaking your criteria before the next automatic refresh.
-
-Go to the list and click Evaluate. The system will show you the matching users without modifying the list members.
-
-## API Routes
-
-User lists are accessed through the following API endpoints:
-
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | `/api/v1/lists` | Create a new list |
-| GET | `/api/v1/lists` | List your lists |
-| GET | `/api/v1/lists/:id` | Get list details |
-| PUT | `/api/v1/lists/:id` | Update list |
-| DELETE | `/api/v1/lists/:id` | Delete list |
-| POST | `/api/v1/lists/:id/members` | Add a member |
-| DELETE | `/api/v1/lists/:id/members/:user_id` | Remove a member |
-| GET | `/api/v1/lists/:id/members` | List members |
-| POST | `/api/v1/lists/:id/subscribe` | Subscribe to a list |
-| POST | `/api/v1/lists/:id/unsubscribe` | Unsubscribe |
-| GET | `/api/v1/lists/:id/subscribers` | See who else subscribed |
-| GET | `/api/v1/lists/subscriptions` | Your subscriptions |
-| POST | `/api/v1/lists/:id/collaborators` | Invite a collaborator |
-| POST | `/api/v1/lists/:id/collaborators/accept` | Accept an invitation |
-| DELETE | `/api/v1/lists/:id/collaborators/:user_id` | Remove collaborator |
-| GET | `/api/v1/lists/:id/collaborators` | List collaborators |
-| POST | `/api/v1/lists/algorithmic` | Create an algorithmic list |
-| POST | `/api/v1/lists/:id/evaluate` | Preview algorithmic matches |
-
-## Privacy Notes
-
-- Your private lists are never visible to anyone else.
-- Public lists show your name as the owner. Anyone can see the list name, description, and member list.
-- When you subscribe to a list, the list owner can see that you subscribed (but not who you follow individually).
-- Block lists are always processed silently — the blocked user is never notified.
+Algorithmic lists can be public and collaborative too. You could share a "rising scientists" list that automatically includes accounts meeting certain criteria, and let a panel of editors override the algorithm by manually adding or removing specific accounts.

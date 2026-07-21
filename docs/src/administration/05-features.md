@@ -1,136 +1,57 @@
-# Features (Migration 003)
+# Features That Give Power Back to You
 
-This page documents the new feature tables introduced in migration 003 — user lists, user affinity, and feed plugins — and how they are configured on your server.
+This page is for the person running a Threadlight server. It explains the new pieces that make the platform more democratic — user lists, affinity, and plugins — and how they fit together without needing you to be a technical expert.
 
-## What Migration 003 Adds
+## Shared Power, Not Central Control
 
-Migration 003 creates three groups of tables that power the feature system. It runs automatically when the server starts, just like all other migrations. You do not need to do anything manually.
+Most social networks are built like a castle: a few people at the top decide what you see, who you hear from, and what is allowed. Threadlight is built differently. It is more like a town square where everyone has a voice and everyone helps keep things running.
 
-### User Lists
+The features in this update continue that idea. They let people organize together, discover each other through genuine connection, and even write their own feed rules — all without needing permission from an admin or a company.
 
-Four tables support the user list system:
+## User Lists: Organizing Together
 
-| Table | Purpose |
-|-------|---------|
-| `user_lists` | List metadata — name, description, type (follow or block), visibility, and algorithmic rules |
-| `list_members` | Accounts in each list, with who added them and when |
-| `list_subscriptions` | Users who subscribe to a shared list and whether it is active |
-| `list_collaborators` | People invited to help manage a list, with editor or viewer roles |
+A user list is simply a group of accounts. You might make one called "science writers I trust" or "accounts that spread harm." What makes lists powerful is that they are **shared tools**, not private notes.
 
-A list can be a simple curated group you build by hand (manual list) or one that fills itself automatically based on criteria rules (algorithmic list). See the [User Lists](../users/07-user-lists.md) guide for how users work with them.
+When you create a list, you decide who can see it and who can help maintain it. A list can be just for you, visible to everyone, or something you and a few friends build together. When someone subscribes to your follow list, the system follows every person on that list for them. When they subscribe to a block list, everyone on that list gets blocked.
 
-### User Affinity
+This turns a single person's careful curation into something the whole community benefits from. One person spots a pattern of harm, adds the accounts to a block list, and everyone who subscribes is protected. A group of people who know a topic well build a follow list of good voices, and newcomers have a healthy starting point instead of staring at an empty feed.
 
-The `user_affinities` table stores computed similarity scores between user pairs:
+The server runs this automatically. You do not need to configure anything. Lists, their members, subscriptions, and collaborators are stored in the database and updated whenever someone subscribes or a list changes.
 
-| Column | Purpose |
-|--------|---------|
-| `user_a_id`, `user_b_id` | The two users in the pair |
-| `affinity_score` | Composite score (floating point) |
-| `recency_factor` | Decay based on how recently both users were active |
-| `breakdown` | JSONB with component scores (tag_overlap, co_community, reaction_agreement, trust_distance) |
-| `computed_at` | When the score was last calculated |
+## Affinity: Finding Your People
 
-Redshift is not used. The affinity system uses a dual approach:
+Most platforms try to keep you engaged by showing you what makes you angry or afraid. Threadlight does the opposite. It tries to connect you with people who share your interests and values.
 
-- **Redis counters** (Option A) — lightweight, always-fresh counters for the badge display. O(1) per lookup. See the [Affinity Redis Keys](#redis-keys-for-affinityaccumulator) section below.
-- **Batch computation** (Option C) — full pairwise scores computed by the affinity worker and cached in the database. Used for the affinity page.
+Affinity is a measure of how much you have in common with another person. It looks at four things:
 
-See the [Affinity](../users/08-affinity.md) user guide for how this looks to users.
+- **Tag overlap** — do you both post about the same topics?
+- **Shared communities** — are you both members of the same spaces?
+- **Reaction agreement** — when you both react to a post, do you tend to agree or disagree?
+- **Trust distance** — how close are you in the web of people who trust each other?
 
-### Feed Plugins (Marketplace)
+These four signals are combined into a single score. The score is not stored in a central database and batch-processed once a day like in older platforms. Instead, every time you follow someone, join a community, or react to a post, a lightweight counter updates in Redis. When you look at someone's profile, the badge shows your affinity instantly — there is no waiting for a nightly job to run.
 
-Five tables support the WASM plugin marketplace:
+For the full affinity page, where you can see your top connections and find similar users, the system computes scores on demand and keeps them cached for a day. You get fresh results when you need them without wasting resources computing scores nobody looks at.
 
-| Table | Purpose |
-|-------|---------|
-| `feed_plugins` | Plugin metadata and the compiled WASM binary |
-| `feed_plugin_installs` | Which users have installed which plugins |
-| `feed_plugin_reviews` | User ratings and reviews for plugins |
-| `user_follows` | Standalone follow records (used by the list apply action) |
+The server does not need special tuning for this. The Redis counters have a three-day expiry so stale data cleans itself up. The on-demand cache refreshes automatically when you visit the page.
 
-Plugins are WASM modules that can rank or filter posts in a user's feed. See the [Plugin API](../contributors/04-plugin-api.md) guide for developers.
+## Feed Plugins: Your Feed, Your Rules
 
-## Applying the Migration
+The most radical idea here is that you should be able to decide how your feed works. Not through a settings panel with five presets chosen by a corporation, but by writing — or installing — a small program that ranks and filters posts however you want.
 
-Nothing special is required. Threadlight applies all pending migrations on startup:
+These programs run in a sandbox. They cannot access your data, the network, or anything else on the server. They receive a list of posts and return either a score for each one (to rank them) or a decision to keep or hide each one (to filter them). You can install plugins made by other people or write your own.
 
-```bash
-# Restart the server to apply any new migrations
-sudo systemctl restart polaris
-```
+Plugins are reviewed before they become public, so bad actors cannot sneak something harmful into the marketplace. The review process is transparent — anyone can see who reviewed a plugin and what they said.
 
-Check the server logs to confirm the migration ran:
+The server runs plugins using WebAssembly, a safe and fast runtime that is built into the Go code. Each plugin gets a strict time limit and memory limit. If a plugin tries to do too much, it is stopped automatically. No harm done.
 
-```bash
-journalctl -u polaris | grep "003_features"
-```
+## How the Server Handles All This
 
-You should see something like "applying migration 003_features.sql" in the output.
+The database tables for these features are created automatically when the server starts. There is nothing to run manually. Two background workers keep things fresh:
 
-## Worker Configuration
+- **Affinity computation** runs once an hour and updates affinity scores between users who have been active recently. This is a safety net — the real-time Redis counters handle the instant lookups, and the hourly worker fills in any gaps.
+- **Algorithmic list refresh** runs every 30 minutes. If you have an algorithmic list (a list that fills itself based on rules), this worker evaluates the rules and updates the membership automatically.
 
-Two background workers support the feature system. They are defined in `internal/worker/scheduler.go` and start automatically when the server runs.
+These workers are gentle on resources. They run inside the same Go process, log what they do, and catch any panics so they never crash the server.
 
-### Affinity Computation
-
-- **Interval:** Every 1 hour
-- **What it does:** Iterates all active user pairs, computes the four affinity components (tag overlap, co-community, reaction agreement, trust distance), and upserts the results into `user_affinities`.
-- **Scope:** Users active within the last 30 days (`last_active_at >= 30 days ago`).
-- **Log prefix:** `affinity:`
-
-The worker only processes users who have been active recently to avoid wasting resources on dormant accounts.
-
-### Algorithmic List Refresh
-
-- **Interval:** Every 30 minutes
-- **What it does:** Finds all algorithmic lists that are due for refresh (their `last_refreshed_at + refresh_interval < NOW()`), evaluates the criteria query against the user table, and replaces the list members atomically.
-- **Scope:** Only lists where `is_algorithmic = true`.
-- **Log prefix:** `algorithmic_list:`
-
-## Redis Requirements for the AffinityAccumulator
-
-The AffinityAccumulator uses Redis to maintain real-time counters for the badge display (Option A). It also caches computed affinity results (Option C).
-
-### Key Scheme
-
-| Key pattern | Type | Purpose | TTL |
-|-------------|------|---------|-----|
-| `aff:follow:{userID}` | Hash | Follow counters keyed by target user ID | 72h |
-| `aff:community:{userID}` | Hash | Shared community counters | 72h |
-| `aff:reaction:{userID}` | Hash | Reaction agreement delta scores | 72h |
-| `aff:trust:{userID}` | Hash | Trust path depth as `1/depth` | 24h (recomputed) |
-| `aff:cached:{userID}` | String | JSON blob of computed affinities (Option C) | 24h |
-| `aff:lock:{userID}` | String | 30s lock to prevent concurrent on-demand compute | 30s |
-
-### Counter Details
-
-- **Follow counters:** `HIncrBy` with ±1 deltas. A mutual follow gives a score of 2.
-- **Community counters:** Incremented when a user joins a community; the counter is bumped for all other active members of that community.
-- **Reaction counters:** `HIncrByFloat` with +1.0 for same reaction type, -0.5 for different types.
-- **Trust counters:** Pre-computed via recursive CTE in PostgreSQL, stored as `1/depth` (max depth 5).
-
-### Badge Query (Option A)
-
-The `GetPairAffinity` method reads four hash fields (follow, community, reaction, trust), normalizes each to [0, 1], and computes:
-
-```
-score = follow * 1.0 + community * 1.5 + reaction * 2.0 + trust * 3.0
-```
-
-This runs in O(1) and is suitable for showing a badge on every profile page load without noticeable latency. The badge is always visible because the counters are always fresh.
-
-### Affinity Page (Option C)
-
-When a user visits their full affinity page, the server checks `aff:cached:{userID}` in Redis. If present (and within the 24-hour TTL), it returns the cached result. If absent, it computes the scores on demand, stores them in both PostgreSQL and Redis, and sets the cache for 24 hours.
-
-A 30-second lock (`aff:lock:{userID}`) prevents multiple requests from triggering concurrent computation for the same user.
-
-## Dependencies
-
-These features require:
-
-- **PostgreSQL** — all feature data is stored in the main database
-- **Redis** — required for affinity counters and caching (affinity badge and affinity page)
-
-Both dependencies must be running and accessible before the server starts, otherwise the workers will log connection errors.
+If you need to see what is happening, the server logs show each worker run — how long it took, how many rows it processed, and any errors it hit. The default settings work for a small community of a few hundred people without any tuning.
