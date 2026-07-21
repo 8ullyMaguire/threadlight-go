@@ -5,14 +5,15 @@
   import { LINKED_INSTANCE_URL } from '$lib/app/instance.svelte'
   import { Menu, Spinner } from 'mono-svelte'
   import {
-    Bars3,
-    GlobeAlt,
-    Home,
-    Icon,
-    MagnifyingGlass,
-    PencilSquare,
-    ServerStack,
-    ShieldCheck,
+      Bars3,
+      GlobeAlt,
+      Home,
+      Icon,
+      MagnifyingGlass,
+      PencilSquare,
+      PuzzlePiece,
+      ServerStack,
+      ShieldCheck,
   } from 'svelte-hero-icons/dist'
   import type { ClassValue } from 'svelte/elements'
   import Avatar from '../generic/Avatar.svelte'
@@ -101,6 +102,13 @@
     label={$t('nav.search')}
     icon={MagnifyingGlass}
     class="order-3 md:order-2"
+  />
+  <NavButton
+    href="/plugins"
+    label={$t('nav.plugins')}
+    icon={PuzzlePiece}
+    isSelectedFilter={(path) => path.startsWith('/plugins')}
+    class="order-4 md:order-3"
   />
   <NavButton
     label={$t('nav.create.label')}

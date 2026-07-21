@@ -29,6 +29,11 @@ import {
   type FeedPlugin,
   type FeedPluginReview,
   type CreatePluginReviewRequest,
+  type Notification,
+  type UserInvite,
+  type PostReportItem,
+  type BlockedUser,
+  type Interaction,
 } from './types'
 
 function mapUser(u: User): Lemmy.PersonView {
@@ -161,11 +166,11 @@ function mapNotification(n: Notification): Lemmy.Notification {
     published: n.created_at,
     read: n.is_read,
     updated: undefined,
-    type: n.type as Lemmy.NotificationType,
-    title: n.title,
+    type: String(n.notification_type) as Lemmy.NotificationType,
+    title: '',
     subtitle: undefined,
     body: n.body,
-    link: n.link ?? undefined,
+    link: n.post_id ? `/post/${n.post_id}` : undefined,
   } as Lemmy.Notification
 }
 
@@ -582,7 +587,118 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async getReplies(form: Lemmy.GetReplies): Promise<Lemmy.GetRepliesResponse> {
-    return { replies: [] } as Lemmy.GetRepliesResponse
+    const data = await this.#api<Notification[]>('/notifications', {
+      params: { page: (form.page ?? 1).toString() },
+    })
+    return {
+      replies: (data ?? []).map(n => ({
+        comment_reply: {
+          id: n.id,
+          recipient_id: n.user_id,
+          comment_id: n.id,
+          read: n.is_read,
+          published: n.created_at,
+          updated: undefined,
+        },
+        comment: {
+          id: n.id,
+          creator_id: n.actor_id ?? n.user_id,
+          post_id: n.post_id ?? 0,
+          content: n.body,
+          published: n.created_at,
+          updated: undefined,
+          deleted: false,
+          removed: false,
+          distinguished: false,
+          path: '',
+          local: true,
+          ap_id: '',
+          language_id: 1,
+        },
+        creator: {
+          id: n.actor_id ?? n.user_id,
+          name: '',
+          display_name: undefined,
+          avatar: undefined,
+          banned: false,
+          published: n.created_at,
+          actor_id: '',
+          local: true,
+          deleted: false,
+          instance_id: 1,
+        },
+        post: {
+          id: n.post_id ?? 0,
+          name: '',
+          creator_id: 0,
+          published: n.created_at,
+          updated: undefined,
+          nsfw: false,
+          removed: false,
+          deleted: false,
+          local: true,
+          locked: false,
+          embed_title: undefined,
+          embed_description: undefined,
+          embed_video_url: undefined,
+          thumbnail_url: undefined,
+          ap_id: '',
+          language_id: 1,
+          featured_community: false,
+          featured_local: false,
+          url: undefined,
+          body: undefined,
+          community_id: 1,
+        },
+        community: {
+          id: 0,
+          name: '',
+          title: '',
+          description: undefined,
+          removed: false,
+          deleted: false,
+          published: n.created_at,
+          updated: undefined,
+          actor_id: '',
+          local: true,
+          nsfw: false,
+          posting_restricted_to_mods: false,
+          instance_id: 1,
+          icon: undefined,
+          banner: undefined,
+          hidden: false,
+          visibility: 'Public',
+        },
+        recipient: {
+          id: n.user_id,
+          name: '',
+          display_name: undefined,
+          avatar: undefined,
+          banned: false,
+          published: n.created_at,
+          actor_id: '',
+          local: true,
+          deleted: false,
+          instance_id: 1,
+        },
+        counts: {
+          comment_id: n.id,
+          score: 0,
+          upvotes: 0,
+          downvotes: 0,
+          child_count: 0,
+          hot_rank: 0,
+          hot_rank_active: 0,
+          reports: 0,
+          score_tally: 0,
+        },
+        creator_banned_from_community: false,
+        creator_is_moderator: false,
+        creator_blocked: false,
+        subscribed: 'NotSubscribed' as Lemmy.SubscribedType,
+        saved: false,
+      })) as Lemmy.CommentReplyView[],
+    } as Lemmy.GetRepliesResponse
   }
 
   async getPersonMentions(
@@ -617,10 +733,9 @@ export class ThreadlightClient extends BaseClient {
   async getUnreadCount(): Promise<Lemmy.GetUnreadCountResponse> {
     const data = await this.#api<{ count: number }>('/notifications/unread-count')
     return {
-      replies: 0,
+      replies: data.count,
       mentions: 0,
       private_messages: 0,
-      notifications: data.count,
     } as Lemmy.GetUnreadCountResponse
   }
 
@@ -731,6 +846,7 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async deleteComment(form: Lemmy.DeleteComment): Promise<Lemmy.CommentResponse> {
+    console.warn('deleteComment: not supported by Threadlight backend (no comment system)')
     return {
       comment_view: {
         comment: {
@@ -746,6 +862,7 @@ export class ThreadlightClient extends BaseClient {
           path: '',
           local: true,
           ap_id: '',
+          language_id: 1,
         },
         creator: {
           id: 0,
@@ -757,8 +874,6 @@ export class ThreadlightClient extends BaseClient {
           actor_id: '',
           local: true,
           deleted: false,
-          admin: false,
-          bot_account: false,
           instance_id: 1,
         },
         post: {
@@ -777,12 +892,12 @@ export class ThreadlightClient extends BaseClient {
           embed_video_url: undefined,
           thumbnail_url: undefined,
           ap_id: '',
-          language_id: 0,
+          language_id: 1,
           featured_community: false,
           featured_local: false,
           url: undefined,
           body: undefined,
-          alt_text: undefined,
+          community_id: 1,
         },
         community: {
           id: 0,
@@ -801,9 +916,9 @@ export class ThreadlightClient extends BaseClient {
           icon: undefined,
           banner: undefined,
           hidden: false,
+          visibility: 'Public',
         },
         counts: {
-          id: 0,
           comment_id: form.comment_id,
           score: 0,
           upvotes: 0,
@@ -818,7 +933,7 @@ export class ThreadlightClient extends BaseClient {
         creator_banned_from_community: false,
         creator_is_moderator: false,
         creator_blocked: false,
-        subscribed: false,
+        subscribed: 'NotSubscribed' as Lemmy.SubscribedType,
       },
     }
   }
@@ -892,10 +1007,12 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async createPrivateMessage(form: Lemmy.CreatePrivateMessage): Promise<Lemmy.PrivateMessageResponse> {
+    console.warn('createPrivateMessage: not supported by Threadlight backend (no private messages)')
     return {} as Lemmy.PrivateMessageResponse
   }
 
   async listPrivateMessages(form: Lemmy.ListPrivateMessages): Promise<Lemmy.ListPrivateMessagesResponse> {
+    console.warn('listPrivateMessages: not supported by Threadlight backend (no private messages)')
     return { private_messages: [] } as Lemmy.ListPrivateMessagesResponse
   }
 
@@ -904,10 +1021,12 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async getSiteMetadata(form: Lemmy.GetSiteMetadata): Promise<Lemmy.GetSiteMetadataResponse> {
+    console.warn('getSiteMetadata: no Threadlight backend equivalent, returning stub')
     return { metadata: { description: undefined, image: undefined, title: undefined } } as Lemmy.GetSiteMetadataResponse
   }
 
   async getModlog(form: Lemmy.GetModlog): Promise<Lemmy.GetModlogResponse> {
+    console.warn('getModlog: no /modlog/actions endpoint on Threadlight backend, returning empty stub')
     return {
       added: [],
       added_to_community: [],
@@ -933,10 +1052,86 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async listPostReports(form: Lemmy.ListPostReports): Promise<Lemmy.ListPostReportsResponse> {
-    return { post_reports: [] } as Lemmy.ListPostReportsResponse
+    const data = await this.#api<PostReportItem[]>('/reports')
+    return {
+      post_reports: (data ?? []).map(r => ({
+        post_report: {
+          id: r.id,
+          creator_id: r.reporter_id,
+          post_id: r.post_id,
+          original_post_name: '',
+          original_post_body: undefined,
+          reason: r.reason,
+          resolved: r.status !== 0,
+          resolved_id: r.resolved_by ?? undefined,
+          published: r.created_at,
+          updated: r.resolved_at ?? undefined,
+        },
+        post: {
+          id: r.post_id,
+          name: '',
+          creator_id: 0,
+          published: r.created_at,
+          updated: undefined,
+          nsfw: false,
+          removed: false,
+          deleted: false,
+          local: true,
+          locked: false,
+          embed_title: undefined,
+          embed_description: undefined,
+          embed_video_url: undefined,
+          thumbnail_url: undefined,
+          ap_id: '',
+          language_id: 1,
+          featured_community: false,
+          featured_local: false,
+          url: undefined,
+          body: undefined,
+          community_id: 1,
+        },
+        community: undefined as unknown as Lemmy.Community,
+        creator: {
+          id: r.reporter_id,
+          name: '',
+          display_name: undefined,
+          avatar: undefined,
+          banned: false,
+          published: r.created_at,
+          actor_id: '',
+          local: true,
+          deleted: false,
+          instance_id: 1,
+        },
+        post_creator: undefined as unknown as Lemmy.Person,
+        creator_banned_from_community: false,
+        my_vote: 0,
+        counts: {
+          id: r.id,
+          post_id: r.post_id,
+          comments: 0,
+          score: 0,
+          upvotes: 0,
+          downvotes: 0,
+          featured_community: false,
+          featured_local: false,
+          hot_rank: 0,
+          hot_rank_active: 0,
+          newest_comment_time: r.created_at,
+          newest_comment_time_necro: r.created_at,
+          published: r.created_at,
+          read_comments: 0,
+          score_time: 0,
+          upvotes_time: 0,
+          downvotes_time: 0,
+        },
+        resolver: r.resolved_by ? { id: r.resolved_by, name: '', display_name: undefined, avatar: undefined, banned: false, published: r.created_at, actor_id: '', local: true, deleted: false, instance_id: 1 } as Lemmy.Person : undefined,
+      })) as Lemmy.PostReportView[],
+    } as Lemmy.ListPostReportsResponse
   }
 
   async listCommentReports(form: Lemmy.ListCommentReports): Promise<Lemmy.ListCommentReportsResponse> {
+    console.warn('listCommentReports: Threadlight backend only has post reports, returning empty')
     return { comment_reports: [] } as Lemmy.ListCommentReportsResponse
   }
 
@@ -949,14 +1144,17 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async getUnregenerateKeys(): Promise<Lemmy.SuccessResponse> {
+    console.warn('getUnregenerateKeys: no Threadlight backend equivalent')
     return { success: true } as Lemmy.SuccessResponse
   }
 
   async createSite(form: Lemmy.CreateSite): Promise<Lemmy.SiteResponse> {
+    console.warn('createSite: no Threadlight backend equivalent (use editSite for config)')
     return {} as Lemmy.SiteResponse
   }
 
   async listMedia(): Promise<Lemmy.ListMediaResponse> {
+    console.warn('listMedia: no Threadlight backend equivalent')
     return { media: [] } as Lemmy.ListMediaResponse
   }
 
@@ -977,7 +1175,24 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async getBannedPersons(): Promise<Lemmy.BannedPersonsResponse> {
-    return { banned: [] } as Lemmy.BannedPersonsResponse
+    const data = await this.#api<BlockedUser[]>('/blocks')
+    return {
+      banned: (data ?? []).map(b => ({
+        person: {
+          id: b.blocked_id,
+          name: '',
+          display_name: undefined,
+          avatar: undefined,
+          banned: true,
+          published: b.created_at,
+          updated: undefined,
+          actor_id: '',
+          local: true,
+          deleted: false,
+          instance_id: 1,
+        },
+      })),
+    } as Lemmy.BannedPersonsResponse
   }
 
   async addAdmin(form: Lemmy.AddAdmin): Promise<Lemmy.AddAdminResponse> {
@@ -985,10 +1200,14 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async getUnreadRegistrationApplicationCount(): Promise<Lemmy.GetUnreadRegistrationApplicationCountResponse> {
-    return { registration_applications: 0 } as Lemmy.GetUnreadRegistrationApplicationCountResponse
+    const data = await this.#api<UserInvite[]>('/admin/invites')
+    return {
+      registration_applications: (data ?? []).filter(i => i.used_by === null).length,
+    } as Lemmy.GetUnreadRegistrationApplicationCountResponse
   }
 
   async listRegistrationApplications(form: Lemmy.ListRegistrationApplications): Promise<Lemmy.ListRegistrationApplicationsResponse> {
+    console.warn('listRegistrationApplications: Threadlight uses /admin/invites instead, returning empty')
     return { registration_applications: [] } as Lemmy.ListRegistrationApplicationsResponse
   }
 
@@ -1025,14 +1244,85 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async searchPostLikes(form: { post_id: number; page?: number; limit?: number }): Promise<Lemmy.SearchResponse> {
-    return { posts: [], comments: [], communities: [], users: [], type_: undefined } as Lemmy.SearchResponse
+    const data = await this.#api<Interaction[]>('/interactions/post/' + form.post_id)
+    const likes = (data ?? []).filter(i => i.interaction_type === 1)
+    return {
+      posts: likes.map(i => ({
+        post: {
+          id: i.post_id,
+          name: '',
+          creator_id: i.user_id,
+          published: i.created_at,
+          updated: undefined,
+          nsfw: false,
+          removed: false,
+          deleted: false,
+          local: true,
+          locked: false,
+          embed_title: undefined,
+          embed_description: undefined,
+          embed_video_url: undefined,
+          thumbnail_url: undefined,
+          ap_id: '',
+          language_id: 1,
+          featured_community: false,
+          featured_local: false,
+          url: undefined,
+          body: undefined,
+          community_id: 1,
+        },
+        creator: {
+          id: i.user_id,
+          name: '',
+          display_name: undefined,
+          avatar: undefined,
+          banned: false,
+          published: i.created_at,
+          actor_id: '',
+          local: true,
+          deleted: false,
+          instance_id: 1,
+        },
+        community: undefined as unknown as Lemmy.Community,
+        counts: {
+          id: i.id,
+          post_id: i.post_id,
+          comments: 0,
+          score: 0,
+          upvotes: 0,
+          downvotes: 0,
+          featured_community: false,
+          featured_local: false,
+          hot_rank: 0,
+          hot_rank_active: 0,
+          newest_comment_time: i.created_at,
+          newest_comment_time_necro: i.created_at,
+          published: i.created_at,
+          read_comments: 0,
+          score_time: 0,
+          upvotes_time: 0,
+          downvotes_time: 0,
+        },
+        creator_banned_from_community: false,
+        creator_is_moderator: false,
+        creator_blocked: false,
+        subscribed: 'NotSubscribed' as Lemmy.SubscribedType,
+        saved: false,
+      })),
+      comments: [],
+      communities: [],
+      users: [],
+      type_: 'All',
+    } as unknown as Lemmy.SearchResponse
   }
 
   async getPersonPostsLiked(form: { person_id: number }): Promise<Lemmy.GetPostsResponse> {
+    console.warn('getPersonPostsLiked: no Threadlight backend equivalent (no /posts?liked_by param)')
     return { posts: [], next_page: undefined } as Lemmy.GetPostsResponse
   }
 
   async getPersonPostsSaved(form: { person_id: number }): Promise<Lemmy.GetPostsResponse> {
+    console.warn('getPersonPostsSaved: no Threadlight backend equivalent (no /posts?saved_by param)')
     return { posts: [], next_page: undefined } as Lemmy.GetPostsResponse
   }
 
@@ -1063,16 +1353,13 @@ export class ThreadlightClient extends BaseClient {
   async createPostReport(form: Lemmy.CreatePostReport): Promise<Lemmy.PostReportResponse> {
     await this.#api('/reports', {
       method: 'POST',
-      body: { target_type: 'post', target_id: form.post_id, reason: form.reason },
+      body: { post_id: form.post_id, category: 0 as number, reason: form.reason },
     })
     return {} as Lemmy.PostReportResponse
   }
 
   async createCommentReport(form: Lemmy.CreateCommentReport): Promise<Lemmy.CommentReportResponse> {
-    await this.#api('/reports', {
-      method: 'POST',
-      body: { target_type: 'comment', target_id: form.comment_id, reason: form.reason },
-    })
+    console.warn('createCommentReport: Threadlight backend only supports post reports (no comment reports)')
     return {} as Lemmy.CommentReportResponse
   }
 

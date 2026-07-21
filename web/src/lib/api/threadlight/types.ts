@@ -146,11 +146,48 @@ export interface TagVoteRequest {
 export interface Notification {
   id: number
   user_id: number
-  type: string
-  title: string
+  notification_type: number
+  actor_id: number | null
+  post_id: number | null
   body: string
-  link: string | null
   is_read: boolean
+  created_at: string
+}
+
+export interface UserInvite {
+  id: number
+  inviter_id: number
+  code: string
+  used_by: number | null
+  used_at: string | null
+  created_at: string
+}
+
+export interface PostReportItem {
+  id: number
+  post_id: number
+  reporter_id: number
+  category: number
+  reason: string
+  status: number
+  resolved_by: number | null
+  created_at: string
+  resolved_at: string | null
+}
+
+export interface BlockedUser {
+  id: number
+  blocker_id: number
+  blocked_id: number
+  created_at: string
+}
+
+export interface Interaction {
+  id: number
+  user_id: number
+  post_id: number
+  interaction_type: number
+  metadata: Record<string, unknown> | null
   created_at: string
 }
 

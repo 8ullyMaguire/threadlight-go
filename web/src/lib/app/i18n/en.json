@@ -11,6 +11,7 @@
         "moderation": "Moderation",
         "communities": "Communities",
         "search": "Search",
+        "plugins": "Plugins",
         "create": {
             "label": "Create",
             "post": "Post",
@@ -942,6 +943,12 @@
                 "title": "Don't virtualize feeds",
                 "description": "Virtualization only renders visible posts, increasing performance drastically. Disable virtualization if you are having stutter problems. This will disable infinite scroll."
             }
+        },
+        "lists": {
+            "title": "Lists"
+        },
+        "affinity": {
+            "title": "Affinity"
         },
         "account": {
             "title": "Account"

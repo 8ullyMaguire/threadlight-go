@@ -5,14 +5,16 @@
   import TabbedLayoutShell from '$lib/ui/layout/pages/TabbedLayoutShell.svelte'
   import { action, Button, Modal, modal, TextArea, toast } from 'mono-svelte'
   import {
-    ArrowDownTray,
-    ArrowPath,
-    ArrowUpTray,
-    AtSymbol,
-    Cog,
-    EllipsisHorizontal,
-    RectangleStack,
-    ShieldCheck,
+      ArrowDownTray,
+      ArrowPath,
+      ArrowUpTray,
+      AtSymbol,
+      Cog,
+      EllipsisHorizontal,
+      Heart,
+      ListBullet,
+      RectangleStack,
+      ShieldCheck,
   } from 'svelte-hero-icons/dist'
 
   let { children } = $props()
@@ -68,6 +70,16 @@
       href: '/settings/embeds',
       name: $t('settings.embeds.title'),
       icon: RectangleStack,
+    },
+    {
+      href: '/settings/lists',
+      name: $t('settings.lists.title'),
+      icon: ListBullet,
+    },
+    {
+      href: '/settings/affinity',
+      name: $t('settings.affinity.title'),
+      icon: Heart,
     },
     {
       href: '/settings/moderation',
