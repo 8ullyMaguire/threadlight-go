@@ -3,7 +3,7 @@
   import type { Comment } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
   import FormattedNumber from '$lib/ui/util/FormattedNumber.svelte'
   import { toast } from 'mono-svelte'
@@ -30,7 +30,7 @@
   const castVote = async (newVote: number) => {
     if (navigator.vibrate) navigator.vibrate(1)
     if (!profile.current?.jwt) {
-      toast({ content: $t('toast.loginVoteGate'), type: 'warning' })
+      toast({ content:'You must be logged in to vote.', type: 'warning' })
       return
     }
 
@@ -86,11 +86,7 @@
         : 'btn-tertiary',
     ]}
     aria-pressed={vote == targetNum}
-    aria-label={$t(
-      target == 'upvote'
-        ? 'post.actions.vote.upvote'
-        : 'post.actions.vote.downvote',
-    )}
+    aria-label={target == 'upvote' ? 'Upvote' : 'Downvote'}
   >
     <Icon src={target == 'upvote' ? ChevronUp : ChevronDown} size="18" micro />
     <div class="grid text-sm z-20">
@@ -99,10 +95,7 @@
           style="grid-column: 1; grid-row: 1;"
           in:fly={{ duration: 400, y: -10, easing: backOut }}
           out:fly={{ duration: 400, y: 10, easing: backOut }}
-          aria-label={$t(
-            target == 'upvote' ? 'aria.vote.upvotes' : 'aria.vote.downvotes',
-            { default: votes },
-          )}
+          aria-label={target == 'upvote' ? `${votes} upvotes` : `${votes} downvotes`}
         >
           <FormattedNumber number={votes ?? 0} />
         </span>

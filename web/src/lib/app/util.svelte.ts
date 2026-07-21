@@ -4,8 +4,6 @@ import { env } from '$env/dynamic/public'
 import { client } from '$lib/api/client.svelte'
 import type { Community, Person } from '$lib/api/types'
 import { SvelteURL } from 'svelte/reactivity'
-import { t } from './i18n'
-
 // Despite the name, this will round up
 // This is because I do not care
 // Example: findClosestNumber([8, 16, 32, 64, 128], 76) will return 128
@@ -36,11 +34,11 @@ export const placeholders = {
       case 'post':
         return Math.random() < 0.01 && env.PUBLIC_XYLIGHT_MODE
           ? 'top 10 reasons why TCP is brilliant and UDP is a spawn of satan'
-          : t.get('placeholders.title')
+          : 'Add a post title'
       case 'body':
-        return t.get('placeholders.body')
+        return 'What do you have to say?'
       case 'comment':
-        return t.get('placeholders.comments')
+        return 'Join the conversation'
       case 'url':
         return 'https://example.com'
     }

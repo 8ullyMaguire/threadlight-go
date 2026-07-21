@@ -3,7 +3,7 @@
   import type { CommentView, PostView } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import { Menu, MenuButton, MenuDivider, toast } from 'mono-svelte'
   import type { Snippet } from 'svelte'
   import {
@@ -82,9 +82,9 @@
   {#if profile.isMod(item.community) || profile.isAdmin}
     <MenuDivider showLabel>
       {#if !item.community.local && !profile.isMod(item.community)}
-        {$t('moderation.labelInstanceOnly')}
+        Moderation (Local only)
       {:else}
-        {$t('moderation.label')}
+        Moderation
       {/if}
     </MenuDivider>
     <MenuButton
@@ -93,7 +93,7 @@
       loading={acting}
       icon={item.post.locked ? LockOpen : LockClosed}
     >
-      {item.post.locked ? $t('moderation.unlock') : $t('moderation.lock')}
+      {item.post.locked ?'Unlock' :'Lock'}
     </MenuButton>
 
     <MenuButton
@@ -108,11 +108,11 @@
       >
         <span>
           {item.post.featured_community
-            ? $t('moderation.unfeature')
-            : $t('moderation.feature')}
+            ?'Unfeature'
+            :'Feature'}
         </span>
         {#if profile.isAdmin}
-          <span class="text-xs opacity-80">{$t('form.post.community')}</span>
+          <span class="text-xs opacity-80">Community</span>
         {/if}
       </div>
     </MenuButton>
@@ -120,10 +120,10 @@
       <Icon src={Trash} size="16" mini />
       {#if isCommentView(item)}
         {item.comment.removed
-          ? $t('moderation.restore')
-          : $t('moderation.remove')}
+          ?'Restore'
+          :'Remove'}
       {:else}
-        {item.post.removed ? $t('moderation.restore') : $t('moderation.remove')}
+        {item.post.removed ?'Restore' :'Remove'}
       {/if}
     </MenuButton>
     {#if profile.current?.user && profile.current.user.local_user_view.person.id != item.creator.id}
@@ -134,25 +134,25 @@
       >
         <Icon src={ShieldExclamation} size="16" mini />
         {item.creator_banned_from_community
-          ? $t('moderation.ban.unbanFromCommunity')
-          : $t('moderation.ban.banFromCommunity')}
+          ?'Unban user from community'
+          :'Ban user from community'}
       </MenuButton>
     {/if}
     <MenuButton color="success-subtle" href="/modlog?user={item.creator.id}">
       <Icon src={Newspaper} size="16" micro />
-      {$t('moderation.modlog.user')}
+      User moderation log
     </MenuButton>
     <MenuButton color="success-subtle" href="/modlog?post={item.post.id}">
       <Icon src={Newspaper} size="16" micro />
-      {$t('moderation.modlog.post')}
+      Post moderation log
     </MenuButton>
     <MenuButton color="blue-subtle" onclick={() => viewVotes(item)}>
       <Icon src={ArrowsUpDown} size="16" micro />
-      {$t('moderation.votes')}
+      Votes
     </MenuButton>
   {/if}
   {#if profile.isAdmin}
-    <MenuDivider showLabel>{$t('admin.label')}</MenuDivider>
+    <MenuDivider showLabel>Administration</MenuDivider>
     <MenuButton
       color="success-subtle"
       onclick={() =>
@@ -164,15 +164,15 @@
       >
         <span>
           {item.post.featured_local
-            ? $t('moderation.unfeature')
-            : $t('moderation.feature')}
+            ?'Unfeature'
+            :'Feature'}
         </span>
-        <span class="text-xs opacity-80">{$t('admin.instance')}</span>
+        <span class="text-xs opacity-80">Server</span>
       </div>
     </MenuButton>
     <MenuButton color="danger-subtle" onclick={() => remove(item, true)}>
       <Icon src={Fire} size="16" mini />
-      {$t('admin.purge')}
+      Purge
     </MenuButton>
   {/if}
 </Menu>

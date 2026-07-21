@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
   import { CommonList } from '$lib/ui/layout'
   import { Switch } from 'mono-svelte'
@@ -22,80 +22,80 @@
   <ToggleSetting
     icon={Eye}
     bind:checked={settings.posts.showHidden}
-    title={$t('settings.lemmy.showHiddenPosts.title')}
-    description={$t('settings.lemmy.showHiddenPosts.description')}
+    title=Show hidden posts
+    description=Shows the posts you've manually hidden.
   />
   <ToggleSetting
     icon={Bars3}
     bind:checked={settings.posts.compactFeatured}
-    title={$t('settings.lemmy.compactFeatured.title')}
-    description={$t('settings.lemmy.compactFeatured.description')}
+    title=Compact featured posts
+    description=Makes featured posts more compact.
   />
   <ToggleSetting
     icon={BookOpen}
     bind:checked={settings.markPostsAsRead}
-    title={$t('settings.lemmy.markReadPosts.title')}
-    description={$t('settings.lemmy.markReadPosts.description')}
+    title=Mark posts as read automatically
+    description=Marks posts as read when you visit them.
   />
   <ToggleSetting
     icon={CubeTransparent}
     bind:checked={settings.markReadPosts}
-    title={$t('settings.lemmy.fadeReadPosts.title')}
-    description={$t('settings.lemmy.fadeReadPosts.description')}
+    title=Fade read posts
+    description=Fade the title of posts you've already read
   />
   <ToggleSetting
     icon={Share}
     bind:checked={settings.crosspostOriginalLink}
-    title={$t('settings.lemmy.crosspostMarker.title')}
-    description={$t('settings.lemmy.crosspostMarker.description')}
+    title=Mark crossposts
+    description=Insert 'crossposted from' and a link when crossposting.
   />
   <Setting icon={EyeSlash}>
     {#snippet title()}
-      <span>{$t('settings.lemmy.hideSubmissions.title')}</span>
+      <span>Hide submissions</span>
     {/snippet}
     {#snippet description()}
       <span>
-        <p>{$t('settings.lemmy.hideSubmissions.description')}</p>
+        <p>Hide certain types of submissions.</p>
       </span>
     {/snippet}
     <div class="flex flex-col items-start gap-4 flex-wrap">
       <Switch bind:checked={settings.hidePosts.deleted}>
-        {$t('settings.lemmy.hideSubmissions.deleted')}
+        Deleted by user
       </Switch>
       <Switch bind:checked={settings.hidePosts.removed}>
-        {$t('settings.lemmy.hideSubmissions.removed')}
+        Removed by moderator
       </Switch>
     </div>
   </Setting>
   <ToggleSetting
     icon={ExclamationTriangle}
     bind:checked={settings.nsfwBlur}
-    title={$t('settings.lemmy.nsfwBlur.title')}
-    description={$t('settings.lemmy.nsfwBlur.description')}
+    title=NSFW blur
+    description=Blurs images and remove post bodies of NSFW posts.
   />
   <Setting icon={ServerStack}>
     {#snippet title()}
-      {$t('settings.lemmy.instances.title')}
+      Show server identifiers
     {/snippet}
     {#snippet description()}
-      {$t('settings.lemmy.instances.description')}
+      Shows the servers where certain content originated from.
     {/snippet}
     <div class="flex flex-row flex-wrap items-center gap-4">
       <Switch bind:checked={settings.showInstances.user}>
-        {$t('content.users')}
+        Users
       </Switch>
       <Switch bind:checked={settings.showInstances.comments}>
-        {$t('content.comments')}
+        Comments
       </Switch>
       <Switch bind:checked={settings.showInstances.community}>
-        {$t('content.communities')}
+        Communities
       </Switch>
     </div>
   </Setting>
   <ToggleSetting
     icon={User}
     bind:checked={settings.displayNames}
-    title={$t('settings.app.displayName.title')}
-    description={$t('settings.app.displayName.description')}
+    title=Use display name
+    description=Show users' display names instead of their actual usernames.
   />
 </CommonList>

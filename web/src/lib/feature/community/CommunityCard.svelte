@@ -3,7 +3,7 @@
   import type { CommunityModeratorView, CommunityView } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import Markdown from '$lib/app/markdown/Markdown.svelte'
   import { settings } from '$lib/app/settings.svelte'
   import { fullCommunityName, userLink } from '$lib/app/util.svelte'
@@ -55,8 +55,8 @@
 
       toast({
         content: !block
-          ? t.get('toast.unblockedCommunity')
-          : t.get('toast.blockedCommunity'),
+          ? 'Unblocked that community.'
+          : 'Blocked that community.',
         type: 'success',
       })
 
@@ -75,7 +75,7 @@
         community_id: id,
       })
       removeToast(purgeToast)
-      toast({ content: t.get('toast.purgedCommunity'), type: 'success' })
+      toast({ content: 'Purged that community.', type: 'success' })
     } catch (err) {
       toast({ content: errorMessage(err as string), type: 'error' })
     }
@@ -153,12 +153,12 @@
   <div
     class="w-full h-full grid place-items-center"
     role="status"
-    aria-label={$t('aria.loading')}
+    aria-label=Loading
   >
     <Spinner width={24} />
   </div>
 {:then community_view}
-  <Modal title={$t('cards.community.flair')} bind:open={setFlair}>
+  <Modal title=Set my flair bind:open={setFlair}>
     <CommunityFlair
       community={community_view.community.id}
       onsubmit={() => (setFlair = !setFlair)}
@@ -185,7 +185,7 @@
     </EntityHeader>
 
     <EndPlaceholder size="xs" margin="sm">
-      {$t('form.post.community')}
+      Community
     </EndPlaceholder>
     {#if profile.current?.jwt}
       {@const subscribed = profile.current.user?.follows.some(
@@ -202,14 +202,14 @@
         icon={community_view.subscribed == 'Subscribed' ? Check : Plus}
       >
         {subscribed
-          ? $t('cards.community.subscribed')
-          : $t('cards.community.subscribe')}
+          ?'Subscribed'
+          :'Subscribe'}
       </Button>
       {#if client().setFlair}
         <SidebarButton
           onclick={() => (setFlair = !setFlair)}
           icon={Tag}
-          label={$t('cards.community.flair')}
+          label=Set my flair
         />
       {/if}
     {/if}
@@ -220,20 +220,20 @@
           community_view.community.actor_id,
         )}/settings"
         icon={Cog6Tooth}
-        label={$t('routes.profile.edit')}
+        label=Edit
       />
     {/if}
     <Menu placement="bottom-start">
       {#snippet target(attachment)}
         <SidebarButton
           {@attach attachment}
-          label={$t('post.actions.more.label')}
+          label=More actions
           icon={EllipsisHorizontal}
         />
       {/snippet}
       <MenuButton href="/modlog?community={community_view.community.id}">
         <Icon src={Newspaper} size="16" mini />
-        {$t('cards.community.modlog')}
+        Modlog
       </MenuButton>
       {#if profile.current?.jwt}
         {#if profile.isMod(community_view.community)}
@@ -242,7 +242,7 @@
             href="/moderation?community={community_view.community.id}"
           >
             <Icon src={ShieldCheck} size="16" micro />
-            {$t('routes.moderation.feed')}
+            Reports
           </MenuButton>
         {/if}
         <MenuButton
@@ -253,8 +253,8 @@
           icon={NoSymbol}
         >
           {community_view.blocked
-            ? $t('cards.community.unblock')
-            : $t('cards.community.block')}
+            ?'Unblock'
+            :'Block'}
         </MenuButton>
         {#if profile.current?.user}
           <MenuButton
@@ -263,7 +263,7 @@
             onclick={() => blockInstance(community_view.community.instance_id)}
             icon={BuildingOffice2}
           >
-            {$t('cards.community.blockInstance')}
+            Block server
           </MenuButton>
         {/if}
         {#if profile.isAdmin}
@@ -271,17 +271,17 @@
             color="danger-subtle"
             onclick={() =>
               modal({
-                title: $t('admin.purgeCommunity.title'),
-                body: `${community_view.community.title}: ${$t('admin.purgeCommunity.warning')}`,
+                title:'Purging community',
+                body: `${community_view.community.title}: $This will delete all posts. Are you sure? (The button will enable in 3 seconds.)`,
                 actions: [
                   action({
                     close: true,
-                    content: $t('common.cancel'),
+                    content:'Cancel',
                   }),
                   action({
                     action: () => purgeCommunity(community_view.community.id),
                     close: true,
-                    content: $t('admin.purge'),
+                    content:'Purge',
                     type: 'danger',
                     icon: Fire,
                   }),
@@ -291,41 +291,41 @@
               })}
             icon={Fire}
           >
-            {$t('admin.purge')}
+            Purge
           </MenuButton>
         {/if}
       {/if}
     </Menu>
     <EndPlaceholder size="xs" margin="sm">
-      {$t('cards.site.stats')}
+      Statistics
     </EndPlaceholder>
 
     <div class="flex flex-row gap-4 flex-wrap px-3">
       <LabelStat
-        label={$t('cards.community.members')}
+        label=Members
         content={community_view.counts.subscribers.toString()}
         formatted
       />
       <LabelStat
-        label={$t('content.posts')}
+        label=Posts
         content={community_view.counts.posts.toString()}
         formatted
       />
       <LabelStat
-        label={$t('cards.community.activeDay')}
+        label=Active Today
         content={community_view.counts.users_active_day.toString()}
         formatted
       />
     </div>
 
     <EndPlaceholder size="xs" margin="sm">
-      {$t('common.info')}
+      Info
     </EndPlaceholder>
     <div class="space-y-3 px-1.5 text-sm">
       <Expandable bind:open={settings.expand.about}>
         {#snippet title()}
           <span class="px-2 py-1 w-full">
-            {$t('cards.site.about')}
+            About
           </span>
         {/snippet}
         <Markdown source={community_view.community.description} />
@@ -335,7 +335,7 @@
         <Expandable bind:open={settings.expand.team}>
           {#snippet title()}
             <span class="px-2 py-1 w-full">
-              {$t('cards.community.moderators')}
+              Moderators
             </span>
           {/snippet}
           <ItemList

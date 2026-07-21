@@ -18,7 +18,7 @@
   import { goto } from '$app/navigation'
   import { env } from '$env/dynamic/public'
   import { validateInstance } from '$lib/api/client.svelte'
-  import { t } from '$lib/app/i18n'
+
   import { DEFAULT_INSTANCE_URL } from '$lib/app/instance.svelte'
   import VirtualList from '$lib/app/render/VirtualList.svelte'
   import Avatar from '$lib/ui/generic/Avatar.svelte'
@@ -63,7 +63,7 @@
       }, 2000)
     } catch {
       toast({
-        content: $t('toast.failFetchInstances'),
+        content:'Failed to fetch available servers.',
         type: 'error',
       })
     }
@@ -71,17 +71,17 @@
 </script>
 
 <svelte:head>
-  <title>{$t('form.signup.title')}</title>
+  <title>Sign Up</title>
 </svelte:head>
 
 <div class="mx-auto max-w-xl flex flex-col gap-4 my-auto h-max w-full">
   <Button href="/accounts" class="mb-4 w-max" rounding="pill">
     <Icon src={ArrowLeft} size="16" micro />
-    {$t('common.back')}
+    Back
   </Button>
-  <Header>{$t('form.signup.title')}</Header>
-  <p>{$t('form.signup.description')}</p>
-  <Note>{$t('form.signup.info')}</Note>
+  <Header>Sign Up</Header>
+  <p>Choose the server your account's information will be hosted on.</p>
+  <Note>You can access all content across the Fediverse regardless of your account's server, it is generally okay to pick any of the following.</Note>
   {#if instances}
     <CommonList>
       <VirtualList
@@ -127,7 +127,7 @@
               {#if instance.recommended}
                 <p class="text-xs inline-flex items-center gap-1">
                   <Icon src={CheckCircle} size="14" micro class="inline" />
-                  {$t('form.signup.recommended')}
+                  Recommended
                 </p>
               {/if}
             </div>
@@ -146,7 +146,7 @@
           goto(`/signup/${encodeURIComponent(selectedInstance)}`)
         } else {
           toast({
-            content: $t('toast.failInstanceURL'),
+            content:'Failed to contact that server URL with those settings. Is it down?',
             type: 'error',
           })
         }
@@ -157,7 +157,7 @@
   >
     <TextInput
       bind:value={selectedInstance}
-      label={$t('form.signup.chooseInstance')}
+      label=Choose a server
       required
       {placeholder}
       oninput={() => {
@@ -171,7 +171,7 @@
       loading={validating}
       disabled={validating}
     >
-      {$t('form.submit')}
+      Submit
     </Button>
   </form>
 </div>

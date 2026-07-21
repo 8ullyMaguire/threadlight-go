@@ -2,7 +2,7 @@
   import { client } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import FormattedNumber from '$lib/ui/util/FormattedNumber.svelte'
   import { toast } from 'mono-svelte'
   import { ChevronDown, ChevronUp, Icon } from 'svelte-hero-icons/dist'
@@ -30,7 +30,7 @@
   const voteOnTag = async (newVote: number) => {
     if (navigator.vibrate) navigator.vibrate(1)
     if (!profile.current?.jwt) {
-      toast({ content: $t('toast.loginVoteGate'), type: 'warning' })
+      toast({ content:'You must be logged in to vote.', type: 'warning' })
       return
     }
 
@@ -86,7 +86,7 @@
         : 'btn-tertiary hover:bg-primary-100 dark:hover:bg-primary-900',
     ]}
     aria-pressed={userVote === 1}
-    aria-label={$t('post.actions.vote.upvote')}
+    aria-label=Upvote
   >
     <Icon src={ChevronUp} size="14" micro />
     <span class="text-xs font-medium tabular-nums">
@@ -115,7 +115,7 @@
         : 'btn-tertiary hover:bg-red-100 dark:hover:bg-red-900',
     ]}
     aria-pressed={userVote === -1}
-    aria-label={$t('post.actions.vote.downvote')}
+    aria-label=Downvote
   >
     <Icon src={ChevronDown} size="14" micro />
   </button>

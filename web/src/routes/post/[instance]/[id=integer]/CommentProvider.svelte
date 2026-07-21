@@ -3,7 +3,7 @@
   import { page } from '$app/state'
   import type { CommentSortType, CommentView, PostView } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
   import CommentForm from '$lib/feature/comment/CommentForm.svelte'
   import CommentListVirtualizer from '$lib/feature/comment/CommentListVirtualizer.svelte'
@@ -75,7 +75,7 @@
         onclick={() => (commenting = true)}
       >
         <Icon src={ChatBubbleOvalLeft} size="16" micro />
-        {$t('routes.post.addComment')}
+        Add a comment
       </Button>
 
       {#snippet action()}
@@ -85,16 +85,16 @@
             bind:value={settings.defaultSort.comments}
             onchange={onupdate}
           >
-            <Option icon={Fire} value="Hot">{$t('filter.sort.hot')}</Option>
+            <Option icon={Fire} value="Hot">Hot</Option>
             <Option icon={Trophy} value="Top">
-              {$t('filter.sort.top.label')}
+              Top
             </Option>
-            <Option icon={Star} value="New">{$t('filter.sort.new')}</Option>
+            <Option icon={Star} value="New">New</Option>
             <Option icon={Clock} value="Old">
-              {$t('filter.sort.old')}
+              Old
             </Option>
             <Option icon={ArrowTrendingDown} value="Controversial">
-              {$t('filter.sort.controversial')}
+              Controversial
             </Option>
           </Select>
           <Button
@@ -121,7 +121,7 @@
       onfocus={() => (commenting = true)}
       tools={commenting}
       preview={commenting}
-      placeholder={commenting ? undefined : $t('routes.post.addComment')}
+      placeholder={commenting ? undefined :'Add a comment'}
       rows={commenting ? 7 : 1}
       oncancel={() => (commenting = false)}
     />
@@ -135,16 +135,16 @@
       bind:value={settings.defaultSort.comments}
       onchange={onupdate}
     >
-      <Option icon={Fire} value="Hot">{$t('filter.sort.hot')}</Option>
+      <Option icon={Fire} value="Hot">Hot</Option>
       <Option icon={Trophy} value="Top">
-        {$t('filter.sort.top.label')}
+        Top
       </Option>
-      <Option icon={Star} value="New">{$t('filter.sort.new')}</Option>
+      <Option icon={Star} value="New">New</Option>
       <Option icon={Clock} value="Old">
-        {$t('filter.sort.old')}
+        Old
       </Option>
       <Option icon={ArrowTrendingDown} value="Controversial">
-        {$t('filter.sort.controversial')}
+        Controversial
       </Option>
     </Select>
     <Button
@@ -161,7 +161,7 @@
   <EndPlaceholder alignment="center">
     {#snippet action()}
       <Button href={postLink(post.post)} icon={PlusCircle} rounding="pill">
-        {$t('routes.post.thread.allComments')}
+        All comments
       </Button>
     {/snippet}
   </EndPlaceholder>
@@ -183,9 +183,7 @@
     class="mt-2 -mb-2 -mx-2.5 w-max"
   >
     <Icon src={PlusCircle} size="16" micro />
-    {$t('comment.more', {
-      comments: tree[0].comment_view.comment.path.split('.').length - 2,
-    })}
+    `${tree[0].comment_view.comment.path.split('.').length - 2} more`
   </Button>
   <div
     class="border-l h-4 -mb-5 ml-2.5 border-slate-200 dark:border-zinc-800"

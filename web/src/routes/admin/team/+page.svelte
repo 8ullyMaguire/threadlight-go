@@ -2,7 +2,7 @@
   import { client } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import UserAutocomplete from '$lib/feature/user/UserAutocomplete.svelte'
   import UserLink from '$lib/feature/user/UserLink.svelte'
   import Placeholder from '$lib/ui/info/Placeholder.svelte'
@@ -22,7 +22,7 @@
   ): Promise<void | number> {
     if (!confirm)
       return toast({
-        content: $t('toast.removeAdminWarning'),
+        content:'Are you sure you want to remove that admin?',
         action: () => removeAdmin(id, true),
       })
 
@@ -36,7 +36,7 @@
 
       data.site.admins = res.admins
       toast({
-        content: $t('toast.removeAdmin'),
+        content:'Removed that admin.',
         type: 'success',
       })
     } catch (err) {
@@ -48,14 +48,14 @@
   }
 </script>
 
-<Header pageHeader>{$t('routes.admin.team.title')}</Header>
+<Header pageHeader>Admins</Header>
 {#if data.site}
   <ul>
     {#if data.site.admins.length <= 0}
       <Placeholder
         icon={QuestionMarkCircle}
-        title={$t('routes.admin.team.empty.title')}
-        description={$t('routes.admin.team.empty.description')}
+        title=No admins
+        description=Somehow there's no admins of this site. How??
       />
     {:else}
       <CommonList items={data.site?.admins ?? []}>
@@ -113,7 +113,7 @@
       submit
       icon={Plus}
     >
-      {$t('common.add')}
+      Add
     </Button>
   </form>
 {/if}

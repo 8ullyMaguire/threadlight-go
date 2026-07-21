@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PrivateMessageView } from '$lib/api/types'
-  import { t } from '$lib/app/i18n'
+
   import Markdown from '$lib/app/markdown/Markdown.svelte'
   import { publishedToDate } from '$lib/ui/util/date'
   import { Button, Menu, MenuButton } from 'mono-svelte'
@@ -58,7 +58,7 @@
         class="opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-all shrink-0"
         size="square-md"
         rounding="pill"
-        title={$t('post.actions.more.actions')}
+        title=Actions
       >
         <Icon src={EllipsisVertical} size="16" micro />
       </Button>
@@ -69,7 +69,7 @@
         onclick={() => ondelete?.(true)}
         icon={Trash}
       >
-        {$t('post.actions.more.delete')}
+        Delete
       </MenuButton>
     {:else}
       <MenuButton
@@ -77,7 +77,7 @@
         onclick={() => onreport?.(true)}
         icon={Flag}
       >
-        {$t('moderation.report')}
+        Report
       </MenuButton>
     {/if}
   </Menu>

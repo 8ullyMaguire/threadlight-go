@@ -4,7 +4,7 @@
   import type { PrivateMessageResponse } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import MarkdownEditor from '$lib/app/markdown/MarkdownEditor.svelte'
   import { settings } from '$lib/app/settings.svelte'
   import { report } from '$lib/feature/moderation/moderation'
@@ -145,20 +145,18 @@
 
 <svelte:head>
   <title>
-    {$t('routes.inbox.messages.indicator', {
-      user: data.creator.value.person_view.person.name,
-    })}
+    `Messaging ${data.creator.value.person_view.person.name}`
   </title>
 </svelte:head>
 
 <Header pageHeader>
-  {$t('filter.inbox.messages')}
+  Messages
   {#snippet extended()}
     <div class="flex flex-wrap gap-4">
       <Button
         size="square-md"
         href="."
-        title={$t('common.back')}
+        title=Back
         icon={ArrowLeft}
       ></Button>
       <UserLink avatar user={data.creator.value.person_view.person} />
@@ -176,19 +174,16 @@
     <ul id="chat-window" class="flex flex-col gap-1 flex-1 px-4 py-4 min-h-0">
       <div class="mt-auto"></div>
       <p class="mx-auto mt-auto text-slate-400 dark:text-zinc-600 text-center">
-        {$t('routes.inbox.messages.conversation', {
-          user:
-            data.creator.value.person_view.person.name +
+        `This is the beginning of your conversation with ${data.creator.value.person_view.person.name +
             '@' +
-            new URL(data.creator.value.person_view.person.actor_id).hostname,
-        })}
+            new URL(data.creator.value.person_view.person.actor_id).hostname}`
       </p>
       {#if data.message.value.private_messages.length % data.limit == 0}
         <Button
           onclick={() => loadMore(++page)}
           color="ghost"
           size="square-md"
-          title={$t('common.next')}
+          title=Next
           icon={ChevronUp}
           class="mx-auto"
         />
@@ -291,7 +286,7 @@
           </Button>
         {/if}
         <Button
-          title={$t('common.send')}
+          title=Send
           size="custom"
           rounding="xl"
           class="aspect-square h-9 flex-1"

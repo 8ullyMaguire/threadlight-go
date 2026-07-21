@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { Button } from 'mono-svelte'
   import { ArrowLeft, Icon } from 'svelte-hero-icons/dist'
   import LoginPage from '../../login/+page.svelte'
@@ -13,6 +13,6 @@
     onclick={() => history?.back()}
   >
     <Icon src={ArrowLeft} size="16" micro />
-    {$t('account.accounts')}
+    Accounts
   </Button>
 </LoginPage>

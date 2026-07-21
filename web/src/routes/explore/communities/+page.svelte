@@ -1,6 +1,6 @@
 <script lang="ts">
   import { navigating, page } from '$app/state'
-  import { t } from '$lib/app/i18n'
+
   import CommunityItem from '$lib/feature/community/CommunityItem.svelte'
   import CommunityItemBig from '$lib/feature/community/CommunityItemBig.svelte'
   import Fixate from '$lib/ui/generic/Fixate.svelte'
@@ -42,14 +42,14 @@
     {#if data.communities.length == 0}
       <Placeholder
         icon={QuestionMarkCircle}
-        title={$t('routes.search.noResults.title')}
-        description={$t('routes.search.noResults.description')}
+        title=No results
+        description=There are no results that match that filter. Try refining your search.
       />
     {/if}
 
     {#if showTop}
       <EndPlaceholder size="lg" margin="md">
-        {$t('routes.search.top')}
+        Top results
       </EndPlaceholder>
       <div
         class="grid md:grid-cols-2 xl:grid-cols-3 gap-4 items-center border-0!"
@@ -74,7 +74,7 @@
 
     {#if data.communities.slice(showTop ? 3 : 0).length > 0}
       <EndPlaceholder size="lg" margin="md">
-        {$t('routes.search.other')}
+        Other results
       </EndPlaceholder>
     {/if}
     {#if data.communities}

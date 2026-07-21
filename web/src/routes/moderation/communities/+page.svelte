@@ -1,13 +1,13 @@
 <script lang="ts">
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import CommunityItem from '$lib/feature/community/CommunityItem.svelte'
   import { CommonList, Header } from '$lib/ui/layout'
   import { Button, Spinner } from 'mono-svelte'
 </script>
 
 <Header pageHeader>
-  {$t('nav.communities')}
+  Communities
 </Header>
 <div class="w-full h-full flex flex-col mt-4">
   {#if !profile.current.user}
@@ -45,7 +45,7 @@
             size="sm"
             class="h-max self-center"
           >
-            {$t('routes.moderation.feed')}
+            Reports
           </Button>
           <div class="w-2"></div>
           <Button
@@ -55,7 +55,7 @@
             size="sm"
             class="h-max self-center"
           >
-            {$t('routes.moderation.manage.title')}
+            Manage
           </Button>
         </CommunityItem>
       {/snippet}

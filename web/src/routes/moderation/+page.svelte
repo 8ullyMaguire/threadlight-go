@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
   import { client } from '$lib/api/client.svelte'
-  import { t } from '$lib/app/i18n'
+
   import { searchParam } from '$lib/app/util.svelte'
   import CommunityLink from '$lib/feature/community/CommunityLink.svelte'
   import Fixate from '$lib/ui/generic/Fixate.svelte'
@@ -68,7 +68,7 @@
       }),
     )
 
-    toast({ content: $t('routes.moderation.markAllComplete'), type: 'success' })
+    toast({ content:'Batch action completed.', type: 'success' })
     await goto(page.url, { invalidateAll: true })
 
     batch.progress = -1
@@ -76,7 +76,7 @@
 </script>
 
 <Header pageHeader>
-  {$t('routes.moderation.title')}
+  Moderation
   {#snippet extended()}
     <div class="flex flex-row gap-2 flex-wrap items-end">
       <Select
@@ -89,11 +89,11 @@
         {#snippet customLabel()}
           <span class="flex items-center gap-1">
             <Icon src={Funnel} size="15" mini />
-            {$t('filter.filter')}
+            Filter
           </span>
         {/snippet}
-        <Option value="all">{$t('filter.location.all')}</Option>
-        <Option value="unread">{$t('filter.unread')}</Option>
+        <Option value="all">All</Option>
+        <Option value="unread">Unread</Option>
       </Select>
       <Button
         loading={batch.progress >= 0}
@@ -104,21 +104,21 @@
         color="primary"
       >
         <Icon src={Check} size="16" mini />
-        {$t('routes.moderation.markAll')}
+        Mark page resolved
       </Button>
     </div>
     {#if data.filters.community}
       <ul class="font-normal flex flex-col gap-2 mt-2">
         <li>
           <span class="text-sm text-slate-600 dark:text-zinc-400">
-            {$t('form.post.community')}
+            Community
           </span>
           {#await client().getCommunity({ id: data.filters.community })}
             <Spinner width={24} />
           {:then community}
             <a
               class="inline"
-              aria-label={$t('common.remove')}
+              aria-label=Remove
               href="?community="
             >
               <Icon src={XMark} size="16" micro class="inline" />
@@ -173,8 +173,8 @@
   <div class="h-full grid place-items-center">
     <Placeholder
       icon={ShieldCheck}
-      title={$t('routes.moderation.empty.title')}
-      description={$t('routes.moderation.empty.description')}
+      title=No new reports
+      description=When submissions are reported, you can act on them here.
     />
   </div>
 {/if}

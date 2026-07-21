@@ -4,7 +4,7 @@
   import type { PostView } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import MarkdownEditor from '$lib/app/markdown/MarkdownEditor.svelte'
   import { settings } from '$lib/app/settings.svelte'
   import { placeholders } from '$lib/app/util.svelte'
@@ -110,10 +110,7 @@
   <div class="mb-3">
     <MultiSelect
       options={['normal', 'poll']}
-      optionNames={[
-        $t('form.post.types.normal'),
-        $t('form.post.types.poll'),
-        $t('form.post.types.event'),
+      optionNames={['Discussion','Poll','Event',
       ]}
       bind:selected={form.type}
     />
@@ -179,11 +176,11 @@
         {#await autofill(new URL(form.url))}
           <div class="w-full h-48 grid place-items-center">
             <TextLoader>
-              {$t('form.post.fetching')}
+              Fetching site metadata
             </TextLoader>
           </div>
           <Button size="lg" color="secondary" onclick={history.back}>
-            {$t('common.cancel')}
+            Cancel
           </Button>
         {:then url}
           {#if !url}
@@ -202,13 +199,13 @@
               history.back()
             }}
           >
-            {$t('form.submit')}
+            Submit
           </Button>
         {:catch err}
           <ErrorContainer scope="-1" message={err} />
         {/await}
         <Switch class="mt-4" bind:checked={settings.forms.autosubmitAutofill}>
-          {$t('form.post.autosubmit')}
+          Submit automatically
         </Switch>
       {/key}
     {/if}
@@ -234,7 +231,7 @@
     {@render title()}
   {:else}
     <Header class="font-bold text-xl">
-      {editPost ? $t('form.post.edit') : $t('form.post.create')}
+      {editPost ?'Edit post' :'Create post'}
     </Header>
   {/if}
   <ErrorContainer scope="post-form" />
@@ -242,7 +239,7 @@
     {#if !form.community}
       <ObjectAutocomplete
         listing_type="All"
-        label={$t('form.post.community')}
+        label=Community
         onselect={(i) => {
           form.community = i.community
         }}
@@ -250,7 +247,7 @@
       />
     {:else}
       <div class="flex flex-col gap-1">
-        <Label>{$t('form.post.community')}</Label>
+        <Label>Community</Label>
         <Button
           class="w-full"
           onclick={() => (form.community = undefined)}
@@ -280,11 +277,11 @@
     required
     bind:value={form.title}
     placeholder={placeholders.get('post')}
-    label={$t('form.post.title')}
+    label=Title
     class="font-display font-medium text-2xl"
   />
   <MarkdownEditor
-    label={$t('form.post.body')}
+    label=Body
     bind:value={form.body}
     placeholder={placeholders.get('body')}
     previewButton
@@ -292,7 +289,7 @@
 
   {#if form.type == 'normal'}
     <TextInput
-      label={$t('form.post.url')}
+      label=URL
       bind:value={form.url}
       placeholder={placeholders.get('url')}
     >
@@ -304,10 +301,10 @@
           size="custom"
           disabled={!form.url || !URL.canParse(form.url)}
           icon={Sparkles}
-          aria-label={$t('form.post.generateTitle')}
+          aria-label=Autofill post
           onclick={() =>
             modal({
-              title: $t('form.post.generateTitle'),
+              title:'Autofill post',
               snippet: autofillPostModal,
               actions: [],
             })}
@@ -318,7 +315,7 @@
 
   {#if form.type == 'poll' && form.poll}
     <div>
-      <Label>{$t('post.poll.choices')}</Label>
+      <Label>Choices</Label>
       <CommonList>
         <!--eslint-disable-next-line @typescript-eslint/no-unused-vars-->
         {#each form.poll.choices as _, index}
@@ -333,7 +330,7 @@
               <Button
                 onclick={() => form.poll?.choices.splice(index, 1)}
                 size="square-md"
-                aria-label={$t('post.actions.more.delete')}
+                aria-label=Delete
               >
                 <Icon src={Trash} size="16" mini />
               </Button>
@@ -353,19 +350,19 @@
             class="font-medium w-full px-4 py-2! flex flex-row items-center gap-1 justify-center cursor-pointer"
           >
             <Icon src={Plus} size="16" micro />
-            {$t('common.add')}
+            Add
           </button>
         </li>
       </CommonList>
     </div>
 
     <EndPlaceholder margin="bottom-lg">
-      <Select label={$t('post.poll.mode')} bind:value={form.poll!.mode}>
+      <Select label=Mode bind:value={form.poll!.mode}>
         <Option value="single">
-          {$t('post.poll.single')}
+          Single choice
         </Option>
         <Option value="multiple">
-          {$t('post.poll.multiple')}
+          Multiple choice
         </Option>
       </Select>
       {#snippet action()}
@@ -416,17 +413,17 @@
           }}
           icon={Photo}
         >
-          {$t('form.post.uploadImage')}
+          Upload image
         </Button>
         {#if form.url && URL.canParse(form.url)}
           <Button
             class="animate-pop-in"
             color={(form.altText ?? '') != '' ? 'primary' : 'secondary'}
             onclick={() =>
-              modal({ title: $t('form.post.altText'), snippet: altText })}
+              modal({ title:'Alt text', snippet: altText })}
             icon={ChatBubbleBottomCenterText}
           >
-            {$t('form.post.altText')}
+            Alt text
           </Button>
         {/if}
         {#if form.url}
@@ -438,13 +435,13 @@
             color={form.thumbnail ? 'primary' : 'secondary'}
             icon={QrCode}
           >
-            {$t('form.post.customThumbnail')}
+            Set thumbnail
           </Button>
         {/if}
       {/if}
       {#if form.language === undefined}
         <Button onclick={() => (form.language = '')} icon={Language}>
-          {$t('form.post.setLanguage')}
+          Set language
         </Button>
       {/if}
       {#await extendedCommunity then communityView}
@@ -453,10 +450,10 @@
             color={form.flairList.length > 0 ? 'primary' : 'secondary'}
             class="animate-pop-in"
             onclick={() =>
-              modal({ title: $t('form.post.flair'), snippet: flairs })}
+              modal({ title:'Add flair', snippet: flairs })}
             icon={Tag}
           >
-            {$t('form.post.flair')}
+            Add flair
           </Button>
         {/if}
       {/await}
@@ -467,7 +464,7 @@
     {#if site.data}
       <Select
         class="w-max"
-        label={$t('settings.app.lang.title')}
+        label=Language
         bind:value={
           () => form.language,
           (v) => {
@@ -478,7 +475,7 @@
       >
         <Option value="">
           <Icon src={XMark} size="16" micro />
-          {$t('form.post.unset')}
+          Unset
         </Option>
         {#each site.data?.all_languages as language}
           <Option value={language.id.toString()}>{language.name}</Option>
@@ -491,9 +488,9 @@
     {/if}
   {/if}
 
-  <Switch bind:checked={form.nsfw}>{$t('form.post.nsfw')}</Switch>
+  <Switch bind:checked={form.nsfw}>NSFW</Switch>
 
   <Button submit color="primary" {loading} size="lg" class="mt-auto">
-    {$t('form.submit')}
+    Submit
   </Button>
 </form>

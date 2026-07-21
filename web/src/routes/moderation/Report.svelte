@@ -2,7 +2,7 @@
   import { getClient } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import CommentItem from '$lib/feature/comment/CommentItem.svelte'
   import PrivateMessage from '$lib/feature/inbox/PrivateMessage.svelte'
   import type { ReportView } from '$lib/feature/moderation/report'
@@ -91,8 +91,8 @@
 
       toast({
         content: item.resolved
-          ? $t('toast.resolveReport')
-          : $t('toast.unresolveReport'),
+          ?'Resolved that report.'
+          :'Unresolved that report.',
         type: 'success',
       })
     } catch (err) {
@@ -117,7 +117,7 @@
   </div>
 </Modal>
 
-<Modal title={$t('moderation.reason')} bind:open={reasonsModal}>
+<Modal title=Reason bind:open={reasonsModal}>
   <div class="flex flex-col divide-y divide-slate-200 dark:divide-zinc-800">
     {#each items as item}
       <div class="py-2">
@@ -135,7 +135,7 @@
 <div class={['flex flex-row flex-wrap gap-4']}>
   {#if item.type == 'comment' || item.type == 'post'}
     <div class="flex flex-col gap-1.5">
-      <span class="text-xs font-medium">{$t('form.post.community')}</span>
+      <span class="text-xs font-medium">Community</span>
       <a
         href="?community={item.item.community.id}"
         class="flex items-center gap-1 font-medium hover:underline"
@@ -178,8 +178,8 @@
     icon={CheckBadge}
   >
     {!item.resolved
-      ? $t('routes.moderation.resolve')
-      : $t('routes.moderation.unresolve')}
+      ?'Resolve'
+      :'Unresolve'}
   </Button>
 </div>
 
@@ -202,7 +202,7 @@
 <div class="flex flex-row gap-4 items-center flex-wrap">
   <div>
     <Label>
-      {$t('routes.moderation.reason')}
+      Reason
     </Label>
     <p>
       {item.reason}
@@ -220,7 +220,7 @@
   {#if item.resolver}
     <div>
       <Label>
-        {$t('routes.moderation.resolvedBy')}
+        Resolved by
       </Label>
       <UserLink avatar user={item.resolver} />
     </div>

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { navigating, page } from '$app/state'
-  import { t } from '$lib/app/i18n'
+
   import { Button, TextInput } from 'mono-svelte'
   import { MagnifyingGlass } from 'svelte-hero-icons/dist'
 
@@ -18,7 +18,7 @@
     bind:value={query}
     bind:element={searchElement}
     name="q"
-    placeholder={$t('routes.search.query')}
+    placeholder=Query
     size="lg"
     class="flex-1 rounded-full! h-full text-base!"
   />

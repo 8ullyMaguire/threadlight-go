@@ -3,7 +3,7 @@
   import type { Tagline } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import Markdown from '$lib/app/markdown/Markdown.svelte'
   import MarkdownEditor from '$lib/app/markdown/MarkdownEditor.svelte'
   import Placeholder from '$lib/ui/info/Placeholder.svelte'
@@ -31,7 +31,7 @@
         taglines: taglines,
       })
       toast({
-        content: $t('toast.updatedSite'),
+        content:'Updated your site.',
         type: 'success',
       })
     } catch (err) {
@@ -47,7 +47,7 @@
 
 {#if taglines.length > 0}
   <Header pageHeader class="justify-between">
-    {$t('routes.admin.taglines.title')}<Button
+    Taglines<Button
       color="primary"
       onclick={save}
       loading={saving}
@@ -55,7 +55,7 @@
       size="lg"
       class="h-max"
     >
-      {$t('common.save')}
+      Save
     </Button>
   </Header>
 
@@ -96,15 +96,15 @@
     <MarkdownEditor bind:value={newTagline} images={false} />
 
     <Button size="lg" submit icon={Plus}>
-      {$t('common.add')}
+      Add
     </Button>
   </form>
 {:else}
   <div class="my-auto">
     <Placeholder
       icon={Plus}
-      title={$t('routes.admin.taglines.empty.title')}
-      description={$t('routes.admin.taglines.empty.description')}
+      title=No taglines
+      description=A random tagline will appear on the site card when users visit your server.
     >
       <div
         class="mt-4 max-w-xl w-full flex flex-col gap-2 text-slate-900 dark:text-zinc-50"
@@ -121,17 +121,17 @@
         >
           <MarkdownEditor
             bind:value={newTagline}
-            placeholder={$t('routes.admin.taglines.add')}
+            placeholder=Add a tagline
             images={false}
           />
 
           <Button size="lg" submit icon={Plus}>
-            {$t('common.add')}
+            Add
           </Button>
         </form>
 
         <Button onclick={save} color="primary" size="lg" class="w-full">
-          {$t('common.save')}
+          Save
         </Button>
       </div>
     </Placeholder>

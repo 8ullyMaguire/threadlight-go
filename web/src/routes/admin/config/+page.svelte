@@ -3,7 +3,7 @@
   import type { EditSite } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import MarkdownEditor from '$lib/app/markdown/MarkdownEditor.svelte'
   import ImageInputUpload from '$lib/ui/form/ImageInputUpload.svelte'
   import { Header } from '$lib/ui/layout'
@@ -45,7 +45,7 @@
         ...formData,
       })
       toast({
-        content: $t('toast.updatedSite'),
+        content:'Updated your site.',
         type: 'success',
       })
     } catch (err) {
@@ -62,7 +62,7 @@
 </script>
 
 <svelte:head>
-  <title>{$t('routes.admin.title')}</title>
+  <title>Administration</title>
 </svelte:head>
 
 <form
@@ -72,22 +72,22 @@
     save()
   }}
 >
-  <Header pageHeader>{$t('routes.admin.config.title')}</Header>
+  <Header pageHeader>Configuration</Header>
   {#if formData}
     <TextInput
       bind:value={() => formData.name ?? '', (v) => (formData.description = v)}
-      label={$t('form.name')}
+      label=Name
     />
     <TextInput
       bind:value={
         () => formData.description ?? '', (v) => (formData.description = v)
       }
-      label={$t('form.description')}
+      label=Description
     />
     <MarkdownEditor
       previewButton
       bind:value={() => formData.sidebar ?? '', (v) => (formData.sidebar = v)}
-      label={$t('routes.admin.config.sidebar')}
+      label=Sidebar
     />
     <MarkdownEditor
       previewButton
@@ -95,90 +95,90 @@
         () => formData.legal_information ?? '',
         (v) => (formData.legal_information = v)
       }
-      label={$t('routes.legal.title')}
+      label=Legal
     />
     <ImageInputUpload
-      label={$t('routes.admin.config.icon')}
+      label=Icon
       bind:imageUrl={formData.icon}
     />
     <ImageInputUpload
-      label={$t('routes.admin.config.banner')}
+      label=Banner
       bind:imageUrl={formData.banner}
     />
     <Switch bind:checked={formData.enable_downvotes}>
-      {$t('routes.admin.config.downvotesEnabled')}
+      Enable downvotes
     </Switch>
     <Switch bind:checked={formData.enable_nsfw}>
-      {$t('routes.admin.config.nsfwEnabled')}
+      Enable NSFW
     </Switch>
     <Select
-      label={$t('routes.admin.config.registration.label')}
+      label=Registration mode
       bind:value={formData.registration_mode}
       class="w-max"
     >
       <Option value="Open">
-        {$t('routes.admin.config.registration.open')}
+        Open
       </Option>
       <Option value="RequireApplication">
-        {$t('routes.admin.config.registration.application')}
+        Require application
       </Option>
       <Option value="Closed">
-        {$t('routes.admin.config.registration.closed')}
+        Closed
       </Option>
     </Select>
     {#if formData.registration_mode == 'RequireApplication'}
       <MarkdownEditor
         previewButton
-        label={$t('routes.admin.config.applicationQuestion')}
+        label=Application question
         bind:value={formData.application_question}
       />
     {/if}
     <Switch bind:checked={formData.community_creation_admin_only}>
-      {$t('routes.admin.config.adminCommunityOnly')}
+      Only admins can create communities
     </Switch>
     <Switch bind:checked={formData.require_email_verification}>
-      {$t('routes.admin.config.requireVerifyEmail')}
+      Require email verification
     </Switch>
     <Switch bind:checked={formData.application_email_admins}>
-      {$t('routes.admin.config.emailAdminsOnApplication')}
+      Email admins on receiving new applications
     </Switch>
     <Switch bind:checked={formData.reports_email_admins}>
-      {$t('routes.admin.config.emailAdminsOnReport')}
+      Email admins on receiving new reports
     </Switch>
     <Select
-      label={$t('routes.admin.config.listingType.label')}
+      label=Listing Type
       bind:value={formData.default_post_listing_type}
       class="w-max"
     >
-      <Option value="All">{$t('routes.admin.config.listingType.all')}</Option>
+      <Option value="All">All</Option>
       <Option value="Local">
-        {$t('routes.admin.config.listingType.local')}
+        Local
       </Option>
     </Select>
     <Switch bind:checked={formData.private_instance}>
-      {$t('routes.admin.config.private')}
+      Private instance
     </Switch>
     <Switch bind:checked={formData.hide_modlog_mod_names}>
-      {$t('routes.admin.config.hideModlogModNames')}
+      Hide modlog mod names
     </Switch>
     <TextInput
       bind:value={formData.slur_filter_regex}
-      label={$t('routes.admin.config.slurFilter')}
+      label=Slur filter regex
       placeholder="(word1|word2)"
     />
     <Switch bind:checked={formData.federation_enabled}>
-      {$t('routes.admin.config.federation')}
+      Federation enabled
     </Switch>
     <Switch bind:checked={formData.federation_debug}>
-      {$t('routes.admin.config.federationDebug')}
+      Federation debug mode
     </Switch>
     <Switch bind:checked={formData.captcha_enabled}>
-      {$t('routes.admin.config.captcha.enabled')}
+      CAPTCHA enabled
     </Switch>
 
     <div class="space-y-1">
-      <Label>{$t('form.profile.languages.title')}</Label>
-      <p>{$t('form.profile.languages.description')}</p>
+      <Label>Languages</Label>
+      <p>If any are set, you will only see content explicitly tagged as that language. Most content, untagged, falls under 'Undetermined'.</p>
       <Material rounding="xl" color="uniform" class="dark:bg-zinc-950">
         {#if site.data}
           <div class="flex gap-2 flex-wrap flex-row">
@@ -187,7 +187,7 @@
                 <button {@attach attachment} type="button">
                   <Badge color="blue-subtle">
                     <Icon src={Plus} micro size="14" />
-                    {$t('common.add')}
+                    Add
                   </Badge>
                 </button>
               {/snippet}
@@ -222,6 +222,6 @@
     </div>
   {/if}
   <Button color="primary" size="lg" loading={saving} disabled={saving} submit>
-    {$t('common.save')}
+    Save
   </Button>
 </form>

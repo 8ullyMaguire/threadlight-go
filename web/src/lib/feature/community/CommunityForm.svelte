@@ -3,7 +3,7 @@
   import { client, site } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import MarkdownEditor from '$lib/app/markdown/MarkdownEditor.svelte'
   import ImageInputUpload from '$lib/ui/form/ImageInputUpload.svelte'
   import { Header } from '$lib/ui/layout'
@@ -92,7 +92,7 @@
           })
 
       toast({
-        content: $t('toast.updatedCommunity'),
+        content:'Your community was updated.',
         type: 'success',
       })
 
@@ -146,11 +146,11 @@
   class="flex flex-col gap-4 h-full w-full"
 >
   {#if formtitle}{@render formtitle()}{:else}
-    <Header>{$t('form.post.community')}</Header>
+    <Header>Community</Header>
   {/if}
   <TextInput
     required
-    label={$t('form.name')}
+    label=Name
     bind:value={formData.name}
     oninput={() => {
       formData.name = formData.name.toLowerCase().replaceAll(' ', '_')
@@ -159,26 +159,26 @@
   />
   <TextInput
     required
-    label={$t('form.profile.displayName')}
+    label=Display name
     bind:value={formData.displayName}
   />
   <div class="flex flex-row gap-4 flex-wrap *:flex-1">
     <ImageInputUpload
       bind:imageUrl={formData.icon}
-      label={$t('routes.admin.config.icon')}
+      label=Icon
     />
     <ImageInputUpload
       bind:imageUrl={formData.banner}
-      label={$t('routes.admin.config.banner')}
+      label=Banner
     />
   </div>
   <MarkdownEditor
     previewButton
-    label={$t('routes.admin.config.sidebar')}
+    label=Sidebar
     bind:value={formData.sidebar}
   />
 
-  <Switch bind:checked={formData.nsfw}>{$t('post.badges.nsfw')}</Switch>
+  <Switch bind:checked={formData.nsfw}>NSFW</Switch>
   <Switch bind:checked={formData.postsLockedToModerators}>
     Only moderators can post
   </Switch>
@@ -188,7 +188,7 @@
   </Select>
 
   <div class="space-y-1">
-    <Label>{$t('form.profile.languages.title')}</Label>
+    <Label>Languages</Label>
     <Material rounding="xl" color="uniform" class="dark:bg-zinc-950">
       {#if site.data}
         <div class="flex gap-2 flex-wrap flex-row">
@@ -197,7 +197,7 @@
               <button {@attach attachment} type="button">
                 <Badge color="blue-subtle">
                   <Icon src={Plus} micro size="14" />
-                  {$t('common.add')}
+                  Add
                 </Badge>
               </button>
             {/snippet}
@@ -242,6 +242,6 @@
     loading={formData.submitting}
     disabled={formData.submitting}
   >
-    {edit ? $t('common.save') : $t('form.submit')}
+    {edit ?'Save' :'Submit'}
   </Button>
 </form>

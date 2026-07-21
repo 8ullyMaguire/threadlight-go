@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
 
   const sizes = {
     sm: 'text-2xl',
@@ -35,7 +34,7 @@
    border-b border-slate-100 dark:border-zinc-900 font-display margin z-0 mb-3 sm:mb-6`,
   ]}
   {style}
-  aria-label={$t('aria.element.pageHeader')}
+  aria-label=Page header
 >
   {#if children}
     <h1

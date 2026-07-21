@@ -1,7 +1,7 @@
 <script lang="ts">
   import { client } from '$lib/api/client.svelte'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import { Button, TextInput, toast } from 'mono-svelte'
 
   interface Props {
@@ -39,8 +39,8 @@
   }}
   class="contents"
 >
-  <TextInput bind:value={flair} label={$t('nav.commands.content')} required />
+  <TextInput bind:value={flair} label=Content required />
   <Button {loading} submit color="primary" size="lg">
-    {$t('form.submit')}
+    Submit
   </Button>
 </form>

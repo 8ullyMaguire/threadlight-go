@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
   import { Option, Select } from 'mono-svelte'
   import { type SelectProps } from 'mono-svelte/forms/select/Select.svelte'
@@ -22,14 +22,14 @@
     {#if showLabel}
       <span class="flex items-center gap-1">
         <Icon src={ViewColumns} size="14" micro />
-        {$t('filter.view.label')}
+        View
       </span>
     {/if}
   {/snippet}
   <Option value="cozy" icon={RectangleGroup}>
-    {$t('filter.view.cozy')}
+    Cozy
   </Option>
   <Option value="compact" icon={Bars3}>
-    {$t('filter.view.compact')}
+    Compact
   </Option>
 </Select>

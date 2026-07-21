@@ -1,6 +1,6 @@
 <script lang="ts">
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import ItemList from '$lib/ui/generic/ItemList.svelte'
   import Placeholder from '$lib/ui/info/Placeholder.svelte'
   import { Button } from 'mono-svelte'
@@ -43,8 +43,8 @@
   </ItemList>
 {:else}
   <Placeholder
-    title={$t('routes.profile.blocks.empty.instance.title')}
-    description={$t('routes.profile.blocks.empty.instance.description')}
+    title=No blocked servers
+    description=Blocking a server will hide posts from its communities from feeds.
     icon={Check}
     class="my-auto"
   />

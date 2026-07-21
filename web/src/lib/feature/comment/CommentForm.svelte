@@ -3,7 +3,7 @@
   import type { CommentResponse } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import Markdown from '$lib/app/markdown/Markdown.svelte'
   import MarkdownEditor from '$lib/app/markdown/MarkdownEditor.svelte'
   import { placeholders } from '$lib/app/util.svelte'
@@ -104,9 +104,9 @@
       {...rest}
       {rows}
       placeholder={locked
-        ? $t('comment.locked')
+        ?'This post is locked.'
         : banned
-          ? $t('comment.banned')
+          ?'You are banned from this community.'
           : (placeholder ?? placeholders.get('comment'))}
       bind:value
       disabled={locked || loading || banned}
@@ -120,7 +120,7 @@
             rounding="xl"
             class="w-7.5 h-7.5"
             color={language != undefined ? 'primary' : 'ghost'}
-            title={$t('form.profile.languages.title')}
+            title=Languages
           >
             <Icon src={Language} size="14" micro />
           </Button>
@@ -132,7 +132,7 @@
             onclick={() => (language = undefined)}
           >
             <Icon src={XMark} size="16" micro />
-            {$t('form.post.unset')}
+            Unset
           </MenuButton>
           {#each site.data?.all_languages as languageOption}
             <MenuButton
@@ -149,7 +149,7 @@
       <div class="flex-1"></div>
       {#if actions}
         <Button
-          title={$t('common.cancel')}
+          title=Cancel
           onclick={() => oncancel?.(true)}
           color="tertiary"
           size="square-md"
@@ -168,7 +168,7 @@
           rounding="xl"
           {loading}
           disabled={locked || loading || banned}
-          title={$t('form.submit')}
+          title=Submit
           size="square-lg"
         >
           {#snippet prefix()}

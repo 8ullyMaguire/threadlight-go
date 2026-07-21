@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { Button, Modal, TextInput } from 'mono-svelte'
   import ImageAttachForm from './ImageAttachForm.svelte'
   import Switch from './Switch.svelte'
@@ -13,11 +13,11 @@
   let customUrl = $state(false)
 </script>
 
-<Modal bind:open title={$t('form.post.uploadImage')}>
+<Modal bind:open title=Upload image>
   <div class="flex justify-between gap-1 flex-wrap">
     <Switch
       options={[false, true]}
-      optionNames={[$t('common.attach'), $t('content.url')]}
+      optionNames={['Attach file','URL']}
       bind:selected={customUrl}
     />
 
@@ -29,7 +29,7 @@
       size="xs"
       rounding="xl"
     >
-      {$t('common.remove')}
+      Remove
     </Button>
   </div>
 
@@ -49,12 +49,12 @@
       class="contents"
     >
       <TextInput
-        label={$t('content.url')}
+        label=URL
         bind:value={imageUrl}
         pattern="http(s)?:\/\/(.*).(png|jpg|gif|avif|webp|jpeg|jxl|svg|bmp)"
       />
       <Button submit color="primary" size="lg">
-        {$t('form.submit')}
+        Submit
       </Button>
     </form>
   {:else}

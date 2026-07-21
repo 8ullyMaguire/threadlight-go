@@ -1,5 +1,5 @@
 <script>
-  import { t } from '$lib/app/i18n'
+
   import { LINKED_INSTANCE_URL } from '$lib/app/instance.svelte'
   import { Header } from '$lib/ui/layout'
   import { Material } from 'mono-svelte'
@@ -8,9 +8,9 @@
 <div class="flex flex-col h-max my-auto gap-2 max-w-xl mx-auto">
   <Material rounding="3xl" padding="xl" color="success" class="space-y-2">
     <Header>
-      {$t('message.success')}
+      Success
     </Header>
-    <p class="text-lg">{$t('routes.verifyEmail.message')}</p>
+    <p class="text-lg">Your email was verified. You can now close this window.</p>
   </Material>
   {#if !LINKED_INSTANCE_URL}
     <p>

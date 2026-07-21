@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import CommunityHeader from '$lib/feature/community/CommunityHeader.svelte'
   import { ban } from '$lib/feature/moderation/moderation'
   import UserAutocomplete from '$lib/feature/user/UserAutocomplete.svelte'
@@ -30,7 +30,7 @@
 >
   <Expandable>
     {#snippet title()}
-      {$t('routes.moderation.manage.modlogs')}
+      Recent moderation logs
     {/snippet}
     <Material
       color="uniform"
@@ -53,7 +53,7 @@
             href="/modlog?community={data.community.community_view.community
               .id}"
           >
-            {$t('form.post.readMore')}
+            Read more
           </Button>
         </div>
       {/await}
@@ -62,15 +62,13 @@
   <Expandable>
     {#snippet title()}
       <div>
-        {$t('moderation.ban.banFromCommunity')}
+        Ban user from community
       </div>
     {/snippet}
     <div class="flex flex-col gap-4">
       <Switch
         options={[false, true]}
-        optionNames={[
-          $t('routes.moderation.manage.ban'),
-          $t('routes.moderation.manage.unban'),
+        optionNames={['Ban','Unban',
         ]}
         bind:selected={banFromCommunity}
       />

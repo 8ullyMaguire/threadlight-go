@@ -3,7 +3,7 @@
   import { client } from '$lib/api/client.svelte'
   import type { GetPosts, PostView } from '$lib/api/types'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import VirtualList from '$lib/app/render/VirtualList.svelte'
   import { settings } from '$lib/app/settings.svelte'
   import { ReactiveState } from '$lib/app/util.svelte'
@@ -160,8 +160,8 @@
       <div class="h-full grid place-items-center my-8">
         <Placeholder
           icon={ArchiveBox}
-          title={$t('routes.frontpage.empty.title')}
-          description={$t('routes.frontpage.empty.description')}
+          title=No posts
+          description=There are no posts that match this filter.
         >
           <Button
             href="/communities"
@@ -169,7 +169,7 @@
             color="primary"
             icon={ArrowTopRightOnSquare}
           >
-            {$t('nav.communities')}
+            Communities
           </Button>
         </Placeholder>
       </div>
@@ -225,7 +225,7 @@
                 class="text-slate-400 dark:text-zinc-600 w-full"
                 size="xs"
               >
-                {$t('settings.lemmy.contentFilter.minimized')}
+                Content hidden by your filters
               </Button>
             {/if}
           </li>
@@ -252,7 +252,7 @@
           disabled={loading}
           onclick={() => loadMore()}
         >
-          {$t('message.retry')}
+          Retry
         </Button>
       </Material>
     {:else if hasMore}
@@ -262,14 +262,11 @@
     {:else}
       <div style="border-top-width: 0">
         <EndPlaceholder>
-          {$t('routes.frontpage.endFeed', {
-            community_name:
-              params.community_name ??
-              'Lemmy. There are no more posts. You saw them all.',
-          })}
+          `You have reached the end of {{community_name; undefined:the feed.; default:${params.community_name ??
+              'Lemmy. There are no more posts. You saw them all.'}.}}`
           {#snippet action()}
             <Button color="tertiary" icon={ChevronDoubleUp}>
-              {$t('routes.post.scrollToTop')}
+              Scroll to top
             </Button>
           {/snippet}
         </EndPlaceholder>

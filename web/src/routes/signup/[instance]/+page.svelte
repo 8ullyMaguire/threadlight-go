@@ -6,7 +6,7 @@
   import type { GetCaptchaResponse } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import Markdown from '$lib/app/markdown/Markdown.svelte'
   import EntityHeader from '$lib/ui/generic/EntityHeader.svelte'
   import ErrorContainer, {
@@ -92,7 +92,7 @@
       if (res?.jwt) {
         await profile.add(res.jwt, page.params.instance!, instanceType)
 
-        toast({ content: $t('toast.logIn'), type: 'success' })
+        toast({ content:'Successfully logged in.', type: 'success' })
         goto('/')
       } else if (
         res.verify_email_sent ||
@@ -103,11 +103,11 @@
         if (registrationMode == 'RequireApplication')
           return (stage = 'application')
       } else {
-        throw new Error($t('toast.failSignup'))
+        throw new Error('Failed to sign up.')
       }
 
       toast({
-        content: $t('toast.successSignup'),
+        content:'Signed up.',
         type: 'success',
       })
     } catch (err) {
@@ -134,7 +134,7 @@
       } else if (res.verify_email_sent) {
         pushError({
           scope: page.url.pathname,
-          message: $t('form.signup.verify.error'),
+          message:'Your email has not been verified.',
         })
       } else {
         stage = 'application'
@@ -150,7 +150,7 @@
 </script>
 
 <svelte:head>
-  <title>{$t('account.signup')}</title>
+  <title>Sign up</title>
 </svelte:head>
 
 <div class="flex flex-col md:flex-row flex-1/2 gap-8 h-full max-w-6xl mx-auto">
@@ -164,10 +164,10 @@
     >
       <Button href="/accounts" class=" mb-4 w-max">
         <Icon src={ArrowLeft} size="16" micro />
-        {$t('common.back')}
+        Back
       </Button>
       <Header>
-        {$t('form.signup.title')}
+        Sign Up
         {#snippet extended()}
           <div class="md:hidden">
             <EntityHeader
@@ -186,7 +186,7 @@
         <div class="flex flex-col md:flex-row gap-2 *:flex-1">
           <TextInput
             bind:value={email}
-            label={$t('form.email')}
+            label=Email
             required={data.site_view.local_site.require_email_verification}
             type="email"
             icon={Envelope}
@@ -194,7 +194,7 @@
           />
           <TextInput
             bind:value={username}
-            label={$t('form.username')}
+            label=Username
             required
             icon={AtSymbol}
           />
@@ -202,14 +202,14 @@
         <div class="flex flex-col md:flex-row *:flex-1 gap-2">
           <TextInput
             bind:value={password}
-            label={$t('form.password')}
+            label=Password
             required
             type="password"
             icon={Key}
           />
           <TextInput
             bind:value={passwordVerify}
-            label={$t('form.confirmPassword')}
+            label=Confirm password
             required
             type="password"
             icon={Key}
@@ -217,7 +217,7 @@
         </div>
         {#if data.site_view.local_site.registration_mode == 'RequireApplication'}
           <Material rounding="2xl" color="warning" icon={ExclamationTriangle}>
-            {$t('form.signup.application.info')}
+            To join this server, you must fill out this application, and wait to be accepted. You will receive an email if your application is accepted.
           </Material>
           <Material rounding="2xl" color="info">
             {#if data.site_view.local_site.application_question}
@@ -227,7 +227,7 @@
             {/if}
           </Material>
           <TextArea
-            label={$t('form.signup.application.label')}
+            label=Application
             required
             bind:value={application}
           />
@@ -264,7 +264,7 @@
             </div>
           </Material>
         {/if}
-        <Switch bind:checked={nsfw}>{$t('form.profile.showNSFW')}</Switch>
+        <Switch bind:checked={nsfw}>Show NSFW content</Switch>
         <input type="dn" name="honeypot" bind:value={honeypot} class="hidden" />
         <Button
           submit
@@ -274,17 +274,17 @@
           disabled={submitting}
           class="mt-auto"
         >
-          {$t('form.submit')}
+          Submit
         </Button>
       {:else}
         <div class="my-auto">
           <Placeholder
             icon={XCircle}
-            title={$t('form.signup.closed.title')}
-            description={$t('form.signup.closed.description')}
+            title=Registrations closed
+            description=This server has registrations closed. Find another server.
           >
             <Button icon={Plus} href="/signup">
-              {$t('form.signup.closed.anotherInstance')}
+              Find another server
             </Button>
           </Placeholder>
         </div>
@@ -293,7 +293,7 @@
   {:else if stage == 'verify'}
     <div class="flex-2/3 flex flex-col h-full justify-center gap-8">
       <ErrorContainer scope={page.url.pathname} />
-      <h2 class="font-medium text-3xl">{$t('toast.verifyEmail')}</h2>
+      <h2 class="font-medium text-3xl">A verification link was sent to your email. Verify your email, then log in.</h2>
       <form
         onsubmit={(e) => {
           e.preventDefault()
@@ -309,22 +309,22 @@
           rounding="pill"
           class="self-start"
         >
-          {$t('form.signup.verify.submit')}
+          I've verified my email
         </Button>
         <Button href="/signup" rounding="pill">
           <Icon src={ArrowLeft} size="16" micro />
-          {$t('common.back')}
+          Back
         </Button>
       </form>
     </div>
   {:else if stage == 'application'}
     <div class="flex-2/3 flex flex-col h-full justify-center gap-8">
       <h2 class="font-medium text-3xl">
-        {$t('form.signup.application.notice')}
+        Your signup is now pending. Once an administrator reviews it, you will receive an email if it was accepted. You then can log in.
       </h2>
       <Button href="/signup" rounding="pill">
         <Icon src={ArrowLeft} size="16" micro />
-        {$t('common.back')}
+        Back
       </Button>
     </div>
   {/if}

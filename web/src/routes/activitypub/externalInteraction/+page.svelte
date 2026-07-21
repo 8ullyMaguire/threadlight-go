@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { ResolveObjectResponse } from '$lib/api/types'
-  import { t } from '$lib/app/i18n'
+
   import CommentItem from '$lib/feature/comment/CommentItem.svelte'
   import CommunityItem from '$lib/feature/community/CommunityItem.svelte'
   import { PostItem } from '$lib/feature/post'
@@ -19,7 +19,7 @@
 <div class="flex flex-col items-center justify-center h-full gap-3">
   {#await data.resolved}
     <Spinner width={32} />
-    <span class="font-medium text-lg">{$t('routes.search.federating')}...</span>
+    <span class="font-medium text-lg">Federating...</span>
   {:then object}
     <div class="w-full max-w-md">
       {#if object.community}

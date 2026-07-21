@@ -1,5 +1,3 @@
-import { t } from './i18n'
-
 // eslint-disable-next-line
 export function errorMessage(error: any, instance?: string): string {
   try {
@@ -27,7 +25,7 @@ export function errorMessage(error: any, instance?: string): string {
     }
     if (!error) throw error
 
-    return t.get(`error.${error}`)
+    return error
   } catch {
     return error as any
   }

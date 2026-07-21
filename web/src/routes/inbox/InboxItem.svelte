@@ -1,7 +1,7 @@
 <script lang="ts">
   import { getClient } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import Markdown from '$lib/app/markdown/Markdown.svelte'
   import { escapeHtml } from '$lib/app/util.svelte'
   import CommentItem from '$lib/feature/comment/CommentItem.svelte'
@@ -80,8 +80,8 @@
     icon={item.read ? EyeSlash : Eye}
   >
     {item.read
-      ? $t('post.actions.more.markUnread')
-      : $t('post.actions.more.markRead')}
+      ?'Mark as unread'
+      :'Mark as read'}
   </Button>
   <Button
     href={item.type == 'private_message'
@@ -92,7 +92,7 @@
     class="shrink-0"
     onclick={() => markAsRead(true)}
   >
-    {$t('common.jump')}
+    Jump
   </Button>
 {/snippet}
 
@@ -123,28 +123,19 @@
           {#if item.type == 'comment_reply'}
             <Markdown
               inline
-              source={$t('routes.inbox.item.reply', {
-                user: `**${item.creator.name}**`,
-                post: `**${escapeHtml(item.item.post.name)}**`,
-              })}
+              source={`**${item.creator.name}** replied to you in **${escapeHtml(item.item.post.name)}**`}
               noStyle
             />
           {:else if item.type == 'person_mention'}
             <Markdown
               inline
-              source={$t('routes.inbox.item.mention', {
-                user: `**${item.creator.name}**`,
-                post: `**${escapeHtml(item.item.post.name)}**`,
-              })}
+              source={`**${item.creator.name}** mentioned you in **${escapeHtml(item.item.post.name)}**`}
               noStyle
             />
           {:else if item.type == 'private_message'}
             <Markdown
               inline
-              source={$t('routes.inbox.item.message', {
-                user: `**${item.creator.name}**`,
-                recipient: `**${escapeHtml(item.item.recipient.name)}**`,
-              })}
+              source={`**${item.creator.name}** messaged **${escapeHtml(item.item.recipient.name)}**`}
               noStyle
             />
           {/if}

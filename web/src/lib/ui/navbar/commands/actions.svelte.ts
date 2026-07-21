@@ -1,7 +1,6 @@
 import { goto } from '$app/navigation'
 import { page } from '$app/state'
 import { profile as currentProfile, type ProfileInfo } from '$lib/app/auth'
-import { t } from '$lib/app/i18n'
 import { settings } from '$lib/app/settings.svelte'
 import { theme, type ThemeData } from '$lib/app/theme/theme.svelte'
 import { fullCommunityName } from '$lib/app/util.svelte'
@@ -70,7 +69,7 @@ export function getGroups(
 ): Group[] {
   return [
     {
-      name: t.get('nav.commands.recents'),
+      name: 'Recents',
       actions: resumables.map((r) => ({
         name: r.name,
         icon: r.avatar ?? PencilSquare,
@@ -78,23 +77,23 @@ export function getGroups(
       })),
     },
     {
-      name: t.get('nav.commands.contextual'),
+      name: 'On this page',
       actions: contextual ?? [],
     },
     {
-      name: t.get('nav.commands.main'),
+      name: 'Main',
       actions: [
-        { href: '/', name: t.get('nav.home'), icon: Home, shortcut: 'h' },
+        { href: '/', name: 'Home', icon: Home, shortcut: 'h' },
         {
           href: '/communities',
-          name: t.get('nav.communities'),
+          name: 'Communities',
           icon: GlobeAlt,
         },
         ...(currentProfile.isMod()
           ? [
               {
                 href: '/moderation',
-                name: t.get('nav.moderation'),
+                name: 'Moderation',
                 icon: ShieldCheck,
               },
             ]
@@ -103,7 +102,7 @@ export function getGroups(
           ? [
               {
                 href: '/admin',
-                name: t.get('nav.admin'),
+                name: 'Admin',
                 icon: ServerStack,
               },
             ]
@@ -111,121 +110,121 @@ export function getGroups(
       ],
     },
     {
-      name: t.get('nav.commands.feeds'),
+      name: 'Feeds',
       actions: [
         {
-          name: t.get('filter.location.label'),
+          name: 'Location',
           icon: GlobeAmericas,
           subActions: [
             {
-              name: t.get('filter.location.all'),
+              name: 'All',
               icon: GlobeAmericas,
               href: '/?type=All',
             },
             {
-              name: t.get('filter.location.local'),
+              name: 'Local',
               icon: MapPin,
               href: '/?type=Local',
             },
             {
-              name: t.get('filter.location.subscribed'),
+              name: 'Subscriptions',
               icon: Newspaper,
               href: '/?type=Subscribed',
             },
           ],
         },
         {
-          name: t.get('filter.sort.label'),
+          name: 'Sort',
           icon: ChartBar,
           subActions: [
             {
-              name: t.get('filter.sort.top.label'),
+              name: 'Top',
               icon: Trophy,
               subActions: [
                 {
-                  name: t.get('filter.sort.top.time.all'),
+                  name: 'All time',
                   icon: ChartBar,
                   href: '/?sort=TopAll',
                 },
                 {
-                  name: t.get('filter.sort.top.time.9months'),
+                  name: '9 months',
                   icon: ChartBar,
                   href: '/?sort=TopNineMonths',
                 },
                 {
-                  name: t.get('filter.sort.top.time.6months'),
+                  name: '6 months',
                   icon: ChartBar,
                   href: '/?sort=TopSixMonths',
                 },
                 {
-                  name: t.get('filter.sort.top.time.3months'),
+                  name: '3 months',
                   icon: ChartBar,
                   href: '/?sort=TopThreeMonths',
                 },
                 {
-                  name: t.get('filter.sort.top.time.month'),
+                  name: 'Past month',
                   icon: ChartBar,
                   href: '/?sort=TopMonth',
                 },
                 {
-                  name: t.get('filter.sort.top.time.week'),
+                  name: 'Past week',
                   icon: ChartBar,
                   href: '/?sort=TopWeek',
                 },
                 {
-                  name: t.get('filter.sort.top.time.day'),
+                  name: 'Past day',
                   icon: ChartBar,
                   href: '/?sort=TopDay',
                 },
                 {
-                  name: t.get('filter.sort.top.time.6hours'),
+                  name: '6 hours',
                   icon: ChartBar,
                   href: '/?sort=TopSixHour',
                 },
                 {
-                  name: t.get('filter.sort.top.time.hour'),
+                  name: 'Past hour',
                   icon: ChartBar,
                   href: '/?sort=TopHour',
                 },
               ],
             },
             {
-              name: t.get('filter.sort.active'),
+              name: 'Active',
               icon: ArrowTrendingUp,
               href: '/?sort=Active',
             },
             {
-              name: t.get('filter.sort.hot'),
+              name: 'Hot',
               icon: Fire,
               href: '/?sort=Hot',
             },
             {
-              name: t.get('filter.sort.scaled'),
+              name: 'Scaled',
               icon: Scale,
               href: '/?sort=Scaled',
             },
             {
-              name: t.get('filter.sort.new'),
+              name: 'New',
               icon: Star,
               href: '/?sort=New',
             },
             {
-              name: t.get('filter.sort.old'),
+              name: 'Old',
               icon: Clock,
               href: '/?sort=Old',
             },
             {
-              name: t.get('filter.sort.controversial'),
+              name: 'Controversial',
               icon: ArrowTrendingDown,
               href: '/?sort=Controversial',
             },
             {
-              name: t.get('filter.sort.mostcomments'),
+              name: 'Most Comments',
               icon: ChatBubbleOvalLeftEllipsis,
               href: '/?sort=MostComments',
             },
             {
-              name: t.get('filter.sort.newcomments'),
+              name: 'New Replies',
               icon: ChatBubbleLeftRight,
               href: '/?sort=NewComments',
             },
@@ -234,78 +233,78 @@ export function getGroups(
       ],
     },
     {
-      name: t.get('profile.profile'),
+      name: 'Profile',
       actions: profile.jwt
         ? [
             {
               href: '/profile/user',
-              name: t.get('profile.profile'),
+              name: 'Profile',
               icon: UserCircle,
             },
             {
               href: '/inbox',
-              name: t.get('profile.inbox'),
+              name: 'Inbox',
               icon: Inbox,
               shortcut: 'i',
             },
             {
               href: '/saved',
-              name: t.get('profile.saved'),
+              name: 'Saved',
               icon: Bookmark,
             },
             {
               href: '/accounts',
-              name: t.get('account.accounts'),
+              name: 'Accounts',
               icon: UserGroup,
             },
             {
               href: '/login',
-              name: t.get('account.login'),
+              name: 'Log in',
               icon: ArrowRightOnRectangle,
             },
             {
               href: '/signup',
-              name: t.get('account.signup'),
+              name: 'Sign up',
               icon: Identification,
             },
             {
               href: '/login/guest',
-              name: t.get('account.addGuest'),
+              name: 'Add guest',
               icon: Plus,
             },
             {
               href: '/inbox/messages',
-              name: t.get('filter.inbox.messages'),
+              name: 'Messages',
               icon: Envelope,
             },
           ]
         : [
             {
               href: '/login',
-              name: t.get('account.login'),
+              name: 'Log in',
               icon: ArrowRightOnRectangle,
             },
             {
               href: '/signup',
-              name: t.get('account.signup'),
+              name: 'Sign up',
               icon: Identification,
             },
             {
               href: '/login/guest',
-              name: t.get('account.addGuest'),
+              name: 'Add guest',
               icon: Plus,
             },
             {
               href: '/accounts',
-              name: t.get('account.accounts'),
+              name: 'Accounts',
               icon: UserGroup,
             },
           ],
     },
     {
-      name: t.get('account.accounts'),
+      name: 'Accounts',
       actions: profiles.map((p) => ({
-        name: p.username ?? t.get('account.guest'),
+        name: p.username ?? 'Guest',
         icon: p.avatar ?? UserCircle,
         detail: p.instance,
         handle: async () => {
@@ -320,65 +319,55 @@ export function getGroups(
       })),
     },
     {
-      name: t.get('nav.menu.app'),
+      name: 'App',
       actions: [
         {
           href: '/settings',
-          name: t.get('nav.menu.settings'),
+          name: 'Settings',
           icon: Cog6Tooth,
         },
         {
-          name: t.get('nav.commands.setView'),
+          name: 'Set view',
           icon: ViewColumns,
           subActions: [
             {
-              name: t.get('nav.commands.setViewTo', {
-                default: t.get('filter.view.compact'),
-              }),
+              name: `Set view to **${'Compact'}**`,
               icon: ViewColumns,
               handle: () => (settings.view = 'compact'),
             },
             {
-              name: t.get('nav.commands.setViewTo', {
-                default: t.get('filter.view.cozy'),
-              }),
+              name: `Set view to **${'Cozy'}**`,
               icon: ViewColumns,
               handle: () => (settings.view = 'cozy'),
             },
           ],
         },
         {
-          name: t.get('nav.commands.setColor'),
+          name: 'Set color scheme',
           icon: PaintBrush,
           subActions: [
             {
-              name: t.get('nav.commands.setColorTo', {
-                default: t.get('nav.menu.colorscheme.system'),
-              }),
+              name: `Set color scheme to **${'System'}**`,
               handle: () => (theme.colorScheme = 'system'),
               icon: ComputerDesktop,
             },
             {
-              name: t.get('nav.commands.setColorTo', {
-                default: t.get('nav.menu.colorscheme.light'),
-              }),
+              name: `Set color scheme to **${'Light'}**`,
               handle: () => (theme.colorScheme = 'light'),
               icon: Sun,
             },
             {
-              name: t.get('nav.commands.setColorTo', {
-                default: t.get('nav.menu.colorscheme.dark'),
-              }),
+              name: `Set color scheme to **${'Dark'}**`,
               handle: () => (theme.colorScheme = 'dark'),
               icon: Moon,
             },
           ],
         },
         {
-          name: t.get('nav.commands.setTheme'),
+          name: 'Set theme',
           icon: Swatch,
           subActions: td.themes.map((th) => ({
-            name: t.get('nav.commands.setThemeTo', { default: th.name }),
+            name: `Set theme to **${th.name}**`,
             icon: Swatch,
             handle: () => (theme.data.currentTheme = th.id),
           })),
@@ -386,17 +375,17 @@ export function getGroups(
       ],
     },
     {
-      name: t.get('nav.commands.content'),
+      name: 'Content',
       actions: [
         {
           href: '/create/post',
-          name: t.get('form.post.create'),
+          name: 'Create post',
           icon: PencilSquare,
         },
       ],
     },
     {
-      name: t.get('profile.subscribed'),
+      name: 'Subscriptions',
       actions:
         profile.user?.follows.map((f) => ({
           icon: f.community.icon ?? Newspaper,
@@ -416,19 +405,19 @@ export function getGroups(
 export function dynamicActions(query: string): Group {
   const actions = [
     {
-      name: t.get('nav.commands.search', { default: query.trim() }),
+      name: `Search for **${query.trim()}**`,
       icon: MagnifyingGlass,
       href: `/search?q=${query}`,
     },
     {
-      name: t.get('nav.commands.communities', { default: query.trim() }),
+      name: `Communities with **${query.trim()}**`,
       icon: Newspaper,
       href: `/explore/communities?q=${query}`,
     },
   ]
 
   return {
-    name: t.get('routes.search.other'),
+    name: 'Other results',
     actions: actions,
   }
 }

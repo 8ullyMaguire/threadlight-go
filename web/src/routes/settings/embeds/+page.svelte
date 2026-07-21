@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
   import { DOMAIN_REGEX_FORMS } from '$lib/app/util.svelte'
   import { CommonList } from '$lib/ui/layout'
@@ -12,8 +12,8 @@
 <CommonList>
   <ToggleSetting
     icon={CursorArrowRays}
-    title={$t('settings.embeds.clickToView.title')}
-    description={$t('settings.embeds.clickToView.description')}
+    title=Click to view
+    description=Only load embeds once you click on them.
     bind:checked={settings.embeds.clickToView}
   />
   <Setting icon={VideoCamera}>
@@ -22,7 +22,7 @@
     {/snippet}
     {#snippet description()}
       <span>
-        {$t('settings.embeds.youtube.description')}
+        The website to embed YouTube content in.
       </span>
     {/snippet}
     <Select bind:value={settings.embeds.youtube}>
@@ -34,15 +34,15 @@
   {#if settings.embeds.youtube == 'invidious'}
     <Setting>
       {#snippet title()}
-        <span>{$t('settings.embeds.instance.invidious')}</span>
+        <span>Invidious instance</span>
       {/snippet}
       {#snippet description()}
         <span>
-          {$t('settings.embeds.instance.description')}
+          The instance to embed YouTube content in.
         </span>
       {/snippet}
       <TextInput
-        label={$t('settings.embeds.instance.invidious')}
+        label=Invidious instance
         pattern={DOMAIN_REGEX_FORMS}
         bind:value={settings.embeds.invidious}
       />
@@ -51,15 +51,15 @@
   {#if settings.embeds.youtube == 'piped'}
     <Setting>
       {#snippet title()}
-        <span>{$t('settings.embeds.instance.piped')}</span>
+        <span>Piped instance</span>
       {/snippet}
       {#snippet description()}
         <span>
-          {$t('settings.embeds.instance.description')}
+          The instance to embed YouTube content in.
         </span>
       {/snippet}
       <TextInput
-        label={$t('settings.embeds.instance.piped')}
+        label=Piped instance
         pattern={DOMAIN_REGEX_FORMS}
         bind:value={settings.embeds.piped}
       />

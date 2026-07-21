@@ -1,7 +1,7 @@
 <script lang="ts">
   import { site } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { LINKED_INSTANCE_URL } from '$lib/app/instance.svelte'
   import { Menu, Spinner } from 'mono-svelte'
   import {
@@ -39,7 +39,7 @@
     }}
     icon={Home}
     href="/"
-    label={$t('nav.home')}
+    label=Home
     class={[
       'logo border-0 md:w-10! md:h-10 md:px-0! -order-1',
       !LINKED_INSTANCE_URL ? 'md:rounded-full!' : 'rounded-none!',
@@ -75,7 +75,7 @@
     {#if profile.isAdmin}
       <NavButton
         href="/admin"
-        label={$t('nav.admin')}
+        label=Admin
         icon={ServerStack}
         class="relative order-0"
         isSelectedFilter={(path) => path.startsWith('/admin')}
@@ -84,7 +84,7 @@
     {#if profile.isMod()}
       <NavButton
         href="/moderation"
-        label={$t('nav.moderation')}
+        label=Moderation
         class="relative order-0"
         icon={ShieldCheck}
       />
@@ -92,26 +92,26 @@
   </div>
   <NavButton
     href="/explore/communities"
-    label={$t('routes.explore.title')}
+    label=Explore
     icon={GlobeAlt}
     isSelectedFilter={(path) => path.startsWith('/explore')}
     class="order-1"
   />
   <NavButton
     href="/search"
-    label={$t('nav.search')}
+    label=Search
     icon={MagnifyingGlass}
     class="order-3 md:order-2"
   />
   <NavButton
     href="/plugins"
-    label={$t('nav.plugins')}
+    label=Plugins
     icon={PuzzlePiece}
     isSelectedFilter={(path) => path.startsWith('/plugins')}
     class="order-4 md:order-3"
   />
   <NavButton
-    label={$t('nav.create.label')}
+    label=Create
     href="/create"
     isSelectedFilter={(path) => path.startsWith('/create')}
     icon={PencilSquare}
@@ -126,7 +126,7 @@
           'transition-all relative grid place-items-center',
           ' group cursor-pointer order-4',
         ]}
-        title={$t('profile.profile')}
+        title=Profile
       >
         {#if profile.current?.user}
           <div

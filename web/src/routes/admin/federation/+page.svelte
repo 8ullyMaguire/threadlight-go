@@ -3,7 +3,7 @@
   import type { Instance } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import Placeholder from '$lib/ui/info/Placeholder.svelte'
   import { Header } from '$lib/ui/layout'
   import { publishedToDate } from '$lib/ui/util/date'
@@ -97,7 +97,7 @@
         blocked_instances: blockedInstances,
       })
       toast({
-        content: $t('toast.updatedSite'),
+        content:'Updated your site.',
         type: 'success',
       })
     } catch (err) {
@@ -119,7 +119,7 @@
     reader.onload = (e) => {
       if (!data.instances.value?.blocked) throw new Error('Missing instance')
       const content = e.target?.result
-      if (!content) toast({ content: $t('toast.failCSV'), type: 'warning' })
+      if (!content) toast({ content:'Failed to read CSV', type: 'warning' })
 
       try {
         const instances: Instance[] = []
@@ -143,12 +143,12 @@
 
         data.instances.value.blocked = instances
       } catch {
-        toast({ content: $t('toast.failCSV'), type: 'error' })
+        toast({ content:'Failed to read CSV', type: 'error' })
       }
     }
 
     reader.onerror = () =>
-      toast({ content: $t('toast.failCSV'), type: 'error' })
+      toast({ content:'Failed to read CSV', type: 'error' })
 
     reader.readAsText(files[0])
   }
@@ -159,27 +159,27 @@
 </script>
 
 <svelte:head>
-  <title>{$t('routes.admin.federation.title')}</title>
+  <title>Federation</title>
 </svelte:head>
 
 <Header pageHeader class="font-bold text-2xl flex items-center justify-between">
-  {$t('routes.admin.federation.title')}
+  Federation
   <Button color="primary" onclick={save} loading={saving} disabled={saving}>
-    {$t('common.save')}
+    Save
   </Button>
 </Header>
 {#if data.site && data.instances.value?.blocked}
   <FileInput preview={false} bind:files={csv}>
     {#snippet button()}
       <Button class="w-max" icon={Plus}>
-        {$t('routes.admin.federation.csv')}
+        Upload CSV
       </Button>
     {/snippet}
     {#snippet choose()}{/snippet}
   </FileInput>
   <div class="flex flex-col md:flex-row gap-4">
     <div class="flex-1 w-full max-h-168 h-full flex flex-col gap-2">
-      <h2 class="font-bold text-lg">{$t('routes.admin.federation.blocked')}</h2>
+      <h2 class="font-bold text-lg">Blocked servers</h2>
       <form
         onsubmit={preventDefault(() =>
           moderateInstance(blockInstance.instance, true),
@@ -187,7 +187,7 @@
         class="flex flex-row gap-2"
       >
         <TextInput
-          placeholder={$t('routes.admin.federation.blockplaceholder')}
+          placeholder=Block a server...
           class="flex-1"
           bind:value={blockInstance.instance}
         />
@@ -196,7 +196,7 @@
           loading={blockInstance.loading}
           disabled={blockInstance.loading}
         >
-          {$t('routes.admin.federation.block')}
+          Block
         </Button>
       </form>
       <Material class="h-full overflow-auto" color="uniform" rounding="2xl">
@@ -238,8 +238,8 @@
           {:else}
             <Placeholder
               icon={Check}
-              title={$t('routes.admin.federation.emptyBlock.title')}
-              description={$t('routes.admin.federation.emptyBlock.description')}
+              title=No blocked servers
+              description=Blocking an server will hide new submissions from that server.
             />
           {/if}
         </ul>
@@ -247,7 +247,7 @@
     </div>
     <div class="md:flex-1 w-full max-h-168 flex flex-col gap-2">
       <h2 class="font-bold text-lg flex items-center space-x-1">
-        <span>{$t('routes.admin.federation.allowed')}</span>
+        <span>Whitelisted servers</span>
         {#if allowInstance.instance || !(data.instances.value.allowed?.length == 0)}
           <Popover openOnHover placement="bottom-end">
             {#snippet target(attachment)}
@@ -260,7 +260,7 @@
               />
             {/snippet}
             <p class="font-normal">
-              {$t('routes.admin.federation.emptyAllow.description')}
+              Whitelisting an server will block every other server.
             </p>
           </Popover>
         {/if}
@@ -272,7 +272,7 @@
         class="flex flex-row gap-2"
       >
         <TextInput
-          placeholder={$t('routes.admin.federation.allowplaceholder')}
+          placeholder=Whitelist a server
           class="flex-1"
           bind:value={allowInstance.instance}
         />
@@ -281,7 +281,7 @@
           loading={allowInstance.loading}
           disabled={allowInstance.loading}
         >
-          {$t('routes.admin.federation.allow')}
+          Whitelist
         </Button>
       </form>
       <Material class="h-full overflow-auto" color="uniform" rounding="2xl">
@@ -320,10 +320,8 @@
             <div class="my-auto h-max">
               <Placeholder
                 icon={Check}
-                title={$t('routes.admin.federation.emptyAllow.title')}
-                description={$t(
-                  'routes.admin.federation.emptyAllow.description',
-                )}
+                title=No whitelisted servers
+                description={"Whitelisting an server will block every other server."}
               />
             </div>
           {/if}

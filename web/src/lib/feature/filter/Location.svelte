@@ -2,7 +2,7 @@
   import { page } from '$app/state'
   import { PiefedClient } from '$lib/api/piefed/adapter'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { searchParam } from '$lib/app/util.svelte'
   import { Option, Select } from 'mono-svelte'
   import { type SelectProps } from 'mono-svelte/forms/select/Select.svelte'
@@ -42,28 +42,28 @@
     {#if showLabel}
       <span class="flex items-center gap-1">
         <Icon src={GlobeAmericas} size="16" micro />
-        {$t('filter.location.label')}
+        Location
       </span>
     {/if}
   {/snippet}
   <Option value="All" icon={GlobeAmericas}>
-    {$t('filter.location.all')}
+    All
   </Option>
   {#if profile.client instanceof PiefedClient}
     <Option value="Popular" icon={ChartBar}>
-      {$t('filter.location.popular')}
+      Popular
     </Option>
   {/if}
-  <Option value="Local" icon={MapPin}>{$t('filter.location.local')}</Option>
+  <Option value="Local" icon={MapPin}>Local</Option>
   <Option
     value="Subscribed"
     disabled={profile.current?.jwt == undefined}
     icon={Newspaper}
   >
-    {$t('filter.location.subscribed')}
+    Subscriptions
   </Option>
   <Option value="ModeratorView" disabled={!profile.isMod()} icon={ShieldCheck}>
-    {$t('filter.location.moderator')}
+    Moderator
   </Option>
   {@render children?.()}
 </Select>

@@ -1,6 +1,5 @@
 import { client } from '$lib/api/client.svelte'
 import type { ListingType, SortType } from '$lib/api/types'
-import { t } from '$lib/app/i18n'
 import { settings } from '$lib/app/settings.svelte'
 import { ReactiveState, awaitIfServer } from '$lib/app/util.svelte'
 import { feed } from '$lib/feature/feeds/feed.svelte'
@@ -38,7 +37,7 @@ export async function load({ url, fetch, route }) {
     contextual: {
       actions: [
         {
-          name: t.get('routes.post.scrollToTop'),
+          name: 'Scroll to top',
           handle: () => window?.scrollTo({ top: 0, behavior: 'instant' }),
           icon: ChevronDoubleUp,
         },

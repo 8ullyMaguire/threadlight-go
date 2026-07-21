@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import { t } from '$lib/app/i18n'
+
   import PictrsImage from '$lib/feature/user/PictrsImage.svelte'
   import Fixate from '$lib/ui/generic/Fixate.svelte'
   import { Header, Pageination } from '$lib/ui/layout'
@@ -10,7 +10,7 @@
   let { data = $bindable() } = $props()
 </script>
 
-<Header pageHeader>{$t('routes.profile.media.title')}</Header>
+<Header pageHeader>Media</Header>
 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
   {#each data.images.value as image (image.local_image.pictrs_delete_token)}
     <div animate:flip={{ duration: 500, easing: expoInOut }}>

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state'
   import { client } from '$lib/api/client.svelte'
-  import { t } from '$lib/app/i18n'
+
   import { ThreadlightClient } from '$lib/api/threadlight/adapter'
   import type { SearchResultItem } from '$lib/api/threadlight/types'
   import { Tabs, CommonList, Header, SearchBar } from '$lib/ui/layout'
@@ -146,11 +146,11 @@
 </script>
 
 <svelte:head>
-  <title>{$t('routes.search.title')}</title>
+  <title>Search</title>
 </svelte:head>
 
 <Header pageHeader>
-  {$t('routes.search.title')}
+  Search
   {#snippet extended()}
     <form method="get" action="/search" class="contents" bind:this={form}>
       <SearchBar bind:query={filters.query} />
@@ -160,7 +160,7 @@
         <div
           class="text-xs text-slate-400 dark:text-zinc-500 -mt-1 mb-1 italic"
         >
-          {$t('routes.search.booleanHint') || 'Use AND, OR, NOT, "phrases", author:name, tag:tagname, community:name'}
+          Use AND, OR, NOT, "phrases", author:name, tag:tagname, community:name
         </div>
       {/if}
 
@@ -172,7 +172,7 @@
           class="flex items-center gap-1"
         >
           <Icon src={AdjustmentsHorizontal} mini size="15" />
-          {$t('filter.filters') || 'Filters'}
+          Filters
           <Icon src={filtersOpen ? ChevronUp : ChevronDown} mini size="12" />
         </Button>
       </div>
@@ -183,9 +183,9 @@
 <!-- Tabs -->
 <Tabs
   routes={[
-    { href: '?tab=posts', name: $t('content.posts') },
-    { href: '?tab=users', name: $t('content.users') },
-    { href: '?tab=communities', name: $t('content.communities') },
+    { href: '?tab=posts', name:'Posts' },
+    { href: '?tab=users', name:'Users' },
+    { href: '?tab=communities', name:'Communities' },
   ]}
   margin={false}
 />
@@ -199,13 +199,13 @@
   >
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <TextInput
-        label={$t('post.author') || 'Author'}
+        label=Author
         bind:value={filters.author}
         placeholder="author:username"
         size="sm"
       />
       <TextInput
-        label={$t('nav.create.community')}
+        label=Community
         bind:value={filters.community}
         placeholder="community:name"
         size="sm"
@@ -213,19 +213,19 @@
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
       <TextInput
-        label={$t('common.tags') || 'Tags'}
+        label=Tags
         bind:value={filters.tags}
         placeholder="tag1, tag2"
         size="sm"
       />
       <TextInput
-        label={$t('filter.dateFrom') || 'Date from'}
+        label=Date from
         type="date"
         bind:value={filters.dateFrom}
         size="sm"
       />
       <TextInput
-        label={$t('filter.dateTo') || 'Date to'}
+        label=Date to
         type="date"
         bind:value={filters.dateTo}
         size="sm"
@@ -233,11 +233,11 @@
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
       <Select
-        label={$t('filter.mood') || 'Mood'}
+        label=Mood
         bind:value={filters.mood}
         size="sm"
       >
-        <Option value="">{$t('content.all') || 'Any'}</Option>
+        <Option value="">'All'</Option>
         <Option value="0">Neutral</Option>
         <Option value="1">Happy</Option>
         <Option value="2">Sad</Option>
@@ -246,31 +246,31 @@
         <Option value="5">Informative</Option>
       </Select>
       <Select
-        label={$t('filter.sort') || 'Sort'}
+        label=Sort
         bind:value={filters.sort}
         size="sm"
       >
-        <Option value="relevance">{$t('filter.relevance') || 'Relevance'}</Option>
-        <Option value="newest">{$t('filter.newest') || 'Newest'}</Option>
-        <Option value="oldest">{$t('filter.oldest') || 'Oldest'}</Option>
-        <Option value="top">{$t('filter.top') || 'Top'}</Option>
+        <Option value="relevance">Relevance</Option>
+        <Option value="newest">Newest</Option>
+        <Option value="oldest">Oldest</Option>
+        <Option value="top">Top</Option>
       </Select>
     </div>
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
       <div class="flex items-center gap-2">
         <Switch bind:checked={filters.isEducational}>
-          {$t('filter.educational') || 'Educational'}
+          Educational
         </Switch>
       </div>
       <div class="flex items-center gap-2">
         <Switch bind:checked={filters.isNsfw}>
-          {$t('filter.nsfw') || 'NSFW'}
+          NSFW
         </Switch>
       </div>
     </div>
     <div class="flex gap-2 pt-1">
       <Button onclick={applyFilters} color="primary" size="sm">
-        {$t('common.apply') || 'Apply Filters'}
+        Apply Filters
       </Button>
     </div>
   </div>
@@ -282,8 +282,8 @@
   <div class="my-auto">
     <Placeholder
       icon={GlobeAmericas}
-      title={$t('routes.search.noResults.title')}
-      description={$t('routes.search.noResults.alt')}
+      title=No results
+      description=Search for anything across the fediverse.
     />
   </div>
 {:else if localResults && localResults.length === 0}
@@ -291,8 +291,8 @@
   <div class="my-auto">
     <Placeholder
       icon={MagnifyingGlass}
-      title={$t('routes.search.noResults.title')}
-      description={$t('routes.search.noResults.description')}
+      title=No results
+      description=There are no results that match that filter. Try refining your search.
     />
   </div>
 {:else}
@@ -455,8 +455,8 @@
         class="px-6"
       >
         {loadingMore
-          ? ($t('common.loading') || 'Loading...')
-          : ($t('common.loadMore') || 'Load More')}
+          ? 'Loading...'
+          : 'Load More'}
       </Button>
     </div>
   {/if}

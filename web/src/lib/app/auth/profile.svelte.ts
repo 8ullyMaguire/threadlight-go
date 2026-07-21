@@ -6,7 +6,6 @@ import type { Community, GetSiteResponse, MyUserInfo } from '$lib/api/types'
 import { publishedToDate } from '$lib/ui/util/date'
 import { toast } from 'mono-svelte'
 import { errorMessage } from '../error'
-import { t } from '../i18n'
 import { DEFAULT_INSTANCE_URL } from '../instance.svelte'
 import { instanceToURL, moveItem } from '../util.svelte'
 import { InboxService } from './inbox.svelte'
@@ -151,7 +150,7 @@ export class Profile {
           Profile.DONATION_REMINDER_INTERVAL
         ) {
           toast({
-            content: t.get('toast.lemmyDonate'),
+            content: "Your account's server runs Lemmy, and the developers are requesting donations. They are able to develop Lemmy as an open source platform, free of tracking and ads, thanks to the generosity of its users.\n\nAnnually, they ask you to consider donating to support their work, and allow them to continue maintaining and improving Lemmy.\n\n[Donate](https://join-lemmy.org/donate)\n\n*Note: this is a donation to Lemmy, not Photon.*",
             duration: 3600 * 1000,
             long: true,
           })

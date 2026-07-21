@@ -1,6 +1,6 @@
 <script>
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { Tabs } from '$lib/ui/layout'
   import { Badge } from 'mono-svelte'
 
@@ -22,27 +22,27 @@
   routes={[
     {
       href: '/admin/config',
-      name: $t('routes.admin.config.title'),
+      name:'Configuration',
     },
     {
       href: '/admin/applications',
-      name: $t('routes.admin.applications.title'),
+      name:'Applications',
     },
     {
       href: '/admin/taglines',
-      name: $t('routes.admin.taglines.title'),
+      name:'Taglines',
     },
     {
       href: '/admin/team',
-      name: $t('routes.admin.team.title'),
+      name:'Admins',
     },
     {
       href: '/admin/federation',
-      name: $t('routes.admin.federation.title'),
+      name:'Federation',
     },
     {
       href: '/admin/media',
-      name: $t('routes.admin.media.title'),
+      name:'Media',
     },
   ]}
 />

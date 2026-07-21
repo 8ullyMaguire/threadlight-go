@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  import { locale } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
 
   export function formatRelativeDate(

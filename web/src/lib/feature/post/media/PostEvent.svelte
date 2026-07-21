@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Post, PostEvent } from '$lib/api/types'
-  import { locale, t } from '$lib/app/i18n'
+
   import Blobs from '$lib/ui/generic/Blobs.svelte'
   import { publishedToDate } from '$lib/ui/util/date'
   import RelativeDate from '$lib/ui/util/RelativeDate.svelte'
@@ -76,7 +76,7 @@
     <Material rounding="2xl" color="info" class="space-y-1">
       <Icon src={MapPin} size="20" mini />
       <h4 class="capitalize text-xl font-display">
-        {$t('filter.location.label')}
+        Location
       </h4>
       <dl class="space-y-2">
         {#each Object.keys(post.event.location) as key}

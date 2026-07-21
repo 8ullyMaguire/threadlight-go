@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import VirtualList from '$lib/app/render/VirtualList.svelte'
   import Placeholder from '$lib/ui/info/Placeholder.svelte'
   import { publishedToDate } from '$lib/ui/util/date'
@@ -25,7 +25,7 @@
 {#if data}
   <div class="flex flex-col gap-4">
     <form onsubmit={() => triggerFilter(filter)}>
-      <TextInput label={$t('filter.filter')} bind:value={filter}></TextInput>
+      <TextInput label=Filter bind:value={filter}></TextInput>
     </form>
     {#if data.linked && data.linked.length > 0}
       {#if loading}

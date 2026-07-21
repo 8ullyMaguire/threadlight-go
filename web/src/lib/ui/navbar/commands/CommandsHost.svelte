@@ -5,7 +5,7 @@
 </script>
 
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { Modal, TextLoader } from 'mono-svelte'
 
   function handleKeydown(event: KeyboardEvent) {
@@ -26,7 +26,7 @@
     {#await import('./Commands.svelte')}
       <div class="h-128 flex flex-col gap-2 items-center justify-center">
         <TextLoader>
-          {$t('nav.commands.downloading')}
+          Downloading actions
         </TextLoader>
       </div>
     {:then { default: Commands }}

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { invalidate } from '$app/navigation'
   import { page as pageData } from '$app/state'
-  import { t } from '$lib/app/i18n'
+
   import { Button } from 'mono-svelte'
   import { ChevronLeft, ChevronRight, Icon } from 'svelte-hero-icons/dist'
   import { backOut } from 'svelte/easing'
@@ -44,7 +44,7 @@
 
 {#if hasMore || page != 1}
   <nav
-    aria-label={$t('aria.pagination.nav')}
+    aria-label=Pagination
     class={[
       'flex flex-row gap-4 items-center justify-center',
       'rounded-full overflow-hidden w-max mx-auto p-1',
@@ -62,7 +62,7 @@
         href={customHref(href?.(cursor?.back ?? page - 1))}
         color="tertiary"
         onclick={() => invalidate(pageData.url)}
-        title={$t('common.back')}
+        title=Back
         rounding="pill"
         size="custom"
         class="text-inherit dark:text-inherit p-1"
@@ -94,7 +94,7 @@
       href={customHref(href?.(cursor?.next ?? page + 1))}
       color="tertiary"
       onclick={() => invalidate(pageData.url)}
-      title={$t('common.next')}
+      title=Next
       size="custom"
       rounding="pill"
       class="text-inherit dark:text-inherit p-1"

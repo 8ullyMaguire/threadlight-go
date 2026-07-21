@@ -3,7 +3,7 @@
   import { resolve } from '$app/paths'
   import type { Person, PrivateMessageView } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import UserAutocomplete from '$lib/feature/user/UserAutocomplete.svelte'
   import Avatar from '$lib/ui/generic/Avatar.svelte'
   import Fixate from '$lib/ui/generic/Fixate.svelte'
@@ -80,7 +80,7 @@
   let { data } = $props()
 </script>
 
-<Modal bind:open={searchModal.open} title={$t('routes.inbox.messages.start')}>
+<Modal bind:open={searchModal.open} title=Start chat>
   <UserAutocomplete
     listing_type="All"
     hideOwnUser={true}
@@ -103,12 +103,12 @@
     onclick={() => (searchModal.open = !searchModal.open)}
   >
     <Icon src={ChatBubbleOvalLeftEllipsis} size="18" mini />
-    {$t('routes.inbox.messages.start')}
+    Start chat
   </Button>
 {/snippet}
 
 <Header pageHeader extended={startChat}>
-  {$t('filter.inbox.messages')}
+  Messages
 </Header>
 {#await data.messages}
   <div class="w-full h-full flex flex-col gap-2">
@@ -132,7 +132,7 @@
 
   {#if previews.length == 0}
     <Placeholder
-      title={$t('routes.inbox.messages.empty.title')}
+      title=No messages
       icon={Inbox}
       class="my-auto"
     >

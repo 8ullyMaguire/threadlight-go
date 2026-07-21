@@ -2,7 +2,7 @@
   import { page } from '$app/state'
   import { PiefedClient } from '$lib/api/piefed/adapter'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { searchParam } from '$lib/app/util.svelte'
   import { Option, Select } from 'mono-svelte'
   import { type SelectProps } from 'mono-svelte/forms/select/Select.svelte'
@@ -55,36 +55,36 @@
     {#snippet customLabel()}
       <span class="flex items-center gap-1">
         <Icon src={ChartBar} size="13" micro />
-        {$t('filter.sort.label')}
+        Sort
       </span>
     {/snippet}
     <Option value="Active" icon={ArrowTrendingUp}>
-      {$t('filter.sort.active')}
+      Active
     </Option>
     <Option value="Hot" icon={Fire}>
-      {$t('filter.sort.hot')}
+      Hot
     </Option>
     <Option value="Scaled" icon={Scale}>
-      {$t('filter.sort.scaled')}
+      Scaled
     </Option>
     <Option value="TopAll" icon={Trophy}>
-      {$t('filter.sort.top.label')}
+      Top
     </Option>
     <Option value="New" icon={Star}>
-      {$t('filter.sort.new')}
+      New
     </Option>
     {#if !(profile.client instanceof PiefedClient)}
       <Option value="Old" icon={Clock}>
-        {$t('filter.sort.old')}
+        Old
       </Option>
       <Option value="Controversial" icon={ArrowTrendingDown}>
-        {$t('filter.sort.controversial')}
+        Controversial
       </Option>
       <Option value="MostComments" icon={ChatBubbleOvalLeft}>
-        {$t('filter.sort.mostcomments')}
+        Most Comments
       </Option>
       <Option value="NewComments" icon={ChatBubbleLeftRight}>
-        {$t('filter.sort.newcomments')}
+        New Replies
       </Option>
     {/if}
   </Select>
@@ -100,41 +100,41 @@
       {#snippet customLabel()}
         <span class="flex items-center gap-1">
           <Icon src={Clock} size="15" micro />
-          {$t('filter.sort.top.time.label')}
+          Period
         </span>
       {/snippet}
       <Option value="TopAll" icon={PlusCircle}>
-        {$t('filter.sort.top.time.all')}
+        All time
       </Option>
       <Option value="TopYear" icon={Calendar}>
-        {$t('filter.sort.top.time.year')}
+        Past year
       </Option>
       <Option value="TopNineMonths" icon={Calendar}>
-        {$t('filter.sort.top.time.9months')}
+        9 months
       </Option>
       <Option value="TopSixMonths" icon={Calendar}>
-        {$t('filter.sort.top.time.6months')}
+        6 months
       </Option>
       <Option value="TopThreeMonths" icon={Calendar}>
-        {$t('filter.sort.top.time.3months')}
+        3 months
       </Option>
       <Option value="TopMonth" icon={CalendarDays}>
-        {$t('filter.sort.top.time.month')}
+        Past month
       </Option>
       <Option value="TopWeek" icon={CalendarDays}>
-        {$t('filter.sort.top.time.week')}
+        Past week
       </Option>
       <Option value="TopDay" icon={Sun}>
-        {$t('filter.sort.top.time.day')}
+        Past day
       </Option>
       <Option value="TopTwelveHour" icon={Clock}>
-        {$t('filter.sort.top.time.12hours')}
+        12 hours
       </Option>
       <Option value="TopSixHour" icon={Clock}>
-        {$t('filter.sort.top.time.6hours')}
+        6 hours
       </Option>
       <Option value="TopHour" icon={Clock}>
-        {$t('filter.sort.top.time.hour')}
+        Past hour
       </Option>
     </Select>
   {/if}

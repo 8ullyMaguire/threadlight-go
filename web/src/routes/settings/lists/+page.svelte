@@ -1,6 +1,6 @@
 <script lang="ts">
   import { client } from '$lib/api/client.svelte'
-  import { t } from '$lib/app/i18n'
+
   import { Button } from 'mono-svelte'
   import { CommonList } from '$lib/ui/layout'
   import { Plus, Trash } from 'svelte-hero-icons/dist'

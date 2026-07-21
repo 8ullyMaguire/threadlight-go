@@ -3,7 +3,7 @@
   import type { CommentView, PostView } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import MarkdownEditor from '$lib/app/markdown/MarkdownEditor.svelte'
   import { settings } from '$lib/app/settings.svelte'
   import { fullCommunityName } from '$lib/app/util.svelte'
@@ -92,7 +92,7 @@
         }
 
         toast({
-          content: $t('moderation.removeSubmission.successPurge'),
+          content:'Successfully purged that submission.',
           type: 'success',
         })
 
@@ -105,7 +105,7 @@
       if (commentReason) {
         if (replyReason == '') {
           toast({
-            content: $t('moderation.removeSubmission.failEmptyReply'),
+            content:"Your reply cannot be empty if 'Notify author' is enabled.",
           })
           return
         }
@@ -120,7 +120,7 @@
             })
             .catch(() => {
               toast({
-                content: $t('moderation.removeSubmission.failMessage'),
+                content:'Failed to message user. Removing anyway...',
                 type: 'warning',
               })
             })
@@ -133,7 +133,7 @@
             })
             .catch(() => {
               toast({
-                content: $t('moderation.removeSubmission.failReply'),
+                content:'Failed to post reply. Removing anyway...',
                 type: 'warning',
               })
             })
@@ -182,10 +182,10 @@
 <Modal
   bind:open
   title={purge
-    ? $t('moderation.removeSubmission.titlePurge')
+    ?'Purging Submission'
     : removed
-      ? $t('moderation.removeSubmission.titleRestore')
-      : $t('moderation.removeSubmission.title')}
+      ?'Restoring Submission'
+      :'Removing Submission'}
 >
   {#if item}
     <form
@@ -214,15 +214,13 @@
 
       {#if !removed}
         <Switch bind:checked={commentReason}>
-          {$t('moderation.removeSubmission.withReason')}
+          Notify author
         </Switch>
 
         {#if commentReason}
           <MultiSelect
             options={[false, true]}
-            optionNames={[
-              $t('moderation.removeSubmission.comment'),
-              $t('moderation.removeSubmission.message'),
+            optionNames={['Comment','Message',
             ]}
             bind:selected={privateMessage}
           />
@@ -233,7 +231,7 @@
           >
             {#snippet customLabel()}
               <div class="flex justify-between items-end mb-1">
-                {$t('comment.reply')}
+                Reply
                 <Select bind:value={preset} placeholder="No preset">
                   {#each settings.moderation.presets as preset}
                     <Option value={preset.content}>
@@ -256,9 +254,9 @@
         icon={purge ? Fire : Trash}
       >
         {#if purge}
-          {$t('admin.purge')}
+          Purge
         {:else}
-          {removed ? $t('moderation.restore') : $t('moderation.remove')}
+          {removed ?'Restore' :'Remove'}
         {/if}
       </Button>
     </form>

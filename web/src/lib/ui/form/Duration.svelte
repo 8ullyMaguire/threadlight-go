@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { Option, Select, TextInput } from 'mono-svelte'
 
   const multipliers = {
@@ -46,14 +46,14 @@
   {/if}
   <Select
     baseClass="flex-1"
-    label={$t('form.time.duration')}
+    label=Duration
     bind:value={duration}
   >
-    <Option value="minute">{$t('form.time.minutes')}</Option>
-    <Option value="hour">{$t('form.time.hours')}</Option>
-    <Option value="day">{$t('form.time.days')}</Option>
-    <Option value="month">{$t('form.time.months')}</Option>
-    <Option value="year">{$t('form.time.years')}</Option>
-    <Option value="permanent">{$t('form.time.permanent')}</Option>
+    <Option value="minute">Minutes</Option>
+    <Option value="hour">Hours</Option>
+    <Option value="day">Days</Option>
+    <Option value="month">Months</Option>
+    <Option value="year">Years</Option>
+    <Option value="permanent">Permanent</Option>
   </Select>
 </div>

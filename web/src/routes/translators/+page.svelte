@@ -1,10 +1,10 @@
 <script>
-  import { t } from '$lib/app/i18n'
+
   import { Header } from '$lib/ui/layout'
 </script>
 
 <Header pageHeader>
-  {$t('routes.translators')}
+  Translators
 </Header>
 
 <ul class="top-list">

@@ -2,7 +2,7 @@
   import { getClient, site } from '$lib/api/client.svelte'
   import type { SaveUserSettings } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import MarkdownEditor from '$lib/app/markdown/MarkdownEditor.svelte'
   import ImageInputUpload from '$lib/ui/form/ImageInputUpload.svelte'
   import { Header } from '$lib/ui/layout'
@@ -45,7 +45,7 @@
       })
 
       toast({
-        content: $t('toast.saveSettings'),
+        content:'Saved your user settings. If you changed your email, a verification link was sent.',
         type: 'success',
       })
     } catch (err) {
@@ -68,54 +68,54 @@
   }}
 >
   {#if !inline}
-    <Header pageHeader>{$t('routes.profile.edit')}</Header>
+    <Header pageHeader>Edit</Header>
   {/if}
   {@render children?.()}
   {#if data.my_user?.local_user_view?.local_user && formData}
-    <TextInput label={$t('form.profile.email')} bind:value={formData.email} />
+    <TextInput label=Email bind:value={formData.email} />
     <TextInput
-      label={$t('form.profile.displayName')}
+      label=Display name
       bind:value={formData.display_name}
       placeholder="Optional"
     />
     <MarkdownEditor
       images={false}
       bind:value={() => formData.bio ?? '', (v) => (formData.bio = v)}
-      label={$t('form.profile.bio')}
+      label=Bio
       previewButton
     />
     <div class="flex gap-2 items-center *:flex-1">
       <ImageInputUpload
-        label={$t('form.profile.avatar')}
+        label=Avatar
         bind:imageUrl={formData.avatar}
       />
       <ImageInputUpload
-        label={$t('form.profile.banner')}
+        label=Banner
         bind:imageUrl={formData.banner}
       />
     </div>
     <TextInput
-      label={$t('form.profile.matrix')}
+      label=Chat on Matrix
       bind:value={formData.matrix_user_id}
       placeholder="@user:example.com"
     />
     <Switch bind:checked={formData.show_nsfw}>
-      {$t('form.profile.showNSFW')}
+      Show NSFW content
     </Switch>
     <Switch bind:checked={formData.bot_account}>
-      {$t('form.profile.bot')}
+      Bot account
     </Switch>
     <Switch bind:checked={formData.show_bot_accounts}>
-      {$t('form.profile.showBots')}
+      Show bots
     </Switch>
     <Switch bind:checked={formData.show_read_posts}>
-      {$t('form.profile.showRead')}
+      Show read posts
     </Switch>
     <div class="space-y-1">
       <Label id="languages">
-        {$t('form.profile.languages.title')}
+        Languages
       </Label>
-      <p>{$t('form.profile.languages.description')}</p>
+      <p>If any are set, you will only see content explicitly tagged as that language. Most content, untagged, falls under 'Undetermined'.</p>
       <Material rounding="xl" color="uniform" class="dark:bg-zinc-950">
         {#if site.data && formData.discussion_languages}
           <div class="flex gap-2 flex-wrap flex-row">
@@ -124,7 +124,7 @@
                 <button {@attach attachment} type="button">
                   <Badge color="blue-subtle">
                     <Icon src={Plus} micro size="14" />
-                    {$t('common.add')}
+                    Add
                   </Badge>
                 </button>
               {/snippet}
@@ -166,7 +166,7 @@
       {loading}
       disabled={loading}
     >
-      {$t('common.save')}
+      Save
     </Button>
   {/if}
 </form>

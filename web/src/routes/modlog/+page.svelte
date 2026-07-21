@@ -3,7 +3,7 @@
   import { page } from '$app/state'
   import { client } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
   import { searchParam } from '$lib/app/util.svelte'
   import CommunityLink from '$lib/feature/community/CommunityLink.svelte'
@@ -41,19 +41,19 @@
 </script>
 
 <svelte:head>
-  <title>{$t('routes.modlog.title')}</title>
+  <title>Modlog</title>
 </svelte:head>
 
 <div class="flex flex-col gap-4">
   <Header pageHeader>
-    {$t('routes.modlog.title')}
+    Modlog
     {#snippet extended()}
-      <span class="font-medium text-lg">{$t('routes.modlog.filters')}</span>
+      <span class="font-medium text-lg">Filters</span>
       <ul class="font-normal flex flex-col gap-2 mt-2">
         {#if data.params.community}
           <li>
             <div class="text-sm text-slate-600 dark:text-zinc-400">
-              {$t('form.post.community')}
+              Community
             </div>
             {#await client().getCommunity({ id: data.params.community })}
               <Spinner width={24} />
@@ -65,7 +65,7 @@
         {#if data.params.user}
           <li>
             <div class="text-sm text-slate-600 dark:text-zinc-400">
-              {$t('routes.admin.applications.user')}
+              User
             </div>
             {#await client().getPersonDetails( { person_id: data.params.user, limit: 1 }, )}
               <Spinner width={24} />
@@ -90,7 +90,7 @@
         {#if data.params.post}
           <li>
             <div class="text-sm text-slate-600 dark:text-zinc-400">
-              {$t('nav.create.post')}
+              Post
             </div>
             {#await client().getPost({ id: data.params.post })}
               <Spinner width={24} />
@@ -107,7 +107,7 @@
         {#if data.params.comment}
           <li>
             <div class="text-sm text-slate-600 dark:text-zinc-400">
-              {$t('moderation.removeSubmission.comment')}
+              Comment
             </div>
             {#await client().getComment({ id: data.params.comment })}
               <Spinner width={24} />

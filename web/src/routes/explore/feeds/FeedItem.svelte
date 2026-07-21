@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { FeedView } from '$lib/api/types'
-  import { t } from '$lib/app/i18n'
+
   import Markdown from '$lib/app/markdown/Markdown.svelte'
   import Entity from '$lib/ui/generic/Entity.svelte'
   import LabelStat from '$lib/ui/info/LabelStat.svelte'
@@ -19,7 +19,7 @@
   <Entity icon={feed.icon} name={feed.title} label={feed.name}></Entity>
   <Markdown source={feed.description} />
   <LabelStat
-    label={$t('cards.community.members')}
+    label=Members
     content={feed.subscriptions_count}
   />
 {/snippet}
@@ -31,12 +31,12 @@
   href="/f/{feed.id}"
 >
   <Button
-    onclick={() => modal({ title: $t('common.info'), snippet: feedModal })}
+    onclick={() => modal({ title:'Info', snippet: feedModal })}
     color="ghost"
     size="custom"
     rounding="xl"
     class="h-8.5 aspect-square"
     icon={InformationCircle}
-    aria-label={$t('common.info')}
+    aria-label=Info
   />
 </CommonItem>

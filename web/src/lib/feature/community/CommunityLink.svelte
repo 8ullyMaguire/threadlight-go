@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Community } from '$lib/api/types'
-  import { t } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
   import { communityLink } from '$lib/app/util.svelte'
   import Avatar from '$lib/ui/generic/Avatar.svelte'
@@ -67,7 +67,7 @@
   {/if}
   {#if badges}
     {#if badges.nsfw}
-      <span title={$t('post.badges.nsfw')}>
+      <span title=NSFW>
         <Icon
           src={ExclamationTriangle}
           size="14"

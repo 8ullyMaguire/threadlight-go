@@ -4,7 +4,7 @@
   import { client } from '$lib/api/client.svelte'
   import type { Post } from '$lib/api/types'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import { Button, toast } from 'mono-svelte'
   import { ArrowDownCircle } from 'svelte-hero-icons/dist'
   import Comment from './Comment.svelte'
@@ -33,7 +33,7 @@
 
       if (newComments.comments.length == 0) {
         toast({
-          content: $t('toast.noComments'),
+          content:'The API returned no comments.',
           type: 'error',
         })
         return
@@ -75,7 +75,7 @@
       <button
         class="expand-btn"
         onclick={() => (nodes[index].expanded = !nodes[index].expanded)}
-        aria-label={$t('comment.expand')}
+        aria-label=Expand
       ></button>
       <div class={['comment-corner', node.depth == 0 && 'hidden']}></div>
       {#if node.children?.length > 0}
@@ -108,9 +108,7 @@
           }}
           icon={ArrowDownCircle}
         >
-          {$t('comment.more', {
-            comments: node.comment_view.counts.child_count,
-          })}
+          `${node.comment_view.counts.child_count} more`
         </Button>
       </svelte:element>
     {/if}

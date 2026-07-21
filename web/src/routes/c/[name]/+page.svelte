@@ -3,7 +3,7 @@
   import { navigating, page } from '$app/state'
   import { site } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { setSessionStorage } from '$lib/app/session'
   import CommunityHeader from '$lib/feature/community/CommunityHeader.svelte'
   import { resumables } from '$lib/feature/legacy/item'
@@ -79,7 +79,7 @@
           (i) => !profile.current.user?.discussion_languages.includes(i),
         )}
         <Note class="p-1! pl-3! flex-col md:flex-row">
-          <div>{$t('routes.community.languageWarning')}</div>
+          <div>Content in this community is in languages you do not have selected. Some or all posts may be missing.</div>
           <Button
             class="inline-block ml-auto"
             href="/profile/settings"
@@ -87,7 +87,7 @@
             rounding="pill"
             size="md"
           >
-            {$t('profile.profile')}
+            Profile
             {#snippet suffix()}
               <Icon src={ArrowRight} size="16" micro />
             {/snippet}

@@ -2,7 +2,7 @@
   import { client } from '$lib/api/client.svelte'
   import type { LocalImage, Person } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { instanceToURL } from '$lib/app/util.svelte'
   import { showImage } from '$lib/ui/generic/ExpandableImage.svelte'
   import { publishedToDate } from '$lib/ui/util/date'
@@ -71,7 +71,7 @@
       date={publishedToDate(image.published)}
     />
     <Button
-      title={$t('routes.profile.media.download')}
+      title=Download
       href="{instanceToURL(
         profile.current.instance,
       )}/pictrs/image/{image.pictrs_alias}"
@@ -80,22 +80,22 @@
       icon={ArrowDownTray}
     />
     <Button
-      title={$t('post.actions.more.delete')}
+      title=Delete
       onclick={() => {
         modal({
-          title: $t('routes.theme.preset.delete.confirm'),
+          title:'Confirm',
           body: '',
           snippet: img,
           actions: [
             action({
               close: true,
-              content: $t('common.cancel'),
+              content:'Cancel',
             }),
             action({
               type: 'danger',
               action: () => deleteImage(image),
               close: true,
-              content: $t('post.actions.more.delete'),
+              content:'Delete',
             }),
           ],
         })

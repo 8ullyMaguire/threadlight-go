@@ -2,7 +2,7 @@
   import { getClient, validateInstance } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import {
     DEFAULT_INSTANCE_URL,
     LINKED_INSTANCE_URL,
@@ -19,14 +19,14 @@
     loading = true
     try {
       if (!(await validateInstance(instance)))
-        throw new Error($t('toast.failInstanceURL'))
+        throw new Error('Failed to contact that server URL with those settings. Is it down?')
 
       await getClient(instance).passwordReset({
         email: email,
       })
 
       toast({
-        content: $t('toast.resetLink'),
+        content:'A password reset link was sent to your email.',
         type: 'success',
       })
     } catch (err) {
@@ -40,28 +40,28 @@
 </script>
 
 <div class="my-auto max-w-xl mx-auto flex flex-col gap-2">
-  <Header>{$t('routes.resetLogin.title')}</Header>
+  <Header>Reset Password</Header>
   <p>
-    {$t('routes.resetLogin.description')}
+    Enter your account's email, and a password reset link will be sent. If your account does not have an email, contact your server admins.
   </p>
   <form class="mt-2 flex flex-col gap-4" onsubmit={preventDefault(submit)}>
     {#if !LINKED_INSTANCE_URL}
       <TextInput
         bind:value={instance}
-        label={$t('form.instance')}
+        label=Server domain
         placeholder={DEFAULT_INSTANCE_URL}
         required
       />
     {/if}
     <TextInput
       bind:value={email}
-      label={$t('form.email')}
+      label=Email
       type="email"
       required
       placeholder="example@example.com"
     />
     <Button color="primary" size="lg" {loading} disabled={loading} submit>
-      {$t('form.submit')}
+      Submit
     </Button>
   </form>
 </div>

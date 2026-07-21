@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import {
     iframeType,
     mediaType,
@@ -60,7 +60,7 @@
     <button
       onclick={() => (loaded = true)}
       class="w-40 h-40 flex flex-col justify-center items-center gap-4 p-2 group cursor-pointer"
-      title={$t('common.download')}
+      title=Download
     >
       <Icon
         src={ArrowDownTray}

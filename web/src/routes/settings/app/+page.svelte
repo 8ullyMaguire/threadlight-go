@@ -1,6 +1,6 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public'
-  import { locale, t } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
   import Sort from '$lib/feature/filter/Sort.svelte'
   import ViewSelect from '$lib/feature/filter/ViewSelect.svelte'
@@ -73,11 +73,11 @@
     <Setting icon={Heart}>
       {#snippet title()}
         <span class="dark:text-pink-400 text-pink-600">
-          {$t('nav.menu.donate')}
+          Donate
         </span>
       {/snippet}
       {#snippet description()}
-        {$t('settings.donate.description')}
+        Photon will always be free and open-source, and is continously developed and designed to be helpful. If you like Photon and want to financially support its development, you can donate here.
       {/snippet}
       <Button
         color="none"
@@ -87,26 +87,26 @@
         rounding="xl"
         icon={Heart}
       >
-        {$t('nav.menu.donate')}
+        Donate
       </Button>
     </Setting>
   {/if}
   <Setting icon={Language}>
     {#snippet title()}
-      {$t('settings.app.lang.title')}
+      Language
     {/snippet}
     {#snippet description()}
       <p>
-        {$t('settings.app.lang.description')}
+        The language used for text in the UI.
         <Link href="/translators" highlight class="text-base font-semibold">
-          {$t('settings.app.lang.credits')}
+          Credits
         </Link>
       </p>
     {/snippet}
     <!--@ts-ignore-->
     <Select bind:value={settings.language}>
       <Option icon={Language} value={null}>
-        {$t('settings.app.lang.auto')}
+        Auto
       </Option>
       {#each localeMap.entries() as [key, value]}
         <Option
@@ -122,30 +122,30 @@
   {#if $locale == 'he' || $locale == 'ar'}
     <ToggleSetting
       bind:checked={settings.useRtl}
-      title={$t('settings.app.lang.useRtl.title')}
+      title=Use RTL layout
     ></ToggleSetting>
   {/if}
   <Setting icon={ViewColumns}>
     {#snippet title()}
-      <span>{$t('settings.app.view.title')}</span>
+      <span>Post style</span>
     {/snippet}
     <ViewSelect showLabel={false} />
     {#snippet description()}
       <p>
         {#if settings.view == 'cozy'}
-          {$t('settings.app.view.cozy')}
+          Show posts with large images, rich embeds, and longer post bodies.
         {:else if settings.view == 'compact'}
-          {$t('settings.app.view.compact')}
+          Show posts in a list, without post bodies and with tighter spacing.
         {/if}
       </p>
     {/snippet}
   </Setting>
   <Setting optionClass="flex-2 max-w-full flex-wrap min-w-0 " icon={ChartBar}>
     {#snippet title()}
-      <span>{$t('settings.app.sort.title')}</span>
+      <span>Default sort</span>
     {/snippet}
     {#snippet description()}
-      <span>{$t('settings.app.sort.description')}</span>
+      <span>Changes the default sort type used in feeds.</span>
     {/snippet}
     <div
       class="flex flex-row flex-wrap
@@ -155,16 +155,16 @@
         {#snippet customLabel()}
           <div class="flex items-center gap-1">
             <Icon src={GlobeAmericas} size="16" mini />
-            {$t('filter.location.label')}
+            Location
           </div>
         {/snippet}
-        <Option value="All">{$t('filter.location.all')}</Option>
-        <Option value="Local">{$t('filter.location.local')}</Option>
+        <Option value="All">All</Option>
+        <Option value="Local">Local</Option>
         <Option value="Subscribed">
-          {$t('filter.location.subscribed')}
+          Subscriptions
         </Option>
         <Option value="Moderator">
-          {$t('filter.location.moderator')}
+          Moderator
         </Option>
       </Select>
       <Sort bind:selected={settings.defaultSort.sort} navigate={false} />
@@ -172,18 +172,18 @@
         {#snippet customLabel()}
           <div class="flex items-center gap-1">
             <Icon src={ChatBubbleOvalLeftEllipsis} size="14" mini />
-            {$t('content.comments')}
+            Comments
           </div>
         {/snippet}
 
-        <Option icon={Fire} value="Hot">{$t('filter.sort.hot')}</Option>
+        <Option icon={Fire} value="Hot">Hot</Option>
         <Option icon={Trophy} value="Top">
-          {$t('filter.sort.top.label')}
+          Top
         </Option>
-        <Option icon={Star} value="New">{$t('filter.sort.new')}</Option>
-        <Option icon={Clock} value="Old">{$t('filter.sort.old')}</Option>
+        <Option icon={Star} value="New">New</Option>
+        <Option icon={Clock} value="Old">Old</Option>
         <Option icon={ArrowTrendingDown} value="Controversial">
-          {$t('filter.sort.controversial')}
+          Controversial
         </Option>
       </Select>
     </div>
@@ -191,15 +191,15 @@
   <ToggleSetting
     icon={BarsArrowDown}
     bind:checked={settings.infiniteScroll}
-    title={$t('settings.app.infiniteScroll.title')}
-    description={$t('settings.app.infiniteScroll.description')}
+    title=Infinite scroll
+    description=Loads new posts as you scroll and appends them to the feed.
   />
   <Setting icon={EyeSlash} adaptive={false} mainClass="rounded-b-none!">
     {#snippet title()}
-      <span>{$t('settings.lemmy.contentFilter.title')}</span>
+      <span>Content filters</span>
     {/snippet}
     {#snippet description()}
-      <span>{$t('settings.lemmy.contentFilter.description')}</span>
+      <span>Hide or minimize posts matching given strings. Supports regular expressions.</span>
     {/snippet}
   </Setting>
   {#each settings.filters as filter, index}
@@ -217,23 +217,21 @@
           type: 'keyword',
         })}
     >
-      {$t('common.add')}
+      Add
     </Button>
   </li>
   <Setting icon={Photo}>
     {#snippet title()}
-      <span>{$t('settings.app.thumbnailSide.title')}</span>
+      <span>Thumbnail alignment</span>
     {/snippet}
     {#snippet description()}
       <span>
-        {$t('settings.app.thumbnailSide.description')}
+        Changes where thumbnails for posts are displayed in compact mode.
       </span>
     {/snippet}
     <Switch
       options={[true, false]}
-      optionNames={[
-        $t('settings.app.thumbnailSide.left'),
-        $t('settings.app.thumbnailSide.right'),
+      optionNames={['Left','Right',
       ]}
       bind:selected={settings.leftAlign}
     />
@@ -241,47 +239,47 @@
   <ToggleSetting
     icon={ArrowsRightLeft}
     bind:checked={settings.posts.reverseActions}
-    title={$t('settings.app.reverseActions.title')}
-    description={$t('settings.app.reverseActions.description')}
+    title=Reverse action row
+    description=Reverses the order of actions on posts and comments.
   />
   <ToggleSetting
     icon={TableCells}
     supportedPlatforms={{ desktop: true, tablet: false, mobile: false }}
     bind:checked={settings.newWidth}
-    title={$t('settings.app.limitLayoutWidth.title')}
-    description={$t('settings.app.limitLayoutWidth.description')}
+    title=Limit layout width
+    description=Improve readability by limiting the main content width.
   />
   <ToggleSetting
     icon={Calendar}
     bind:checked={settings.absoluteDates}
-    title={$t('settings.app.absoluteDates.title')}
-    description={$t('settings.app.absoluteDates.description')}
+    title=Absolute timestamps
+    description=Replaces relative timestamps (3 hours ago) with absolute ones (15/6/25).
   />
   <ToggleSetting
     icon={ArrowsUpDown}
     bind:checked={settings.voteRatioBar}
-    title={$t('settings.app.voteRatioBar.title')}
-    description={$t('settings.app.voteRatioBar.description')}
+    title=Vote ratio bar
+    description=When the controversiality of a post reaches greater than 15%, a bar will be displayed in the vote buttons to help visualize sentiment.
   />
   <ToggleSetting
     icon={CubeTransparent}
     supportedPlatforms={{ desktop: false, tablet: false, mobile: true }}
     bind:checked={settings.dock.autoHide}
-    title={$t('settings.navigation.autoHide.title')}
-    description={$t('settings.navigation.autoHide.description')}
+    title=Auto hide dock
+    description=Hides the dock on mobile when you scroll down, re-appears when you scroll up.
   />
   <ToggleSetting
     icon={ArrowTopRightOnSquare}
     bind:checked={settings.openLinksInNewTab}
-    title={$t('settings.app.postsInNewTab.title')}
-    description={$t('settings.app.postsInNewTab.description')}
+    title=Open posts in new tab
+    description=Opens posts in a separate tab instead of the current.
   />
   <Setting icon={DocumentText}>
     {#snippet title()}
-      <span>{$t('settings.app.font.title')}</span>
+      <span>Font</span>
     {/snippet}
     {#snippet description()}
-      <span>{$t('settings.app.font.description')}</span>
+      <span>The font used for text in the UI.</span>
     {/snippet}
     <Select bind:value={settings.font}>
       <Option value="inter">Inter</Option>
@@ -293,25 +291,25 @@
   <ToggleSetting
     icon={ArrowsPointingOut}
     bind:checked={settings.expandImages}
-    title={$t('settings.app.expandImages.title')}
-    description={$t('settings.app.expandImages.description')}
+    title=Expandable thumbnails
+    description=Clicking on a post's image brings you to an expanded view rather than the post page.
   />
   <ToggleSetting
     icon={Bars2}
     bind:checked={settings.posts.deduplicateEmbed}
-    title={$t('settings.app.duplicateTitles.title')}
-    description={$t('settings.app.duplicateTitles.description')}
+    title=Hide duplicate embed content
+    description=Hides the post title and body if they are identical to the embed.
   />
   <ToggleSetting
     icon={ArrowTopRightOnSquare}
     bind:checked={settings.posts.titleOpensUrl}
-    title={$t('settings.app.titleOpensUrl.title')}
-    description={$t('settings.app.titleOpensUrl.description')}
+    title=Title opens URL
+    description=Makes clicking the title open the post's attached URL, rather than the comments.
   />
   <ToggleSetting
     icon={Tag}
-    title={$t('settings.app.titleTags.title')}
-    description={$t('settings.app.titleTags.description')}
+    title=Parse tags in title
+    description=Take text in [brackets] and turn it into tags that you can click to search for.
     bind:checked={settings.parseTags}
   />
 </CommonList>

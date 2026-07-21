@@ -7,7 +7,7 @@
   } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import MarkdownEditor from '$lib/app/markdown/MarkdownEditor.svelte'
   import { Button, Modal, toast } from 'mono-svelte'
   import ButtonGroup from 'mono-svelte/button/ButtonGroup.svelte'
@@ -62,7 +62,7 @@
       }
       open = false
       toast({
-        content: $t('moderation.reportModal.success'),
+        content:'Reported that submission.',
         type: 'success',
       })
     } catch (err) {
@@ -81,7 +81,7 @@
   })
 </script>
 
-<Modal bind:open title={$t('moderation.reportModal.title')}>
+<Modal bind:open title=Report>
   <form class="flex flex-col gap-4" onsubmit={preventDefault(report)}>
     {#if item}
       <div class="pointer-events-none list-none">
@@ -97,30 +97,29 @@
     <MarkdownEditor
       required
       rows={4}
-      label={$t('moderation.reason')}
+      label=Reason
       bind:value={reason}
     />
     <ButtonGroup orientation="horizontal" class="flex flex-wrap">
       <Button
-        onclick={() => (reason = $t('moderation.reportModal.presets.spam'))}
-        disabled={reason == $t('moderation.reportModal.presets.spam')}
+        onclick={() => (reason ='Spam/abuse')}
+        disabled={reason =='Spam/abuse'}
         icon={Plus}
       >
-        {$t('moderation.reportModal.presets.spam')}
+        Spam/abuse
       </Button>
       <Button
         onclick={() =>
-          (reason = $t('moderation.reportModal.presets.rules.content'))}
-        disabled={reason.startsWith(
-          $t('moderation.reportModal.presets.rules.content').slice(0, -3),
+          (reason ='This submission breaks the rules because __')}
+        disabled={reason.startsWith('This submission breaks the rules because __'.slice(0, -3),
         )}
         icon={Plus}
       >
-        {$t('moderation.reportModal.presets.rules')}
+        Breaks community rules
       </Button>
     </ButtonGroup>
     <Button submit {loading} disabled={loading} color="primary" size="lg">
-      {$t('form.submit')}
+      Submit
     </Button>
   </form>
 </Modal>

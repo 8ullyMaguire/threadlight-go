@@ -3,7 +3,7 @@
   import { page } from '$app/state'
   import { client } from '$lib/api/client.svelte'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import Placeholder from '$lib/ui/info/Placeholder.svelte'
   import { qr } from '@svelte-put/qr/svg'
   import { Button, Material, Modal, TextInput, toast } from 'mono-svelte'
@@ -57,7 +57,7 @@
   <Modal
     dismissable={false}
     bind:open={openModal}
-    title={$t('form.profile.2fa.2fa')}
+    title=2FA
   >
     {#if totpLink && !totpEnabled}
       <Material rounding="2xl" color="uniform" class="">
@@ -67,7 +67,7 @@
         disabled
         type="password"
         value={totpLink}
-        label={$t('form.profile.2fa.totp')}
+        label=TOTP
       >
         {#snippet suffix()}
           <button
@@ -75,14 +75,14 @@
             onclick={() => {
               if (!totpLink) return
               navigator.clipboard?.writeText(totpLink)
-              toast({ content: $t('toast.copied') })
+              toast({ content:'Copied to clipboard.' })
             }}
           >
             <Icon src={ClipboardDocument} size="20" mini />
           </button>
         {/snippet}
         <span class="font-normal text-xs">
-          {$t('form.profile.2fa.paste')}
+          Paste this in your authenticator app.
         </span>
       </TextInput>
     {/if}
@@ -96,17 +96,17 @@
       <TextInput
         bind:value={verify_totp}
         placeholder="012345"
-        label={$t('form.2fa')}
+        label=2FA Code
         pattern={'\\d{6}'}
         required
       />
       {#if totpEnabled}
         <Button submit size="lg" color="primary">
-          {$t('common.disable')}
+          Disable
         </Button>
       {:else}
         <Button submit size="lg" color="primary">
-          {$t('common.enable')}
+          Enable
         </Button>
       {/if}
     </form>
@@ -116,28 +116,28 @@
       <Placeholder
         iconClass="p-3 bg-green-100 text-green-600 dark:bg-green-500/10 dark:text-green-400 rounded-full"
         icon={Key}
-        title={$t('form.profile.2fa.enabled')}
+        title="2FA is enabled"
       >
         <Button
           onclick={() => twofa(false, false)}
           rounding="pill"
           color="primary"
         >
-          {$t('common.disable')}
+          Disable
         </Button>
       </Placeholder>
     {:else}
       <Placeholder
         iconClass="p-3 bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400 rounded-full"
         icon={Key}
-        title={$t('form.profile.2fa.disabled')}
+        title=2FA is disabled
       >
         <Button
           onclick={() => twofa(true, false)}
           rounding="pill"
           color="primary"
         >
-          {$t('form.setup')}
+          Setup
         </Button>
       </Placeholder>
     {/if}

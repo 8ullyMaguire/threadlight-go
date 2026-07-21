@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { CommentView } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { Menu, MenuButton, MenuDivider } from 'mono-svelte'
   import type { Snippet } from 'svelte'
   import {
@@ -29,16 +29,16 @@
   {#if profile.isMod(item.community) || profile.isAdmin}
     <MenuDivider hidden>
       {#if !item.community.local && !profile.isMod(item.community)}
-        {$t('moderation.labelInstanceOnly')}
+        Moderation (Local only)
       {:else}
-        {$t('moderation.label')}
+        Moderation
       {/if}
     </MenuDivider>
     <MenuButton color="danger-subtle" onclick={() => remove(item)} icon={Trash}>
       {#if isCommentView(item)}
         {item.comment.removed
-          ? $t('moderation.restore')
-          : $t('moderation.remove')}
+          ?'Restore'
+          :'Remove'}
       {/if}
     </MenuButton>
     {#if profile.current?.user && profile.current.user?.local_user_view.person.id != item.creator.id}
@@ -50,8 +50,8 @@
         icon={ShieldExclamation}
       >
         {item.creator_banned_from_community
-          ? $t('moderation.ban.unbanFromCommunity')
-          : $t('moderation.ban.banFromCommunity')}
+          ?'Unban user from community'
+          :'Ban user from community'}
       </MenuButton>
     {:else}
       <!--Comment made by self-->
@@ -70,33 +70,33 @@
         icon={Megaphone}
       >
         {item.comment.distinguished
-          ? $t('moderation.unfeature')
-          : $t('moderation.feature')}
+          ?'Unfeature'
+          :'Feature'}
       </MenuButton>
     {/if}
 
     <MenuButton color="success-subtle" href="/modlog?comment={item.comment.id}">
       <Icon src={Newspaper} size="16" micro />
-      {$t('moderation.modlog.comment')}
+      Comment moderation log
     </MenuButton>
     <MenuButton color="success-subtle" href="/modlog?user={item.creator.id}">
       <Icon src={Newspaper} size="16" micro />
-      {$t('moderation.modlog.user')}
+      User moderation log
     </MenuButton>
     <MenuButton color="blue-subtle" onclick={() => viewVotes(item)}>
       <Icon src={ArrowsUpDown} size="16" micro />
-      {$t('moderation.votes')}
+      Votes
     </MenuButton>
   {/if}
 
   {#if profile.isAdmin}
-    <MenuDivider showLabel>{$t('admin.label')}</MenuDivider>
+    <MenuDivider showLabel>Administration</MenuDivider>
     <MenuButton
       color="danger-subtle"
       onclick={() => remove(item, true)}
       icon={Fire}
     >
-      {$t('admin.purge')}
+      Purge
     </MenuButton>
   {/if}
 </Menu>

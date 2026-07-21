@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { Label } from 'mono-svelte'
   import { DocumentPlus, Icon, Plus } from 'svelte-hero-icons/dist'
   import ImageInputModal from './ImageInputModal.svelte'
@@ -47,7 +47,7 @@
         solid
       />
       <p class="text-slate-600 dark:text-zinc-400 font-medium">
-        {$t('common.attach')}
+        Attach file
       </p>
     {/if}
     <ImageInputModal bind:open bind:imageUrl={passedImageUrl} />

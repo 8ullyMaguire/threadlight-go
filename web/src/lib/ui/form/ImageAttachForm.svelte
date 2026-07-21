@@ -1,7 +1,7 @@
 <script lang="ts">
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import { uploadImage } from '$lib/app/util.svelte'
   import { Button, toast } from 'mono-svelte'
   import { DocumentPlus, Icon } from 'svelte-hero-icons/dist'
@@ -104,7 +104,7 @@
         text-slate-600 dark:text-zinc-400"
       >
         <Icon src={DocumentPlus} size="32" />
-        <span class="font-medium text-sm">{$t('form.post.selectFile')}</span>
+        <span class="font-medium text-sm">Select a file</span>
       </div>
     {/if}
     <input

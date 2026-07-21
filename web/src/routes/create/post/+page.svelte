@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
   import type { CommunityView } from '$lib/api/types'
-  import { t } from '$lib/app/i18n'
+
   import { getSessionStorage, setSessionStorage } from '$lib/app/session'
   import PostForm from '$lib/feature/post/form/PostForm.svelte'
   import {
@@ -31,7 +31,7 @@
 </script>
 
 <svelte:head>
-  <title>{$t('form.post.create')}</title>
+  <title>Create post</title>
 </svelte:head>
 
 <PostForm

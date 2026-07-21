@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { getDefaultColors } from '$lib/app/theme/presets'
   import { theme as themeData } from '$lib/app/theme/theme.svelte'
   import { Header } from '$lib/ui/layout'
@@ -30,7 +30,7 @@
 </script>
 
 <svelte:head>
-  <title>{$t('routes.theme.title')}</title>
+  <title>Theme</title>
 </svelte:head>
 
 {#if importing}
@@ -46,21 +46,21 @@
           id: Math.max(...themeData.data.themes.map((i) => i.id)) + 1,
           name: 'Imported theme',
         })
-        toast({ content: $t('message.success'), type: 'success' })
+        toast({ content:'Success', type: 'success' })
         importing = false
       } catch (err) {
         toast({ content: err as string, type: 'error' })
       }
     }}
-    title={$t('settings.import')}
-    action={$t('settings.import')}
+    title=Import
+    action=Import
   >
     <TextArea bind:value={importText} style="font-family: monospace;" />
   </Modal>
 {/if}
 
 <Header pageHeader>
-  {$t('routes.theme.title')}
+  Theme
 
   {#snippet extended()}
     <div class="flex items-center gap-2">
@@ -71,7 +71,7 @@
         size="lg"
         icon={ArrowDownTray}
       >
-        {$t('settings.import')}
+        Import
       </Button>
       <Button
         onclick={() => {
@@ -83,7 +83,7 @@
         size="lg"
         icon={ArrowUpTray}
       >
-        {$t('settings.export')}
+        Export
       </Button>
       <Button
         disabled={themeData.current.id <= 0}
@@ -91,7 +91,7 @@
           modal({
             actions: [
               action({
-                content: $t('common.cancel'),
+                content:'Cancel',
                 close: true,
               }),
               action({
@@ -103,19 +103,19 @@
                     slate: {},
                   }
                 },
-                content: $t('settings.reset'),
+                content:'Reset',
                 close: true,
                 type: 'danger',
               }),
             ],
-            title: $t('routes.theme.resetWarning.title'),
-            body: $t('routes.theme.resetWarning.description'),
+            title:'Reset theme',
+            body:'This will reset all of your colors to the default. It is recommended to export your theme before this.',
           })
         }}
         size="lg"
         icon={ArrowPath}
       >
-        {$t('settings.reset')}
+        Reset
       </Button>
     </div>
   {/snippet}
@@ -124,7 +124,7 @@
   <h3
     class="relative -mb-7 z-10 left-6 font-medium text-sm bg-slate-25 dark:bg-zinc-925 w-max px-1"
   >
-    {$t('routes.theme.preset.presets')}
+    Presets
   </h3>
   <Material
     color="uniform"
@@ -143,7 +143,7 @@
           const newTheme = {
             id: Math.max(...themeData.data.themes.map((t) => t.id)) + 1,
             colors: getDefaultColors(),
-            name: $t('routes.theme.preset.new'),
+            name:'New theme',
           }
 
           themeData.data.themes = [...themeData.data.themes, newTheme]
@@ -159,7 +159,7 @@
   </Material>
   {#if themeData.current.id <= 0}
     <Note>
-      {$t('routes.theme.preset.description')}
+      This is a default theme, and cannot be modified.
     </Note>
   {/if}
   <div
@@ -173,7 +173,7 @@
       rounding="2xl"
     >
       <Header size="sm" style="grid-column: span 2 / span 2;">
-        {$t('routes.theme.accent')}
+        Accent
       </Header>
       <ColorSwatch
         value={themeData.current.colors.primary?.[900]}
@@ -202,10 +202,10 @@
         class="w-12! h-12! col-span-1"
       />
       <span class="font-medium text-sm -mt-2">
-        {$t('nav.menu.colorscheme.light')}
+        Light
       </span>
       <span class="font-medium text-sm -mt-2">
-        {$t('nav.menu.colorscheme.dark')}
+        Dark
       </span>
     </Material>
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-4">

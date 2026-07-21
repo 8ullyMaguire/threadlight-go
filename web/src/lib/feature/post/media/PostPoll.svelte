@@ -4,7 +4,7 @@
   import type { Post, PostPoll } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import { CommonList } from '$lib/ui/layout'
   import EndPlaceholder from '$lib/ui/layout/EndPlaceholder.svelte'
   import { publishedToDate } from '$lib/ui/util/date'
@@ -162,7 +162,7 @@
     {/each}
   </CommonList>
   <EndPlaceholder size="md" margin="bottom-sm">
-    {$t('post.poll.votes', { votes: totalVotes })}
+    `${totalVotes} votes`
     {#snippet action()}
       {#if (selected && canVote) || loading}
         <Button
@@ -172,11 +172,10 @@
           {loading}
           disabled={loading}
         >
-          {$t('form.submit')}
+          Submit
         </Button>
       {:else if post.poll.end_poll}
-        {$t('post.poll.results.ends', {
-          time: formatRelativeDate(publishedToDate(post.poll.end_poll), {}),
+        {`Ends ${formatRelativeDate(publishedToDate(post.poll.end_poll)}`,
         })}
       {/if}
     {/snippet}

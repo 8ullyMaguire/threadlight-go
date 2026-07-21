@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import { client } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { Button, removeToast, Switch, TextInput, toast } from 'mono-svelte'
 
   let deletion = $state({
@@ -15,21 +15,21 @@
     switch (level) {
       case 0: {
         toast({
-          content: $t('toast.confirmDelete1'),
+          content:'Are you sure you want to delete your account?',
           action: () => deleteAccount(1),
         })
         return
       }
       case 1: {
         toast({
-          content: $t('toast.confirmDelete2'),
+          content:'Are you really sure?',
           action: () => deleteAccount(2),
         })
         return
       }
       case 2: {
         toast({
-          content: $t('toast.confirmDelete3'),
+          content:'Final warning. Are you really sure?',
           action: () => deleteAccount(3),
         })
         return
@@ -43,13 +43,13 @@
 
     if (!(deletion.password || null)) {
       toast({
-        content: $t('toast.needPassword'),
+        content:'You must provide your password.',
         type: 'warning',
       })
     }
 
     const id = toast({
-      content: $t('toast.deleting'),
+      content:'Deleting your account...',
       loading: true,
     })
 
@@ -64,7 +64,7 @@
 
       profile.meta.profile = -1
       toast({
-        content: $t('toast.deleted'),
+        content:'Your account was deleted.',
       })
       goto('/')
     } catch (err) {
@@ -86,19 +86,19 @@
   class="w-full flex flex-col gap-4 max-w-xl"
 >
   <TextInput
-    label={$t('form.password')}
+    label=Password
     type="password"
     bind:value={deletion.password}
   />
   <Switch bind:checked={deletion.deleteContent}>
-    {$t('form.profile.deleteAccount.deleteContent')}
+    Delete content
     {#snippet description()}
       <span>
-        {$t('form.profile.deleteAccount.warning')}
+        This will delete ALL of your submissions.
       </span>
     {/snippet}
   </Switch>
   <Button submit color="danger" size="lg">
-    {$t('form.submit')}
+    Submit
   </Button>
 </form>

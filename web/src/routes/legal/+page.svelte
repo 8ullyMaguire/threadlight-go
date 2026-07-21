@@ -1,6 +1,6 @@
 <script lang="ts">
   import { site } from '$lib/api/client.svelte'
-  import { t } from '$lib/app/i18n'
+
   import Markdown from '$lib/app/markdown/Markdown.svelte'
   import { Header } from '$lib/ui/layout'
   import { Spinner } from 'mono-svelte'
@@ -9,10 +9,9 @@
 <div class="flex flex-row w-full">
   {#if site.data}
     <div class="flex flex-col flex-1 gap-4">
-      <Header pageHeader>{$t('routes.legal.title')}</Header>
+      <Header pageHeader>Legal</Header>
       <Markdown
-        source={site.data.site_view.local_site.legal_information ??
-          $t('routes.legal.noLegal')}
+        source={site.data.site_view.local_site.legal_information ??'This server does not have any legal information.'}
       />
     </div>
   {:else}

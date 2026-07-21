@@ -2,7 +2,7 @@
   import { browser } from '$app/environment'
   import { navigating, page } from '$app/state'
   import { site } from '$lib/api/client.svelte'
-  import { locale } from '$lib/app/i18n'
+
   import { LINKED_INSTANCE_URL } from '$lib/app/instance.svelte'
   import { settings } from '$lib/app/settings.svelte'
   import { getDefaultColors } from '$lib/app/theme/presets'

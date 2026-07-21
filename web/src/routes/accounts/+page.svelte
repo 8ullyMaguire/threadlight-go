@@ -1,7 +1,7 @@
 <script lang="ts">
   import { DEFAULT_CLIENT_TYPE } from '$lib/api/base'
   import { type ProfileInfo, profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import {
     DEFAULT_INSTANCE_URL,
     LINKED_INSTANCE_URL,
@@ -40,7 +40,7 @@
 </script>
 
 <svelte:head>
-  <title>{$t('routes.accounts')}</title>
+  <title>Accounts</title>
 </svelte:head>
 
 {#if debugging}
@@ -64,7 +64,7 @@
 {#if removing.shown && removing.account}
   <Modal bind:open={removing.shown}>
     {#snippet customTitle()}
-      <span>{$t('account.logout')}</span>
+      <span>Log out</span>
     {/snippet}
     <div class="flex flex-row items-center gap-2">
       <ProfileAvatar profile={removing.account} selected={true} />
@@ -96,7 +96,7 @@
 {/if}
 
 <Header pageHeader>
-  {$t('routes.accounts')}
+  Accounts
   {#snippet extended()}
     <div class="flex gap-2 items-center flex-wrap">
       <Button
@@ -106,10 +106,10 @@
         rounding="2xl"
         icon={ArrowLeftOnRectangle}
       >
-        {$t('account.login')}
+        Log in
       </Button>
       <Button href="/signup" size="lg" rounding="2xl" icon={Identification}>
-        {$t('account.signup')}
+        Sign up
       </Button>
       {#if !LINKED_INSTANCE_URL}
         <Button
@@ -118,7 +118,7 @@
           rounding="2xl"
           icon={Plus}
         >
-          {$t('account.addGuest')}
+          Add guest
         </Button>
       {/if}
     </div>
@@ -127,10 +127,10 @@
 {#if profile.meta.profiles.length == 1 && !profile.current.jwt && profile.current.instance == DEFAULT_INSTANCE_URL}
   <Placeholder
     icon={Identification}
-    title={$t('routes.accounts.placeholder.title')}
+    title=Not logged in
     description={LINKED_INSTANCE_URL
-      ? $t('routes.accounts.placeholder.description')
-      : $t('routes.accounts.placeholder.descriptionWithGuest')}
+      ?"You aren't logged in. You can sign up or log in here."
+      :"You aren't logged in. You can log in, sign up, or add a new guest account here."}
     class="my-auto"
   />
 {:else}
@@ -188,7 +188,7 @@
                     size="square-md"
                     color="tertiary"
                     class="justify-self-end ml-auto z-50"
-                    aria-label={$t('post.actions.more.label')}
+                    aria-label=More actions
                     icon={EllipsisHorizontal}
                   ></Button>
                 {/snippet}
@@ -201,14 +201,14 @@
                   <Button
                     size="square-md"
                     color="secondary"
-                    title={$t('account.moveUp')}
+                    title=Move up
                     onclick={() => profile.move(p.id, true)}
                     icon={ChevronUp}
                   ></Button>
                   <Button
                     size="square-md"
                     color="secondary"
-                    title={$t('account.moveDown')}
+                    title=Move down
                     onclick={() => profile.move(p.id, false)}
                     icon={ChevronDown}
                   ></Button>
@@ -221,7 +221,7 @@
                     }}
                     icon={BugAnt}
                   >
-                    {$t('common.debug')}
+                    Debug
                   </MenuButton>
                 {/if}
                 {#if !LINKED_INSTANCE_URL || p.user}
@@ -233,7 +233,7 @@
                     color="danger-subtle"
                     icon={ArrowRightOnRectangle}
                   >
-                    {$t('account.logout')}
+                    Log out
                   </MenuButton>
                 {/if}
               </Menu>

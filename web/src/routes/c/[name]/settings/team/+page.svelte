@@ -2,7 +2,7 @@
   import { getClient } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import UserAutocomplete from '$lib/feature/user/UserAutocomplete.svelte'
   import Avatar from '$lib/ui/generic/Avatar.svelte'
   import { CommonList, Header } from '$lib/ui/layout'
@@ -37,14 +37,14 @@
         data.community.value.moderators = addModRes.moderators
 
         toast({
-          content: $t('toast.addMod'),
+          content:'Added that moderator.',
           type: 'success',
         })
 
         formData.newModerator = -1
       } else {
         toast({
-          content: $t('toast.failFindUser'),
+          content:'Could not find that user.',
           type: 'warning',
         })
       }
@@ -71,7 +71,7 @@
       data.community.value.moderators = res.moderators
 
       toast({
-        content: $t('toast.updateMods'),
+        content:'Updated community moderators.',
         type: 'success',
       })
     } catch (err) {
@@ -104,17 +104,17 @@
         size="square-md"
         onclick={() => {
           modal({
-            title: $t('common.remove'),
+            title:'Remove',
             body: `Are you sure you want to remove ${moderator.moderator.name} as a moderator?`,
             actions: [
               action({
-                content: $t('common.remove'),
+                content:'Remove',
                 action: () => removeMod(moderator.moderator.id),
                 type: 'danger',
                 close: true,
               }),
               action({
-                content: $t('common.cancel'),
+                content:'Cancel',
                 close: true,
               }),
             ],
@@ -149,6 +149,6 @@
     submit
     icon={Plus}
   >
-    {$t('common.add')}
+    Add
   </Button>
 </form>

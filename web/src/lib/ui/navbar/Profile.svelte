@@ -2,7 +2,7 @@
   import { env } from '$env/dynamic/public'
   import { site } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
   import { theme } from '$lib/app/theme/theme.svelte'
   import InstanceCard from '$lib/feature/instance/InstanceCard.svelte'
@@ -65,7 +65,7 @@
 {#if profile.current?.jwt}
   {@const notifications = profile.inbox.notifications}
   <MenuButton href="/inbox" icon={Inbox}>
-    {$t('profile.inbox')}
+    Inbox
     {#if notifications.inbox > 0}
       <Badge color="red-subtle" class="text-xs ml-auto font-bold py-0.5!">
         {notifications.inbox > 99 ? '∞' : notifications.inbox}
@@ -74,7 +74,7 @@
   </MenuButton>
   {#if profile.isMod()}
     <MenuButton href="/moderation" icon={ShieldCheck}>
-      {$t('routes.moderation.feed')}
+      Reports
       {#snippet suffix()}
         {@render notifBadge(notifications.reports)}
       {/snippet}
@@ -82,33 +82,33 @@
   {/if}
   {#if profile.isAdmin}
     <MenuButton href="/admin/applications" icon={ServerStack}>
-      {$t('routes.admin.applications.title')}
+      Applications
       {#snippet suffix()}
         {@render notifBadge(notifications.applications)}
       {/snippet}
     </MenuButton>
   {/if}
-  <MenuDivider>{$t('profile.profile')}</MenuDivider>
+  <MenuDivider>Profile</MenuDivider>
   <MenuButton href="/profile" icon={UserCircle}>
-    {$t('profile.profile')}
+    Profile
   </MenuButton>
   <MenuButton href="/saved" icon={Bookmark}>
-    {$t('profile.saved')}
+    Saved
   </MenuButton>
 {:else}
   <MenuButton href="/accounts/login" icon={ArrowLeftOnRectangle}>
-    {$t('account.login')}
+    Log in
   </MenuButton>
   <MenuButton href="/signup" icon={Identification}>
-    {$t('account.signup')}
+    Sign up
   </MenuButton>
 {/if}
 <MenuButton href="/accounts" icon={UserGroup}>
-  {$t('account.accounts')}
+  Accounts
 </MenuButton>
-<MenuDivider>{$t('nav.menu.app')}</MenuDivider>
+<MenuDivider>App</MenuDivider>
 <MenuButton href="/settings" icon={Cog6Tooth}>
-  {$t('nav.menu.settings')}
+  Settings
 </MenuButton>
 <Select bind:value={theme.colorScheme} size="sm" placement="bottom">
   {#snippet target(attachment)}
@@ -122,21 +122,21 @@
       class=" w-full"
       nest
     >
-      {$t('nav.menu.colorscheme.label')}
+      Color scheme
     </MenuButton>
     <Option value="system" class="hidden" icon={ComputerDesktop}>
-      {$t('nav.menu.colorscheme.system')}
+      System
     </Option>
     <Option value="light" class="hidden" icon={Sun}>
-      {$t('nav.menu.colorscheme.light')}
+      Light
     </Option>
     <Option value="dark" class="hidden" icon={Moon}>
-      {$t('nav.menu.colorscheme.dark')}
+      Dark
     </Option>
   {/snippet}
 </Select>
 <MenuButton href="/theme" icon={Swatch}>
-  {$t('nav.menu.theme')}
+  Theme
 </MenuButton>
 {#snippet key(label: string)}
   <span
@@ -149,7 +149,7 @@
   onclick={() => (chords.commands = !chords.commands)}
   icon={CommandLine}
 >
-  {$t('nav.commands.prompt')}
+  Command palette
   <div class="text-slate-600 dark:text-zinc-400 text-xs ml-auto max-sm:hidden">
     {@render key('Ctrl')}
     {@render key('K')}
@@ -165,7 +165,7 @@
         class="hover:brightness-110 transition-all"
         onclick={() => {
           navigator?.clipboard?.writeText(__VERSION__)
-          toast({ content: $t('toast.copied') })
+          toast({ content:'Copied to clipboard.' })
         }}
       >
         <Badge color="blue-subtle">{__VERSION__}</Badge>
@@ -174,13 +174,13 @@
     <Button
       onclick={() => {
         modal({
-          title: $t('nav.menu.instance'),
+          title:'Server info',
           snippet: siteSnippet,
           body: '',
         })
       }}
       color="tertiary"
-      title={$t('nav.menu.instance')}
+      title=Server info
       size="square-md"
     >
       <Icon src={ServerStack} size="16" micro />
@@ -189,7 +189,7 @@
       <Button
         color="tertiary"
         href="https://github.com/Xyphyn/Photon"
-        title={$t('nav.menu.source')}
+        title=Source
         size="square-md"
       >
         <Icon src={CodeBracketSquare} size="16" micro />

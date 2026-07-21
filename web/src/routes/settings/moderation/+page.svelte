@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import MarkdownEditor from '$lib/app/markdown/MarkdownEditor.svelte'
   import { settings } from '$lib/app/settings.svelte'
   import { removalTemplate } from '$lib/feature/moderation/moderation'
@@ -12,13 +12,13 @@
 <CommonList>
   <Setting icon={Trash} adaptive={false}>
     {#snippet title()}
-      <span>{$t('settings.moderation.replyPresets.title')}</span>
+      <span>Removal reply presets</span>
     {/snippet}
     {#snippet description()}
       <span>
-        <p>{$t('settings.moderation.replyPresets.description')}</p>
+        <p>Presets to use for 'reply reason' in the submission removal dialog.</p>
         <ul class="leading-6">
-          <li>{$t('settings.moderation.replyPresets.syntax')}</li>
+          <li>Syntax</li>
           <li>
             <code>{'{{reason}}'}</code>
           </li>
@@ -71,7 +71,7 @@
             class="w-max"
           >
             <Icon src={Trash} size="16" mini />
-            {$t('common.remove')}
+            Remove
           </Button>
         </div>
       </Expandable>

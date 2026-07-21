@@ -2,7 +2,7 @@
   import { page } from '$app/state'
   import { client } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import Markdown from '$lib/app/markdown/Markdown.svelte'
   import { settings } from '$lib/app/settings.svelte'
   import { resumables } from '$lib/feature/legacy/item'
@@ -185,7 +185,7 @@
       <Expandable class="text-base mt-2 w-full cursor-pointer">
         {#snippet title()}
           <EndPlaceholder size="md" color="none" class="w-full ">
-            {$t('routes.post.crosspostCount')}
+            Crossposts
             {#snippet action()}
               <span class="font-bold">
                 <FormattedNumber number={crossposts.length} />
@@ -205,7 +205,7 @@
 <section class="flex flex-col gap-2 w-full" id="comments">
   <header class="mt-4">
     <EndPlaceholder size="md" color="none">
-      {$t('routes.post.commentCount')}
+      Comments
       {#snippet action()}
         <span class="font-bold">
           <FormattedNumber number={data.data.value.post.counts.comments} />
@@ -216,7 +216,7 @@
   {#if !page.url.searchParams.get('noVirtualize')}
     <noscript>
       <Button href="?noVirtualize=true" class="block">
-        {$t('routes.post.loadComments')}
+        Load comments
       </Button>
     </noscript>
   {/if}
@@ -248,14 +248,14 @@
     {#if comments.length == 0}
       <Placeholder
         icon={ChatBubbleLeftRight}
-        title={$t('routes.post.emptyComments.title')}
-        description={$t('routes.post.emptyComments.description')}
+        title=No comments
+        description=Start the conversation!
       ></Placeholder>
     {/if}
   {/await}
   {#if data.data.value.post.counts.comments > 5}
     <EndPlaceholder>
-      {$t('routes.post.commentCount')}
+      Comments
       {#snippet action()}
         <span class="text-black dark:text-white font-bold">
           {data.data.value.post.counts.comments}
@@ -265,7 +265,7 @@
           onclick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
           icon={ChevronDoubleUp}
         >
-          {$t('routes.post.scrollToTop')}
+          Scroll to top
         </Button>
       {/snippet}
     </EndPlaceholder>

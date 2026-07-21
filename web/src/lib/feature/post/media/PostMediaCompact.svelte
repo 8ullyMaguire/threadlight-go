@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Post } from '$lib/api/types'
-  import { t } from '$lib/app/i18n'
+
   import { settings, type View } from '$lib/app/settings.svelte'
   import { showImage } from '$lib/ui/generic/ExpandableImage.svelte'
   import { Button, modal } from 'mono-svelte'
@@ -49,8 +49,8 @@
     this={!settings.expandImages || type != 'image' ? 'a' : 'button'}
     href={postLink(post)}
     aria-label={type == 'image'
-      ? $t('aria.postDecor.openImage', { default: post.name })
-      : $t('aria.postDecor.openPost', { default: post.name })}
+      ?`Open image: ${post.name}`
+      :`Open post: ${post.name}`}
     onclick={() => {
       if (type == 'image') showImage(bestImageURL(post, false, -1))
     }}

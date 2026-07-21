@@ -3,7 +3,7 @@
   import { page } from '$app/state'
   import { DEFAULT_CLIENT_TYPE } from '$lib/api/base'
   import { profile, type ProfileInfo } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { LINKED_INSTANCE_URL } from '$lib/app/instance.svelte'
   import Avatar from '$lib/ui/generic/Avatar.svelte'
   import { Badge, Button, Menu, MenuButton } from 'mono-svelte'
@@ -39,7 +39,7 @@
       size="md"
       rounding="xl"
       class="flex flex-row gap-2! items-center"
-      aria-label={$t('aria.sidebar.accounts')}
+      aria-label=Accounts selector
     >
       {#snippet prefix()}
         <Avatar
@@ -108,6 +108,6 @@
     </MenuButton>
   {/each}
   <MenuButton href="/accounts" icon={UserGroup}>
-    {$t('account.accounts')}
+    Accounts
   </MenuButton>
 </Menu>

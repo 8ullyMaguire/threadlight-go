@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state'
   import type { CommentView, PostView } from '$lib/api/types'
-  import { t } from '$lib/app/i18n'
+
   import { searchParam } from '$lib/app/util.svelte'
   import CommentItem from '$lib/feature/comment/CommentItem.svelte'
   import { PostItem } from '$lib/feature/post'
@@ -27,11 +27,11 @@
 </script>
 
 <svelte:head>
-  <title>{$t('routes.saved')}</title>
+  <title>Saved</title>
 </svelte:head>
 
 <Header pageHeader>
-  {$t('routes.saved')}
+  Saved
 
   {#snippet extended()}
     <div class="flex items-center">
@@ -42,17 +42,17 @@
         {#snippet customLabel()}
           <div class="flex items-center gap-0.5">
             <Icon src={AdjustmentsHorizontal} size="15" mini />
-            {$t('filter.filter')}
+            Filter
           </div>
         {/snippet}
         <Option icon={Bars3} value="all">
-          {$t('content.all')}
+          All
         </Option>
         <Option icon={PencilSquare} value="posts">
-          {$t('content.posts')}
+          Posts
         </Option>
         <Option icon={ChatBubbleOvalLeft} value="comments">
-          {$t('content.comments')}
+          Comments
         </Option>
       </Select>
     </div>

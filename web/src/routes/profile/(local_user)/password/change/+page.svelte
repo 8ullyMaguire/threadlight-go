@@ -2,7 +2,7 @@
   import { client } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import { Button, TextInput, toast } from 'mono-svelte'
 
   let oldPassword = $state(''),
@@ -23,12 +23,12 @@
         profile.remove(profile.current.id)
         await profile.add(res.jwt, instance, client)
 
-        toast({ content: $t('toast.loginRefresh'), type: 'success' })
+        toast({ content:'Your login was refreshed.', type: 'success' })
       } else {
-        throw new Error($t('toast.invalidLogin'))
+        throw new Error('Invalid credentials')
       }
 
-      toast({ content: $t('toast.passwordReset') })
+      toast({ content:'Your password was reset.' })
     } catch (e) {
       toast({
         content: errorMessage(e as string),
@@ -49,26 +49,26 @@
 >
   <TextInput
     bind:value={oldPassword}
-    label={$t('form.profile.currentPassword')}
+    label=Current password
     type="password"
     minlength={10}
     required
   />
   <TextInput
     bind:value={newPassword}
-    label={$t('form.profile.newPassword')}
+    label=New password
     type="password"
     minlength={10}
     required
   />
   <TextInput
     bind:value={newPasswordVerify}
-    label={$t('form.profile.verifyNewPassword')}
+    label=Verify new password
     type="password"
     minlength={10}
     required
   />
   <Button size="lg" color="primary" submit {loading} disabled={loading}>
-    {$t('form.submit')}
+    Submit
   </Button>
 </form>

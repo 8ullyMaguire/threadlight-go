@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { Badge } from 'mono-svelte'
   import {
     ComputerDesktop,
@@ -55,7 +55,7 @@
           {#snippet icon()}
             <Icon src={ComputerDesktop} micro size="14" />
           {/snippet}
-          {$t('settings.desktop')}
+          Desktop
         </Badge>
       {/if}
       {#if supportedPlatforms.tablet}
@@ -63,7 +63,7 @@
           {#snippet icon()}
             <Icon src={DeviceTablet} micro size="14" />
           {/snippet}
-          {$t('settings.tablet')}
+          Tablet
         </Badge>
       {/if}
       {#if supportedPlatforms.mobile}
@@ -71,7 +71,7 @@
           {#snippet icon()}
             <Icon src={DevicePhoneMobile} micro size="14" />
           {/snippet}
-          {$t('settings.mobile')}
+          Mobile
         </Badge>
       {/if}
     </div>

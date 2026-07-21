@@ -7,7 +7,7 @@
     SubscribedType,
   } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
   import { fullCommunityName, userLink } from '$lib/app/util.svelte'
   import EntityHeader from '$lib/ui/generic/EntityHeader.svelte'
@@ -68,7 +68,7 @@
   let setFlair = $state(false)
 </script>
 
-<Modal title={$t('cards.community.flair')} bind:open={setFlair}>
+<Modal title=Set my flair bind:open={setFlair}>
   <CommunityFlair
     community={community.id}
     onsubmit={() => (setFlair = !setFlair)}
@@ -85,19 +85,19 @@
   stats={counts
     ? [
         {
-          name: $t('cards.community.members'),
+          name:'Members',
           value: counts.subscribers.toString(),
         },
         {
-          name: $t('content.posts'),
+          name:'Posts',
           value: counts.posts.toString(),
         },
         {
-          name: $t('cards.community.activeDay'),
+          name:'Active Today',
           value: counts.users_active_day.toString(),
         },
         {
-          name: $t('stats.created'),
+          name:'Created',
           format: false,
           value: formatRelativeDate(publishedToDate(community.published), {
             style: 'short',
@@ -114,7 +114,7 @@
         navigator?.clipboard?.writeText?.(
           `!${fullCommunityName(community.name, community.actor_id)}`,
         )
-        toast({ content: $t('toast.copied') })
+        toast({ content:'Copied to clipboard.' })
       }}
       class="text-sm flex gap-0 items-center"
     >
@@ -124,7 +124,7 @@
   {#if moderators.length > 0}
     <Expandable class={[compact == 'lg' && 'lg:hidden']}>
       {#snippet title()}
-        {$t('cards.community.moderators')}
+        Moderators
         <hr class="flex-1 border-slate-200 dark:border-zinc-800 mx-3" />
       {/snippet}
       <ItemList
@@ -169,8 +169,8 @@
             icon={subscribed != 'NotSubscribed' ? Check : Plus}
           >
             {subscribed == 'Subscribed' || subscribed == 'Pending'
-              ? $t('cards.community.subscribed')
-              : $t('cards.community.subscribe')}
+              ?'Subscribed'
+              :'Subscribe'}
           </Button>
         {/snippet}
       </Subscribe>
@@ -179,7 +179,7 @@
         <Button
           size="square-lg"
           onclick={() => (setFlair = !setFlair)}
-          aria-label={$t('cards.community.flair')}
+          aria-label=Set my flair
         >
           <Icon src={Tag} size="16" micro />
         </Button>
@@ -207,7 +207,7 @@
       {/snippet}
       <MenuButton href="/modlog?community={community.id}">
         <Icon src={Newspaper} size="16" mini />
-        {$t('cards.community.modlog')}
+        Modlog
       </MenuButton>
       {#if profile.isMod(community)}
         <MenuButton
@@ -215,7 +215,7 @@
           href="/moderation?community={community.id}"
         >
           <Icon src={ShieldCheck} size="16" micro />
-          {$t('routes.moderation.feed')}
+          Reports
         </MenuButton>
       {/if}
       {#if profile.current?.jwt}
@@ -226,8 +226,8 @@
           icon={NoSymbol}
         >
           {blocked
-            ? $t('cards.community.unblock')
-            : $t('cards.community.block')}
+            ?'Unblock'
+            :'Block'}
         </MenuButton>
         <MenuButton
           color="danger-subtle"
@@ -235,24 +235,24 @@
           onclick={() => blockInstance(community.instance_id)}
           icon={BuildingOffice2}
         >
-          {$t('cards.community.blockInstance')}
+          Block server
         </MenuButton>
         {#if profile.isAdmin}
           <MenuButton
             color="danger-subtle"
             onclick={() =>
               modal({
-                title: $t('admin.purgeCommunity.title'),
-                body: `${community.title}: ${$t('admin.purgeCommunity.warning')}`,
+                title:'Purging community',
+                body: `${community.title}: $This will delete all posts. Are you sure? (The button will enable in 3 seconds.)`,
                 actions: [
                   action({
                     close: true,
-                    content: $t('common.cancel'),
+                    content:'Cancel',
                   }),
                   action({
                     action: () => purgeCommunity(community.id),
                     close: true,
-                    content: $t('admin.purge'),
+                    content:'Purge',
                     type: 'danger',
                     icon: Fire,
                   }),
@@ -262,7 +262,7 @@
               })}
             icon={Fire}
           >
-            {$t('admin.purge')}
+            Purge
           </MenuButton>
         {/if}
       {/if}

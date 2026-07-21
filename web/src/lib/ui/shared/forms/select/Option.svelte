@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { locale } from '$lib/app/i18n'
+
   import { type Snippet, getContext, onDestroy } from 'svelte'
   import type { IconSource } from 'svelte-hero-icons/dist'
   import type { HTMLOptionAttributes } from 'svelte/elements'

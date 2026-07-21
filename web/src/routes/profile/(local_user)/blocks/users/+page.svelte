@@ -1,6 +1,6 @@
 <script lang="ts">
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { userLink } from '$lib/app/util.svelte.js'
   import ItemList from '$lib/ui/generic/ItemList.svelte'
   import Placeholder from '$lib/ui/info/Placeholder.svelte'
@@ -37,7 +37,7 @@
   >
     {#snippet action(block)}
       <Button
-        title={$t('common.jump')}
+        title=Jump
         size="square-md"
         href={block.url}
         color="primary"
@@ -53,8 +53,8 @@
   </ItemList>
 {:else}
   <Placeholder
-    title={$t('routes.profile.blocks.empty.user.title')}
-    description={$t('routes.profile.blocks.empty.user.description')}
+    title=No blocked users
+    description=Blocking a user will hide the user's posts and comments from feeds.
     icon={Check}
     class="my-auto"
   />

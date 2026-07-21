@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { Tabs } from '$lib/ui/layout'
 
   let { children } = $props()
@@ -9,19 +9,19 @@
   routes={[
     {
       href: '/inbox',
-      name: $t('filter.location.all'),
+      name:'All',
     },
     {
       href: '/inbox?type=replies',
-      name: $t('filter.inbox.replies'),
+      name:'Replies',
     },
     {
       href: '/inbox?type=mentions',
-      name: $t('filter.inbox.mentions'),
+      name:'Mentions',
     },
     {
       href: '/inbox/messages',
-      name: $t('filter.inbox.messages'),
+      name:'Messages',
     },
   ]}
   class="overflow-auto"

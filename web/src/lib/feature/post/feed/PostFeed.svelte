@@ -7,7 +7,6 @@
   import { ArchiveBox, ArrowsPointingOut, Plus } from 'svelte-hero-icons/dist'
   import { Post } from '..'
   import { filterPost, type FilteredItem } from '../filters.svelte'
-  import { t } from '$lib/app/i18n'
 
   interface Props {
     posts: PostView[]
@@ -72,7 +71,7 @@
               class="text-slate-400 dark:text-zinc-600 w-full"
               size="xs"
             >
-              {$t('settings.lemmy.contentFilter.minimized')}
+              Content hidden by your filters
             </Button>
           {/if}
         </li>

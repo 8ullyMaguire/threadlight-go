@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { type Theme, theme as themeData } from '$lib/app/theme/theme.svelte'
   import FreeTextInput from '$lib/ui/form/FreeTextInput.svelte'
   import { action, Button, Material, modal } from 'mono-svelte'
@@ -65,11 +65,11 @@
                 action({
                   close: true,
                   type: 'secondary',
-                  content: $t('common.cancel'),
+                  content:'Cancel',
                 }),
                 action({
                   close: true,
-                  content: $t('routes.theme.preset.delete.confirm'),
+                  content:'Confirm',
                   type: 'danger',
                   action: () => {
                     const index = themeData.data.themes
@@ -88,7 +88,7 @@
               ],
               type: 'error',
               body: '',
-              title: $t('routes.theme.preset.delete.title'),
+              title:'Delete theme',
             })
           }}
           icon={Trash}

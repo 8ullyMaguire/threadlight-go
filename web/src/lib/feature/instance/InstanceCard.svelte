@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PersonView, SiteView, Tagline } from '$lib/api/types'
-  import { t } from '$lib/app/i18n'
+
   import Markdown from '$lib/app/markdown/Markdown.svelte'
   import { settings } from '$lib/app/settings.svelte'
   import { userLink } from '$lib/app/util.svelte'
@@ -51,40 +51,40 @@
     {/if}
 
     <EndPlaceholder size="xs" margin="sm">
-      {$t('nav.menu.instance')}
+      Server info
     </EndPlaceholder>
     <SidebarButton
       href="/modlog"
-      label={$t('routes.modlog.title')}
+      label=Modlog
       icon={Newspaper}
     />
     <SidebarButton
       href="/legal"
-      label={$t('routes.legal.title')}
+      label=Legal
       icon={BuildingOffice}
     />
     <SidebarButton
       href="/instances"
-      label={$t('routes.instances')}
+      label=Linked servers
       icon={ServerStack}
     />
 
     <EndPlaceholder size="xs" margin="sm">
-      {$t('cards.site.stats')}
+      Statistics
     </EndPlaceholder>
     <div class="flex flex-row gap-4 flex-wrap px-3">
       <LabelStat
-        label={$t('content.users')}
+        label=Users
         content={site.counts.users.toString()}
         formatted
       />
       <LabelStat
-        label={$t('content.posts')}
+        label=Posts
         content={site.counts.posts.toString()}
         formatted
       />
       <LabelStat
-        label={$t('content.comments')}
+        label=Comments
         content={site.counts.comments.toString()}
         formatted
       />
@@ -92,7 +92,7 @@
         {#snippet target(attachment)}
           <button class="text-left cursor-pointer" {@attach attachment}>
             <LabelStat
-              label={$t('cards.community.activeDay')}
+              label=Active Today
               content={site.counts.users_active_day.toString()}
               formatted
             />
@@ -100,37 +100,37 @@
         {/snippet}
         <div class="flex flex-row gap-4 flex-wrap px-3">
           <LabelStat
-            label={$t('filter.sort.top.time.week')}
+            label=Past week
             content={site.counts.users_active_week.toString()}
             formatted
           />
           <LabelStat
-            label={$t('filter.sort.top.time.month')}
+            label=Past month
             content={site.counts.users_active_month.toString()}
             formatted
           />
           <LabelStat
-            label={$t('filter.sort.top.time.6months')}
+            label=6 months
             content={site.counts.users_active_half_year.toString()}
             formatted
           />
         </div>
       </Popover>
       <LabelStat
-        label={$t('content.communities')}
+        label=Communities
         content={site.counts.communities.toString()}
         formatted
       />
     </div>
 
     <EndPlaceholder size="xs" margin="sm">
-      {$t('common.info')}
+      Info
     </EndPlaceholder>
     <div class="space-y-3 px-1.5 text-sm">
       <Expandable bind:open={settings.expand.about}>
         {#snippet title()}
           <span class="flex items-center gap-1 py-1 px-2 w-full">
-            {$t('cards.site.about')}
+            About
           </span>
         {/snippet}
         <Markdown source={site.site.description} />
@@ -151,7 +151,7 @@
         <Expandable bind:open={settings.expand.team}>
           {#snippet title()}
             <span class="flex items-center gap-1 py-1 px-2 w-full">
-              {$t('cards.site.admins')}
+              Admins
             </span>
           {/snippet}
           <ItemList

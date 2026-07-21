@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import CommunityLink from '$lib/feature/community/CommunityLink.svelte'
   import UserLink from '$lib/feature/user/UserLink.svelte'
   import { Button, modal } from 'mono-svelte'
@@ -17,7 +17,7 @@
 {#snippet itemInfo()}
   {#if item.link}
     <Button color="primary" rounding="pill" class="w-max" href={item.link}>
-      {$t('common.jump')}
+      Jump
     </Button>
   {/if}
   {#if item.moderatee}
@@ -69,9 +69,9 @@
     {#if item.content}
       <Button
         size="sm"
-        onclick={() => modal({ title: $t('common.info'), snippet: itemInfo })}
+        onclick={() => modal({ title:'Info', snippet: itemInfo })}
       >
-        {$t('common.info')}
+        Info
       </Button>
     {:else if item.moderatee}
       <UserLink user={item.moderatee} />

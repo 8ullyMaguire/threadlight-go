@@ -5,7 +5,7 @@
   import { client } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import ProfileButton from '$lib/feature/user/ProfileButton.svelte'
   import { Header } from '$lib/ui/layout'
   import SidebarButton from '$lib/ui/sidebar/SidebarButton.svelte'
@@ -75,7 +75,7 @@
               style="grid-column: 1; grid-row: 1;"
             >
               <TextLoader class="text-3xl!">
-                {$t('routes.postRedirect.automatic.title')}
+                Locating content
               </TextLoader>
             </div>
           {:else if _state == 'found'}
@@ -84,7 +84,7 @@
               style="grid-column: 1; grid-row: 1;"
             >
               <TextLoader class="text-3xl!">
-                {$t('routes.postRedirect.automatic.found')}
+                Redirecting
               </TextLoader>
             </div>
           {/if}
@@ -92,7 +92,7 @@
       </Header>
       <p></p>
       <Button color="secondary" size="lg" onclick={() => (manual = true)}>
-        {$t('common.cancel')}
+        Cancel
       </Button>
     </header>
   {:else}
@@ -103,12 +103,10 @@
         {page.params.instance}/{type}/{page.params.id}
       </div>
       <Header>
-        {$t('routes.postRedirect.title')}
+        Cross-server content
       </Header>
       <p>
-        {$t('routes.postRedirect.description', {
-          homeInstance: fetched,
-        })}
+        `That content does not originate from ${fetched}.`
       </p>
     </header>
     <div class="flex flex-row items-center gap-2 flex-wrap">
@@ -119,13 +117,11 @@
           color="primary"
           onclick={fetchOnHome}
         >
-          {$t('routes.postRedirect.actions.fetch', {
-            homeInstance: fetched,
-          })}
+          `Continue on ${fetched}`
         </Button>
       {/if}
       <Button size="lg" onclick={() => history.back()}>
-        {$t('routes.postRedirect.actions.back')}
+        Go back
       </Button>
     </div>
     {#if profile.meta.profiles}
@@ -134,9 +130,7 @@
       )}
       <div class="space-y-1">
         <div class="font-medium text-sm">
-          {$t('routes.postRedirect.actions.switch', {
-            destInstance: page.params.instance,
-          })}
+          `Switch to an account on ${page.params.instance}`
         </div>
         <Material
           color="uniform"
@@ -152,7 +146,7 @@
             icon={Plus}
             class="rounded-lg"
           >
-            {$t('account.addGuest')}
+            Add guest
           </SidebarButton>
         </Material>
       </div>

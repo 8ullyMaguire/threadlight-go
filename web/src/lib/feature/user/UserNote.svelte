@@ -1,7 +1,7 @@
 <script lang="ts">
   import { client } from '$lib/api/client.svelte'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import { Button, TextInput, toast } from 'mono-svelte'
 
   interface Props {
@@ -41,10 +41,10 @@
   }}
   class="contents"
 >
-  <TextInput bind:value={note} label={$t('nav.commands.content')} required />
+  <TextInput bind:value={note} label=Content required />
   <div class="flex flex-row gap-2 *:flex-1">
     <Button loading={loading === true} submit color="primary" size="lg">
-      {$t('form.submit')}
+      Submit
     </Button>
     <Button
       onclick={() => submit(null)}
@@ -52,7 +52,7 @@
       color="danger"
       size="lg"
     >
-      {$t('common.remove')}
+      Remove
     </Button>
   </div>
 </form>

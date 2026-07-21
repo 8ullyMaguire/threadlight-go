@@ -2,7 +2,7 @@
   import { browser } from '$app/environment'
   import { page } from '$app/state'
   import { site } from '$lib/api/client.svelte'
-  import { t } from '$lib/app/i18n'
+
   import { settings, SSR_ENABLED } from '$lib/app/settings.svelte'
   import Location from '$lib/feature/filter/Location.svelte'
   import Sort from '$lib/feature/filter/Sort.svelte'
@@ -34,12 +34,12 @@
   <title>
     {SSR_ENABLED && site.data
       ? site.data.site_view.site.name
-      : $t('routes.frontpage.title')}
+      :'Frontpage'}
   </title>
 </svelte:head>
 
 <Header pageHeader>
-  {$t('routes.frontpage.title')}
+  Frontpage
   {#snippet extended()}
     <form class="contents" method="get" action={page.url.pathname}>
       <div class="flex flex-row gap-2 max-w-full flex-wrap">

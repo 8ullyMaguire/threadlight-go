@@ -1,4 +1,3 @@
-import { t } from '$lib/app/i18n'
 import type { IconSource } from '@xylightdev/svelte-hero-icons'
 import type { Snippet } from 'svelte'
 import { writable } from 'svelte/store'
@@ -42,7 +41,7 @@ export const action = (action?: {
       }
     : () => shownModal.set(undefined),
   type: action?.type ?? 'secondary',
-  content: action?.content || t.get('common.back'),
+  content: action?.content || 'Back',
   close: action?.close ?? true,
 })
 

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { communityLink } from '$lib/app/util.svelte.js'
   import ItemList from '$lib/ui/generic/ItemList.svelte'
   import Placeholder from '$lib/ui/info/Placeholder.svelte'
@@ -36,7 +36,7 @@
   >
     {#snippet action(block)}
       <Button
-        title={$t('common.jump')}
+        title=Jump
         size="square-md"
         href={block.url}
         color="primary"
@@ -52,8 +52,8 @@
   </ItemList>
 {:else}
   <Placeholder
-    title={$t('routes.profile.blocks.empty.community.title')}
-    description={$t('routes.profile.blocks.empty.community.description')}
+    title=No blocked communities
+    description=Blocking a community will hide its posts from feeds.
     icon={Check}
     class="my-auto"
   />

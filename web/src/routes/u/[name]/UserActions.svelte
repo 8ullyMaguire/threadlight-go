@@ -2,7 +2,7 @@
   import { client } from '$lib/api/client.svelte'
   import type { PersonView } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { ban } from '$lib/feature/moderation/moderation'
   import { blockUser, isBlocked } from '$lib/feature/user'
   import UserNote from '$lib/feature/user/UserNote.svelte'
@@ -41,7 +41,7 @@
         person_id: person.person.id,
       })
       removeToast(purgeToast)
-      toast({ content: $t('toast.purgeUser'), type: 'success' })
+      toast({ content:'Purged that user.', type: 'success' })
     } catch (e) {
       toast({ content: e as string, type: 'error' })
     }
@@ -73,7 +73,7 @@
 {#if setNote}
   <Modal bind:open={setNote}>
     {#snippet customTitle()}
-      {$t('routes.user.note')}
+      Set note
     {/snippet}
     <UserNote
       person={person.person.id}
@@ -83,7 +83,7 @@
         person.person.note = e ?? undefined
         setNote = !setNote
         toast({
-          content: $t('message.success'),
+          content:'Success',
           type: 'success',
         })
       }}
@@ -99,7 +99,7 @@
       href="/inbox/messages/{person.person.id}"
       icon={Envelope}
     >
-      {$t('content.message')}
+      Message
     </Button>
     {#if person.person.matrix_user_id}
       <Button
@@ -110,7 +110,7 @@
         {#snippet prefix()}
           <Icon solid size="16" src={AtSymbol} />
         {/snippet}
-        {$t('form.profile.matrix')}
+        Chat on Matrix
       </Button>
     {/if}
     {#if profile.isAdmin}
@@ -121,7 +121,7 @@
             size="square-lg"
             rounding="2xl"
             icon={ShieldCheck}
-            aria-label={$t('moderation.label')}
+            aria-label=Moderation
           ></Button>
         {/snippet}
         <MenuButton
@@ -129,7 +129,7 @@
           color="success-subtle"
           icon={Newspaper}
         >
-          {$t('moderation.modlog.user')}
+          User moderation log
         </MenuButton>
         <MenuButton
           color="danger-subtle"
@@ -154,11 +154,11 @@
           size="square-lg"
           rounding="2xl"
           icon={EllipsisHorizontal}
-          aria-label={$t('post.actions.more.label')}
+          aria-label=More actions
         />
       {/snippet}
       <MenuButton onclick={() => (setNote = !setNote)} icon={Tag}>
-        {$t('routes.user.note')}
+        Set note
       </MenuButton>
       <MenuButton
         color="danger-subtle"

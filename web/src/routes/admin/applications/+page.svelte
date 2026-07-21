@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import { t } from '$lib/app/i18n'
+
   import { searchParam } from '$lib/app/util.svelte'
   import Placeholder from '$lib/ui/info/Placeholder.svelte'
   import { CommonList, Header, Pageination } from '$lib/ui/layout'
@@ -13,7 +13,7 @@
   let selectForm = $state<HTMLFormElement>()
 </script>
 
-<Header pageHeader>{$t('routes.admin.applications.title')}</Header>
+<Header pageHeader>Applications</Header>
 <form bind:this={selectForm} action="/admin/applications" class="w-max">
   <Select
     bind:value={data.type.value}
@@ -24,11 +24,11 @@
     {#snippet customLabel()}
       <span class="flex items-center gap-1">
         <Icon src={Funnel} size="15" mini />
-        {$t('filter.filter')}
+        Filter
       </span>
     {/snippet}
-    <Option value="all">{$t('filter.location.all')}</Option>
-    <Option value="unread">{$t('filter.unread')}</Option>
+    <Option value="all">All</Option>
+    <Option value="unread">Unread</Option>
   </Select>
 </form>
 {#if data.applications?.value && data.applications?.value.length > 0}
@@ -51,7 +51,7 @@
 {:else}
   <Placeholder
     icon={ClipboardDocumentCheck}
-    title={$t('routes.admin.applications.empty.title')}
-    description={$t('routes.admin.applications.empty.description')}
+    title=No new applications
+    description=Applications to join your server will appear here.
   />
 {/if}

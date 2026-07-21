@@ -3,7 +3,7 @@
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { theme } from '$lib/app/theme/theme.svelte'
   import { fuzzySearch } from '$lib/app/util.svelte'
   import { resumables } from '$lib/feature/legacy/item'
@@ -234,7 +234,7 @@
   bind:value={search}
   class="sticky rounded-none! border-t-0 border-x-0 focus-within:border-inherit! focus-within:ring-0!"
   size="lg"
-  placeholder={$t('nav.commands.prompt')}
+  placeholder=Command palette
   bind:element={input}
 />
 <div class="h-128 overflow-auto border-slate-200 dark:border-zinc-800 p-5">

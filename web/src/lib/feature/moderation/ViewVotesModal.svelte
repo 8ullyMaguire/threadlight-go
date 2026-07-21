@@ -1,7 +1,7 @@
 <script lang="ts">
   import { client } from '$lib/api/client.svelte'
   import type { CommentView, PostView, VoteView } from '$lib/api/types'
-  import { t } from '$lib/app/i18n'
+
   import { Button, Modal, Spinner } from 'mono-svelte'
   import {
     ArrowDownCircle,
@@ -45,7 +45,7 @@
   let votes: Promise<VoteView[]> = $derived(loadVotes(page))
 </script>
 
-<Modal bind:open title={$t('moderation.votes')}>
+<Modal bind:open title=Votes>
   <div class="flex flex-col gap-1">
     {#await votes}
       <div class="self-center justify-self-center h-48 grid place-items-center">
@@ -59,7 +59,7 @@
           >
             <th style="width: 6%;"></th>
             <th style="width: 60%;" class="text-left">
-              {$t('routes.admin.applications.user')}
+              User
             </th>
             <th style="width: 5%;"></th>
           </tr>
@@ -74,8 +74,8 @@
                   size="20"
                   class={vote.score == 1 ? 'text-blue-400' : 'text-red-400'}
                   aria-label={vote.score == 1
-                    ? $t('routes.profile.upvoted')
-                    : $t('routes.profile.downvoted')}
+                    ?'Upvoted'
+                    :'Downvoted'}
                 />
               </td>
               <td class="text-sm w-full overflow-hidden">
@@ -91,7 +91,7 @@
                   href="/modlog?user={vote.creator.id}"
                   data-sveltekit-preload-data="tap"
                   class="text-green-400 hover:underline flex flex-row items-center gap-1 font-medium text-xs"
-                  aria-label={$t('moderation.modlog.user')}
+                  aria-label=User moderation log
                 >
                   <Icon src={Newspaper} size="18" micro />
                 </a>
@@ -105,7 +105,7 @@
           <Button
             onclick={() => page--}
             color="ghost"
-            aria-label={$t('common.back')}
+            aria-label=Back
             rounding="pill"
             size="square-md"
             disabled={page == 1}
@@ -116,7 +116,7 @@
           <Button
             onclick={() => page++}
             color="ghost"
-            aria-label={$t('common.next')}
+            aria-label=Next
             rounding="pill"
             size="square-md"
             disabled={votes.length < 50}

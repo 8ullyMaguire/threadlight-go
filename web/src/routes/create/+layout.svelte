@@ -1,7 +1,7 @@
 <script lang="ts">
   import { site } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { Header, Tabs } from '$lib/ui/layout'
 
   let { children } = $props()
@@ -13,18 +13,18 @@
     routes={[
       {
         href: '/create/post',
-        name: $t('nav.create.post'),
+        name:'Post',
       },
       {
         href: '/create/community',
-        name: $t('nav.create.community'),
+        name:'Community',
       },
     ]}
   />
 {/if}
 
 <Header pageHeader>
-  {$t('nav.create.label')}
+  Create
 </Header>
 
 {@render children?.()}

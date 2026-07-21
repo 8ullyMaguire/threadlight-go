@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { communityLink } from '$lib/app/util.svelte'
   import EntityHeader from '$lib/ui/generic/EntityHeader.svelte'
   import ItemList from '$lib/ui/generic/ItemList.svelte'
@@ -46,7 +46,7 @@
             {#if topic.communities}
               <Expandable>
                 {#snippet title()}
-                  {$t('content.communities')}
+                  Communities
                 {/snippet}
                 <ItemList
                   items={topic.communities.map((i) => ({

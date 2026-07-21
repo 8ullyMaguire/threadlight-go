@@ -3,7 +3,7 @@
   import { getClient, validateInstance } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import {
     DEFAULT_INSTANCE_URL,
     LINKED_INSTANCE_URL,
@@ -29,7 +29,7 @@
     loading = true
     try {
       if (!(await validateInstance(instance)))
-        throw new Error($t('toast.failInstanceURL'))
+        throw new Error('Failed to contact that server URL with those settings. Is it down?')
 
       await getClient(instance).passwordChangeAfterReset({
         password: password,
@@ -38,7 +38,7 @@
       })
 
       toast({
-        content: $t('toast.passwordReset'),
+        content:'Your password was reset.',
         type: 'success',
       })
 
@@ -54,37 +54,37 @@
 </script>
 
 <div class="my-auto max-w-xl mx-auto flex flex-col gap-2">
-  <Header>{$t('routes.passwordChange.title')}</Header>
+  <Header>Change password</Header>
   <p>
-    {$t('routes.passwordChange.description')}
+    Choose your new password.
   </p>
   <form class="mt-2 flex flex-col gap-4" onsubmit={preventDefault(submit)}>
     {#if !LINKED_INSTANCE_URL}
       <TextInput
         bind:value={instance}
-        label={$t('form.password')}
+        label=Password
         placeholder={DEFAULT_INSTANCE_URL}
         required
       >
         <span class="font-normal text-xs">
-          {$t('routes.passwordChange.instance')}
+          Which server is your account hosted on?
         </span>
       </TextInput>
     {/if}
     <TextInput
       bind:value={password}
-      label={$t('form.profile.newPassword')}
+      label=New password
       type="password"
       required
     />
     <TextInput
       bind:value={password_verify}
-      label={$t('form.profile.verifyNewPassword')}
+      label=Verify new password
       type="password"
       required
     />
     <Button color="primary" size="lg" {loading} disabled={loading} submit>
-      {$t('form.submit')}
+      Submit
     </Button>
   </form>
 </div>

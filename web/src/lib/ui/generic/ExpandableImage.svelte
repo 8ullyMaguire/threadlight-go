@@ -1,7 +1,7 @@
 <script lang="ts" module>
   import { pushState } from '$app/navigation'
   import { page } from '$app/state'
-  import { t } from '$lib/app/i18n'
+
   import { Button, Material, toast } from 'mono-svelte'
   import { Share, XMark } from 'svelte-hero-icons/dist'
   import { backOut } from 'svelte/easing'
@@ -38,7 +38,7 @@
     } else {
       navigator.clipboard.writeText(page.state.openImage ?? '')
       toast({
-        content: $t('toast.copied'),
+        content:'Copied to clipboard.',
       })
     }
   }
@@ -79,7 +79,7 @@
           color="tertiary"
           size="square-lg"
           rounding="pill"
-          aria-label={$t('post.actions.more.share')}
+          aria-label=Share
           icon={Share}
         />
         <Button
@@ -87,7 +87,7 @@
           color="tertiary"
           size="square-lg"
           rounding="pill"
-          aria-label={$t('common.back')}
+          aria-label=Back
           icon={XMark}
         />
       </Material>

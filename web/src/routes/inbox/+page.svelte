@@ -3,7 +3,7 @@
   import { page } from '$app/state'
   import { getClient } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { searchParam } from '$lib/app/util.svelte'
   import Fixate from '$lib/ui/generic/Fixate.svelte'
   import Placeholder from '$lib/ui/info/Placeholder.svelte'
@@ -39,11 +39,11 @@
 </script>
 
 <svelte:head>
-  <title>{$t('routes.inbox.title')}</title>
+  <title>Inbox</title>
 </svelte:head>
 
 <Header pageHeader class="lg:flex-row justify-between flex-col">
-  {$t('routes.inbox.title')}
+  Inbox
 
   {#snippet extended()}
     <div class="flex gap-2 tracking-normal items-end">
@@ -64,11 +64,11 @@
         {#snippet customLabel()}
           <div class="flex items-center gap-1">
             <Icon src={Funnel} size="15" mini />
-            {$t('filter.filter')}
+            Filter
           </div>
         {/snippet}
-        <Option value="false">{$t('filter.location.all')}</Option>
-        <Option value="true">{$t('filter.unread')}</Option>
+        <Option value="false">All</Option>
+        <Option value="true">Unread</Option>
       </Select>
       <div class="flex-1"></div>
       <Button
@@ -79,12 +79,12 @@
         icon={Check}
         size="lg"
       >
-        {$t('routes.inbox.markAsRead')}
+        Mark All Read
       </Button>
       <Button
         onclick={() => goto(page.url, { invalidateAll: true })}
         size="square-lg"
-        aria-label={$t('common.refresh')}
+        aria-label=Refresh
         icon={ArrowPath}
       />
     </div>
@@ -94,8 +94,8 @@
 {#if !data.inbox?.value || (data.inbox.value?.length ?? 0) == 0}
   <Placeholder
     icon={Inbox}
-    title={$t('routes.inbox.empty.title')}
-    description={$t('routes.inbox.empty.description')}
+    title=No new notifications
+    description=Messages, replies, and mentions will appear here.
     class="self-center justify-self-center my-auto"
   />
 {:else}

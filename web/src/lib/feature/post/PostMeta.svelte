@@ -1,7 +1,7 @@
 <script lang="ts" module>
   import type { Community, Person, SubscribedType } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import Markdown from '$lib/app/markdown/Markdown.svelte'
   import { type View, settings } from '$lib/app/settings.svelte'
   import Avatar from '$lib/ui/generic/Avatar.svelte'
@@ -153,7 +153,7 @@
       {
         icon: ExclamationTriangle,
         color: 'red-subtle',
-        label: $t('post.badges.nsfw'),
+        label:'NSFW',
       },
     ],
     [
@@ -161,7 +161,7 @@
       {
         icon: Bookmark,
         color: 'yellow-subtle',
-        label: $t('post.badges.saved'),
+        label:'Saved',
       },
     ],
     [
@@ -169,7 +169,7 @@
       {
         icon: Megaphone,
         color: 'green-subtle',
-        label: $t('post.badges.featured'),
+        label:'Featured',
       },
     ],
     [
@@ -177,7 +177,7 @@
       {
         icon: Trash,
         color: 'green-subtle',
-        label: $t('post.badges.removed'),
+        label:'Removed',
       },
     ],
     [
@@ -185,7 +185,7 @@
       {
         icon: Trash,
         color: 'red-subtle',
-        label: $t('post.badges.deleted'),
+        label:'Deleted',
       },
     ],
     [
@@ -193,7 +193,7 @@
       {
         icon: LockClosed,
         color: 'yellow-subtle',
-        label: $t('post.badges.locked'),
+        label:'Locked',
       },
     ],
   ])
@@ -300,19 +300,11 @@
     {/if}
     {#if edited}
       <button
-        title={$t('post.meta.lastEdited', {
-          default: formatRelativeDate(publishedToDate(edited), {
-            style: 'long',
-          }),
-        })}
+        title={`Last edited ${formatRelativeDate(publishedToDate(edited), { style: 'long' })}`}
         onclick={() =>
           modal({
-            title: $t('common.info'),
-            body: $t('post.meta.lastEdited', {
-              default: formatRelativeDate(publishedToDate(edited), {
-                style: 'long',
-              }),
-            }),
+            title: 'Info',
+            body: `Last edited ${formatRelativeDate(publishedToDate(edited), { style: 'long' })}`,
           })}
       >
         <Icon src={Pencil} micro size="14" />

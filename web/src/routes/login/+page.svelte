@@ -11,7 +11,7 @@
   import { PiefedClient } from '$lib/api/piefed/adapter'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import {
     DEFAULT_INSTANCE_URL,
     LINKED_INSTANCE_URL,
@@ -101,7 +101,7 @@
         )
 
         if (result) {
-          toast({ content: $t('toast.logIn'), type: 'success' })
+          toast({ content:'Successfully logged in.', type: 'success' })
           goto(ref)
         }
       } else {
@@ -147,7 +147,7 @@
 </script>
 
 <svelte:head>
-  <title>{$t('account.login')}</title>
+  <title>Log in</title>
 </svelte:head>
 
 <form
@@ -159,19 +159,19 @@
 >
   <div class="flex flex-col">
     {@render children?.()}
-    <Header>{$t('account.login')}</Header>
+    <Header>Log in</Header>
     <ErrorContainer class="pt-2" scope={page.route.id} />
   </div>
   {#if form.client.name == 'piefed'}
     <Note>
-      {$t('account.piefedGate')}
+      Piefed support is experimental. Some features are not supported.
     </Note>
   {/if}
   <div class="flex items-center gap-2">
     <TextInput
       id="username"
       bind:value={form.username}
-      label={$t('form.username')}
+      label=Username
       class="flex-1"
       required
     />
@@ -188,7 +188,7 @@
         autocapitalize="off"
       >
         {#snippet customLabel()}
-          {$t('form.instance')}
+          Server domain
           <span class="absolute right-0">
             {#if detectedClient}
               <span
@@ -209,7 +209,7 @@
     <TextInput
       id="password"
       bind:value={form.password}
-      label={$t('form.password')}
+      label=Password
       type="password"
       minlength={form.client.name == 'piefed'
         ? PiefedClient.constants.password.minLength
@@ -223,7 +223,7 @@
     <TextInput
       id="totp"
       bind:value={form.totp}
-      label={$t('form.2fa')}
+      label=2FA Code
       placeholder="123456"
       pattern={'\\d{6}'}
       minlength={6}
@@ -238,19 +238,19 @@
     size="lg"
     submit
   >
-    {$t('account.login')}
+    Log in
   </Button>
   <hr class="border-slate-200 dark:border-zinc-800" />
   <ButtonGroup orientation="horizontal" class="flex overflow-auto">
     <Button href="/signup" icon={Identification}>
-      {$t('account.signup')}
+      Sign up
     </Button>
     <Button href="/login_reset" icon={QuestionMarkCircle}>
-      {$t('form.forgotpassword')}
+      Forgot password
     </Button>
     {#if !LINKED_INSTANCE_URL}
       <Button href="/login/guest" icon={UserCircle}>
-        {$t('account.guest')}
+        Guest
       </Button>
     {/if}
   </ButtonGroup>

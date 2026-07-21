@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { CommentView } from '$lib/api/types'
-  import { t } from '$lib/app/i18n'
+
   import { publishedToDate } from '$lib/ui/util/date'
   import { Button } from 'mono-svelte'
   import { ArrowUturnUp, Icon } from 'svelte-hero-icons/dist'
@@ -58,7 +58,7 @@
         href="/comment/{comment.comment.id}"
         class="self-start"
       >
-        {$t('common.jump')}
+        Jump
         <Icon src={ArrowUturnUp} size="14" micro />
       </Button>
     </div>

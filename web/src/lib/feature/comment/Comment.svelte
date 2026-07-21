@@ -3,7 +3,7 @@
   import { getClient } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import Markdown from '$lib/app/markdown/Markdown.svelte'
   import { settings } from '$lib/app/settings.svelte'
   import { publishedToDate } from '$lib/ui/util/date'
@@ -87,7 +87,7 @@
 {#if editing}
   <Modal bind:open={editing}>
     {#snippet customTitle()}
-      <div>{$t('form.edit')}</div>
+      <div>Edit</div>
     {/snippet}
     <form
       onsubmit={(e) => {
@@ -110,7 +110,7 @@
         disabled={editingLoad}
         class="w-full"
       >
-        {$t('form.submit')}
+        Submit
       </Button>
     </form>
   </Modal>
@@ -136,7 +136,7 @@
         {#if node.comment_view.counts.child_count > 0}
           {@const children = node.comment_view.counts.child_count}
           <div
-            aria-label={$t('aria.comments.children', { childCount: children })}
+            aria-label=`${children} children`
             class="font-medium"
           >
             {children}
@@ -171,7 +171,7 @@
                 size="16"
                 micro
                 class="text-green-500"
-                aria-label={$t('class.moderator')}
+                aria-label=Moderator
               />
             {/if}
             {#if node.comment_view.creator_is_admin}
@@ -180,7 +180,7 @@
                 size="16"
                 micro
                 class="text-red-500"
-                aria-label={$t('class.admin')}
+                aria-label=Administrator
               />
             {/if}
           {/snippet}
@@ -199,17 +199,12 @@
         date={publishedToDate(node.comment_view.comment.published)}
       />
       <span class="text-slate-600 dark:text-zinc-400 flex flex-row gap-2 ml-1">
-        {#if node.comment_view.comment.updated}{@const edited = $t(
-            'post.meta.lastEdited',
-            {
-              default: formatRelativeDate(
+        {#if node.comment_view.comment.updated}{@const edited = `Last edited ${formatRelativeDate(
                 publishedToDate(node.comment_view.comment.updated),
                 {
                   style: 'long',
                 },
-              ),
-            },
-          )}
+              )}`}
           <div title={edited}>
             <Icon src={Pencil} micro size="14" />
           </div>
@@ -219,7 +214,7 @@
             src={Trash}
             solid
             size="12"
-            aria-label={$t('post.badges.deleted')}
+            aria-label=Deleted
             class="text-red-600 dark:text-red-500"
           />
         {/if}
@@ -228,7 +223,7 @@
             src={Trash}
             solid
             size="12"
-            aria-label={$t('post.badges.removed')}
+            aria-label=Removed
             class="text-green-600 dark:text-green-500"
           />
         {/if}
@@ -237,7 +232,7 @@
             src={Bookmark}
             solid
             size="12"
-            aria-label={$t('post.badges.saved')}
+            aria-label=Saved
             class="text-yellow-600 dark:text-yellow-500"
           />
         {/if}
@@ -288,7 +283,7 @@
       {#if replying}
         <div transition:slide={{ duration: 600, easing: expoOut }}>
           <CommentForm
-            label={$t('comment.reply')}
+            label=Reply
             postId={node.comment_view.post.id}
             parentId={node.comment_view.comment.id}
             oncomment={(e) => {

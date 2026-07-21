@@ -2,7 +2,7 @@
   import { PiefedClient } from '$lib/api/piefed/adapter'
   import type { PostView } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
   import { deleteItem, markAsRead } from '$lib/feature/legacy/contentview'
   import { report } from '$lib/feature/moderation/moderation'
@@ -45,7 +45,7 @@
 
 {#if profile.current?.user && profile.current?.jwt && profile.current.user.local_user_view.person.id == post.creator.id}
   <MenuButton onclick={() => (editing = true)} icon={PencilSquare}>
-    {$t('post.actions.more.edit')}
+    Edit
   </MenuButton>
 {/if}
 {#if profile.current?.jwt}
@@ -57,8 +57,8 @@
     icon={post.read ? EyeSlash : Eye}
   >
     {post.read
-      ? $t('post.actions.more.markUnread')
-      : $t('post.actions.more.markRead')}
+      ?'Mark as unread'
+      :'Mark as read'}
   </MenuButton>
 {/if}
 {#if profile.current?.jwt}
@@ -66,7 +66,7 @@
     href="/create/post?crosspost={crosspostB64()}"
     icon={ArrowTopRightOnSquare}
   >
-    {$t('post.actions.more.crosspost')}
+    Crosspost
   </MenuButton>
   {#if profile.current.user && post.creator.id == profile.current.user.local_user_view.person.id}
     <MenuButton
@@ -78,8 +78,8 @@
       icon={Trash}
     >
       {post.post.deleted
-        ? $t('post.actions.more.restore')
-        : $t('post.actions.more.delete')}
+        ?'Restore'
+        :'Delete'}
     </MenuButton>
   {/if}
   {#if profile.current.user?.local_user_view.person.id != post.creator.id}
@@ -99,12 +99,12 @@
         icon={XMark}
       >
         {post.hidden
-          ? $t('post.actions.more.unhide')
-          : $t('post.actions.more.hide')}
+          ?'Unhide'
+          :'Hide'}
       </MenuButton>
     {/if}
     <MenuButton onclick={() => report(post)} color="danger-subtle" icon={Flag}>
-      {$t('moderation.report')}
+      Report
     </MenuButton>
   {/if}
 {/if}

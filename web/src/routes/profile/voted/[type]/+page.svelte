@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import CommentItem from '$lib/feature/comment/CommentItem.svelte'
   import { isCommentView } from '$lib/feature/legacy/item'
   import { PostItem } from '$lib/feature/post'
@@ -10,7 +10,7 @@
 </script>
 
 <Header pageHeader>
-  {data.upvoted ? $t('routes.profile.upvoted') : $t('routes.profile.downvoted')}
+  {data.upvoted ?'Upvoted' :'Downvoted'}
 </Header>
 
 <CommonList items={data.items}>

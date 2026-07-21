@@ -1,6 +1,6 @@
 <script lang="ts">
   import { page } from '$app/state'
-  import { t } from '$lib/app/i18n'
+
   import { communityLink } from '$lib/app/util.svelte'
   import CommentItem from '$lib/feature/comment/CommentItem.svelte'
   import Sort from '$lib/feature/filter/Sort.svelte'
@@ -49,15 +49,15 @@
           bio={data.person_view.value.person.bio}
           stats={[
             {
-              name: $t('content.posts'),
+              name:'Posts',
               value: data.person_view.value.counts.post_count.toString(),
             },
             {
-              name: $t('content.comments'),
+              name:'Comments',
               value: data.person_view.value.counts.comment_count.toString(),
             },
             {
-              name: $t('stats.joined'),
+              name:'Joined',
               value: formatRelativeDate(
                 publishedToDate(data.person_view.value.person.published),
                 { style: 'short' },
@@ -80,7 +80,7 @@
           {#if (data.moderates.value ?? []).length > 0}
             <Expandable class="">
               {#snippet title()}
-                {$t('routes.profile.moderates')}
+                Moderating
                 <hr
                   class="flex-1 w-full border-slate-200 dark:border-zinc-800 mx-3"
                 />
@@ -117,12 +117,12 @@
               {#snippet customLabel()}
                 <span class="flex items-center gap-1">
                   <Icon src={AdjustmentsHorizontal} size="15" mini />
-                  {$t('filter.type')}
+                  Type
                 </span>
               {/snippet}
-              <Option value="all">{$t('content.all')}</Option>
-              <Option value="posts">{$t('content.posts')}</Option>
-              <Option value="comments">{$t('content.comments')}</Option>
+              <Option value="all">All</Option>
+              <Option value="posts">Posts</Option>
+              <Option value="comments">Comments</Option>
             </Select>
             <Sort
               bind:selected={data.filters.value.sort}

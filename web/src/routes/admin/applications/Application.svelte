@@ -6,7 +6,7 @@
   } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import ApplicationDenyModal from '$lib/feature/moderation/ApplicationDenyModal.svelte'
   import UserLink from '$lib/feature/user/UserLink.svelte'
   import { publishedToDate } from '$lib/ui/util/date'
@@ -61,8 +61,8 @@
       )
       toast({
         content: approve
-          ? $t('toast.approvedApplication')
-          : $t('toast.deniedApplication'),
+          ?'Approved that application.'
+          :'Denied that application.',
         type: 'success',
       })
       application.creator_local_user.accepted_application = approve
@@ -129,8 +129,8 @@
               <UserLink avatar user={application.admin} />
               <Label>
                 {accepted
-                  ? $t('routes.admin.applications.approved')
-                  : $t('routes.admin.applications.denied')}
+                  ?'Approved'
+                  :'Denied'}
               </Label>
               <Label>:</Label>
             </div>
@@ -148,8 +148,8 @@
             <UserLink avatar user={application.admin} />
             <Label>
               {accepted
-                ? $t('routes.admin.applications.approved')
-                : $t('routes.admin.applications.denied')}
+                ?'Approved'
+                :'Denied'}
             </Label>
           </div>
           <div class="md:ml-auto"></div>
@@ -164,7 +164,7 @@
           .accepted_application === false && application.admin
           ? 'text-red-500!'
           : ''}"
-        aria-label={$t('routes.admin.applications.deny')}
+        aria-label=Deny
         onclick={() => review(false)}
         loading={denying || reviewing}
         disabled={approving || denying || reviewing}
@@ -176,7 +176,7 @@
           .accepted_application
           ? 'text-green-500!'
           : ''}"
-        title={$t('routes.admin.applications.approve')}
+        title=Approve
         onclick={() => review(true)}
         loading={approving}
         disabled={approving || denying || reviewing}

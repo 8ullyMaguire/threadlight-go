@@ -2,7 +2,7 @@
   import { page } from '$app/state'
   import { client } from '$lib/api/client.svelte'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { LINKED_INSTANCE_URL } from '$lib/app/instance.svelte'
   import Location from '$lib/feature/filter/Location.svelte'
   import Sort from '$lib/feature/filter/Sort.svelte'
@@ -21,26 +21,26 @@
     routes={[
       {
         href: '/explore/communities',
-        name: $t('routes.communities.title'),
+        name:'Communities',
       },
       {
         href: '/explore/feeds',
-        name: $t('routes.explore.feeds'),
+        name:'Feeds',
       },
       {
         href: '/explore/topics',
-        name: $t('routes.explore.topics'),
+        name:'Topics',
       },
     ]}
   ></Tabs>
 {/if}
 
 <svelte:head>
-  <title>{$t('routes.explore.title')}</title>
+  <title>Explore</title>
 </svelte:head>
 
 <Header pageHeader>
-  {$t('routes.explore.title')}
+  Explore
   {#snippet extended()}
     {#if page.route.id == '/explore/communities'}
       <form

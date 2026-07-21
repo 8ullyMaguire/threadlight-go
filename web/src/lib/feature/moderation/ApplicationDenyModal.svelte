@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { Person } from '$lib/api/types'
-  import { t } from '$lib/app/i18n'
+
   import MarkdownEditor from '$lib/app/markdown/MarkdownEditor.svelte'
   import { Button, Modal } from 'mono-svelte'
   import UserLink from '../user/UserLink.svelte'
@@ -27,7 +27,7 @@
   }
 </script>
 
-<Modal bind:open title={$t('routes.admin.applications.modalTitle')}>
+<Modal bind:open title=Deny application>
   <form
     onsubmit={(e) => {
       e.preventDefault()
@@ -38,11 +38,11 @@
     <UserLink avatar {user} />
     <MarkdownEditor
       bind:value={denyReason}
-      label={$t('routes.admin.applications.reason')}
+      label=Reason
       rows={4}
     />
     <Button color="primary" size="lg" submit {loading} disabled={loading}>
-      {$t('routes.admin.applications.deny')}
+      Deny
     </Button>
   </form>
 </Modal>

@@ -2,7 +2,7 @@
   import { goto } from '$app/navigation'
   import { page } from '$app/state'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import { Button, Material } from 'mono-svelte'
 
   function getError(message: string): { string: string; code: boolean } {
@@ -36,10 +36,10 @@
   </Material>
   <div class="flex items-center gap-2 px-4">
     <Button size="lg" onclick={() => goto(page.url, { invalidateAll: true })}>
-      {$t('message.retry')}
+      Retry
     </Button>
     <Button href="/" size="lg">
-      {$t('nav.home')}
+      Home
     </Button>
   </div>
 </div>

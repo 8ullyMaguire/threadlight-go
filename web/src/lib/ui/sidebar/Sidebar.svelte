@@ -1,7 +1,7 @@
 <script lang="ts">
   import { env } from '$env/dynamic/public'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { LINKED_INSTANCE_URL } from '$lib/app/instance.svelte'
   import { settings } from '$lib/app/settings.svelte'
   import { theme } from '$lib/app/theme/theme.svelte'
@@ -38,7 +38,7 @@
 </script>
 
 <nav
-  aria-label={$t('aria.sidebar.title')}
+  aria-label=Sidebar
   class={['flex flex-col overflow-auto gap-1', clazz]}
   {style}
 >
@@ -50,15 +50,15 @@
     )}
     profiles={profile.meta.profiles}
   />
-  <EndPlaceholder margin="sm" size="xs">{$t('profile.profile')}</EndPlaceholder>
+  <EndPlaceholder margin="sm" size="xs">Profile</EndPlaceholder>
   {#if profile.current?.jwt}
     {@const notifications = profile.inbox.notifications}
     <SidebarButton
       icon={UserCircle}
       href="/profile"
-      label={$t('profile.profile')}
+      label=Profile
     />
-    <SidebarButton icon={Inbox} href="/inbox" label={$t('profile.inbox')}>
+    <SidebarButton icon={Inbox} href="/inbox" label=Inbox>
       {#if notifications.inbox > 0}
         <Badge
           class="min-w-5 h-5 p-0! px-0.5 grid place-items-center ml-auto"
@@ -68,35 +68,35 @@
         </Badge>
       {/if}
     </SidebarButton>
-    <SidebarButton icon={Bookmark} href="/saved" label={$t('profile.saved')} />
+    <SidebarButton icon={Bookmark} href="/saved" label=Saved />
   {:else}
     <SidebarButton
       href="/login"
-      label={$t('account.login')}
+      label=Log in
       icon={ArrowLeftOnRectangle}
     />
     <SidebarButton
       href="/signup"
-      label={$t('account.signup')}
+      label=Sign up
       icon={Identification}
     />
     <SidebarButton
       href="/accounts"
-      label={$t('account.accounts')}
+      label=Accounts
       icon={UserGroup}
     />
   {/if}
-  <EndPlaceholder margin="sm" size="xs">{$t('nav.menu.app')}</EndPlaceholder>
+  <EndPlaceholder margin="sm" size="xs">App</EndPlaceholder>
   <SidebarButton
     href="/settings"
-    label={$t('nav.menu.settings')}
+    label=Settings
     icon={Cog6Tooth}
   />
   <Select bind:value={theme.colorScheme} size="sm">
     {#snippet target(attachment)}
       <SidebarButton
         {@attach attachment}
-        label={$t('nav.menu.colorscheme.label')}
+        label=Color scheme
         icon={theme.colorScheme == 'system'
           ? ComputerDesktop
           : theme.colorScheme == 'light'
@@ -105,22 +105,22 @@
         class="w-full relative"
       >
         <Option value="system" class="hidden" icon={ComputerDesktop}>
-          {$t('nav.menu.colorscheme.system')}
+          System
         </Option>
         <Option value="light" class="hidden" icon={Sun}>
-          {$t('nav.menu.colorscheme.light')}
+          Light
         </Option>
         <Option value="dark" class="hidden" icon={Moon}>
-          {$t('nav.menu.colorscheme.dark')}
+          Dark
         </Option>
         <Icon micro size="16" src={ChevronUpDown} class="ml-auto" />
       </SidebarButton>
     {/snippet}
   </Select>
-  <SidebarButton href="/theme" label={$t('nav.menu.theme')} icon={Swatch} />
+  <SidebarButton href="/theme" label=Theme icon={Swatch} />
   {#if profile.current?.user}
     <EndPlaceholder margin="sm" size="xs">
-      {$t('content.communities')}
+      Communities
     </EndPlaceholder>
 
     <div class="space-y-3">
@@ -129,7 +129,7 @@
           {#snippet title()}
             <span class="px-2 py-1 w-full">
               <EndPlaceholder border={false}>
-                {$t('routes.profile.moderates')}
+                Moderating
                 {#snippet action()}
                   <span class="dark:text-white text-black">
                     {profile.current.user?.moderates.length}
@@ -154,7 +154,7 @@
         {#snippet title()}
           <span class="px-2 py-1 w-full">
             <EndPlaceholder border={false}>
-              {$t('profile.subscribed')}
+              Subscriptions
               {#snippet action()}
                 <span class="dark:text-white text-black">
                   {profile.current.user?.follows.length}
@@ -193,13 +193,13 @@
         class="text-blue-600 dark:text-blue-400"
         href="https://github.com/xyphyn/photon"
       >
-        {$t('nav.menu.source')}
+        Source
       </a>
       <a
         class="text-blue-600 dark:text-blue-400"
         href="https://buymeacoffee.com/xylight"
       >
-        {$t('nav.menu.donate')}
+        Donate
       </a>
     {/if}
   </footer>

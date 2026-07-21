@@ -3,7 +3,7 @@
   import type { Community, Person } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import MarkdownEditor from '$lib/app/markdown/MarkdownEditor.svelte'
   import Duration from '$lib/ui/form/Duration.svelte'
   import Avatar from '$lib/ui/generic/Avatar.svelte'
@@ -74,7 +74,7 @@
       open = false
 
       toast({
-        content: banned ? $t('toast.unbannedUser') : $t('toast.bannedUser'),
+        content: banned ?'Unbanned that user.' :'Banned that user.',
         type: 'success',
       })
 
@@ -92,7 +92,7 @@
 
 <Modal
   bind:open
-  title={banned ? $t('moderation.ban.unbanning') : $t('moderation.ban.banning')}
+  title={banned ?'Unbanning User' :'Banning User'}
 >
   {#if item}
     <form
@@ -112,21 +112,21 @@
       <MarkdownEditor
         required
         bind:value={reason}
-        label={$t('moderation.reason')}
+        label=Reason
       />
       {#if !banned}
         <Switch bind:checked={deleteData}>
-          {$t('moderation.ban.deleteData')}
+          Delete data
           {#snippet description()}
-            {$t('moderation.ban.warning')}
+            This will delete ALL of this user's submissions here.
           {/snippet}
         </Switch>
-        <Label text={$t('moderation.ban.expires')}>
+        <Label text=Expires (UTC)>
           <Duration bind:value={expires}></Duration>
         </Label>
       {/if}
       <Button submit color="primary" {loading} disabled={loading} size="lg">
-        {$t('form.submit')}
+        Submit
       </Button>
     </form>
   {/if}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { Button, Material, toast } from 'mono-svelte'
   import { ClipboardDocument, Icon } from 'svelte-hero-icons/dist'
 
@@ -43,7 +43,7 @@
       color="tertiary"
       onclick={() => {
         navigator?.clipboard?.writeText(codeblock.code)
-        toast({ content: $t('toast.copied') })
+        toast({ content:'Copied to clipboard.' })
       }}
     >
       <Icon

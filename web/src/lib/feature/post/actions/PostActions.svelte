@@ -2,7 +2,7 @@
   import { page } from '$app/state'
   import type { PostView } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { LINKED_INSTANCE_URL } from '$lib/app/instance.svelte'
   import { settings, type View } from '$lib/app/settings.svelte'
   import { instanceToURL } from '$lib/app/util.svelte'
@@ -72,7 +72,7 @@
       })
     else {
       navigator.clipboard.writeText(link)
-      toast({ content: $t('toast.copied') })
+      toast({ content:'Copied to clipboard.' })
     }
   }
 </script>
@@ -80,7 +80,7 @@
 {#if editing}
   <Modal bind:open={editing}>
     {#snippet customTitle()}
-      <h1 class="text-2xl font-bold">{$t('form.edit')}</h1>
+      <h1 class="text-2xl font-bold">Edit</h1>
     {/snippet}
     {#await import('../form/PostForm.svelte')}
       <div class="mx-auto h-96 flex justify-center items-center">
@@ -127,7 +127,7 @@
     class="text-inherit! h-full px-3 relative"
     rounding="xl"
     target={settings.openLinksInNewTab ? '_blank' : ''}
-    aria-label={$t('post.actions.comments')}
+    aria-label=Comments
   >
     {@const newComment =
       publishedToDate(post.counts.newest_comment_time).getTime() >
@@ -187,7 +187,7 @@
       rounding="xl"
       loading={saving}
       disabled={saving}
-      title={post.saved ? $t('post.actions.unsave') : $t('post.actions.save')}
+      title={post.saved ?'Unsave' :'Save'}
       icon={post.saved ? BookmarkSlash : Bookmark}
     ></Button>
   {/if}
@@ -203,15 +203,15 @@
           if (post.post.local) share()
         }}
         icon={Share}
-        title={$t('post.actions.more.share')}
+        title=Share
       />
     {/snippet}
-    <MenuDivider showLabel>{$t('post.actions.more.share.from')}</MenuDivider>
+    <MenuDivider showLabel>Share from</MenuDivider>
     <MenuButton onclick={() => share(true)} icon={GlobeAlt}>
-      {$t('post.actions.more.share.global')}
+      Origin server
     </MenuButton>
     <MenuButton onclick={() => share(false)} icon={MapPin}>
-      {$t('post.actions.more.share.local')}
+      Your server
     </MenuButton>
     {#if !LINKED_INSTANCE_URL}
       <MenuDivider>
@@ -225,7 +225,7 @@
           )}
         icon={Photon}
       >
-        {$t('post.actions.more.share.photon')}
+        Photon link
       </MenuButton>
     {/if}
   </Menu>
@@ -235,7 +235,7 @@
       {#snippet target(popover)}
         <Button
           {@attach popover}
-          title={$t('post.actions.more.label')}
+          title=More actions
           rounding="xl"
           size="custom"
           class={buttonSquare}

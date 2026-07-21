@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { defaultSettings, settings } from '$lib/app/settings.svelte'
   import { Header } from '$lib/ui/layout'
   import TabbedLayoutShell from '$lib/ui/layout/pages/TabbedLayoutShell.svelte'
@@ -35,21 +35,21 @@
 
         Object.assign(settings, merged)
 
-        toast({ content: $t('toast.settingsImport'), type: 'success' })
+        toast({ content:'Successfully imported settings', type: 'success' })
         importing = false
       } catch (err) {
         toast({ content: err as string, type: 'error' })
       }
     }}
-    title={$t('settings.import')}
-    action={$t('settings.import')}
+    title=Import
+    action=Import
   >
     <TextArea bind:value={importText} style="font-family: monospace;" />
   </Modal>
 {/if}
 
 <svelte:head>
-  <title>{$t('settings.title')}</title>
+  <title>Settings</title>
 </svelte:head>
 
 <!--TODO use route ID instead of pathname-->
@@ -58,44 +58,44 @@
   routes={[
     {
       href: '/settings/app',
-      name: $t('settings.app.title'),
+      name:'App',
       icon: Cog,
     },
     {
       href: '/settings/lemmy',
-      name: $t('settings.lemmy.title'),
+      name:'Lemmy',
       icon: AtSymbol,
     },
     {
       href: '/settings/embeds',
-      name: $t('settings.embeds.title'),
+      name:'Embeds',
       icon: RectangleStack,
     },
     {
       href: '/settings/lists',
-      name: $t('settings.lists.title'),
+      name:'Lists',
       icon: ListBullet,
     },
     {
       href: '/settings/affinity',
-      name: $t('settings.affinity.title'),
+      name:'Affinity',
       icon: Heart,
     },
     {
       href: '/settings/moderation',
-      name: $t('settings.moderation.title'),
+      name:'Moderation',
       icon: ShieldCheck,
     },
     {
       href: '/settings/other',
-      name: $t('settings.other.title'),
+      name:'Other',
       icon: EllipsisHorizontal,
     },
   ]}
 >
   {#snippet header()}
     <Header pageHeader class="text-3xl font-bold flex justify-between">
-      {$t('settings.title')}
+      Settings
       {#snippet extended()}
         <div class="flex items-center tracking-normal gap-2">
           <Button
@@ -106,33 +106,33 @@
             icon={ArrowDownTray}
             size="lg"
           >
-            {$t('settings.import')}
+            Import
           </Button>
           <Button
             onclick={() => {
               const json = JSON.stringify(settings)
               navigator?.clipboard?.writeText?.(json)
-              toast({ content: $t('toast.copied') })
+              toast({ content:'Copied to clipboard.' })
             }}
             icon={ArrowUpTray}
             size="lg"
           >
-            {$t('settings.export')}
+            Export
           </Button>
           <Button
             onclick={() => {
               modal({
-                title: $t('settings.reset'),
-                body: $t('toast.resetSettings'),
+                title:'Reset',
+                body:'Do you want to reset your settings to the default?',
                 actions: [
                   action({
                     action: () => Object.assign(settings, defaultSettings),
                     close: true,
                     type: 'danger',
-                    content: $t('settings.reset'),
+                    content:'Reset',
                   }),
                   action({
-                    content: $t('common.cancel'),
+                    content:'Cancel',
                   }),
                 ],
               })
@@ -140,7 +140,7 @@
             icon={ArrowPath}
             size="lg"
           >
-            {$t('settings.reset')}
+            Reset
           </Button>
         </div>
       {/snippet}

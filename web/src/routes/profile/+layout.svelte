@@ -1,5 +1,5 @@
 <script>
-  import { t } from '$lib/app/i18n'
+
   import { Tabs } from '$lib/ui/layout'
   import { Button, Menu, MenuButton } from 'mono-svelte'
   import {
@@ -14,7 +14,7 @@
 </script>
 
 <svelte:head>
-  <title>{$t('profile.profile')}</title>
+  <title>Profile</title>
 </svelte:head>
 
 <div class="flex flex-row justify-between">
@@ -22,22 +22,22 @@
     routes={[
       {
         href: '/profile/user',
-        name: $t('routes.profile.submissions'),
+        name:'Submissions',
       },
 
       {
         href: '/profile/settings',
-        name: $t('routes.profile.edit'),
+        name:'Edit',
       },
 
       {
         href: '/profile/blocks',
-        name: $t('routes.profile.blocks.title'),
+        name:'Blocked',
       },
 
       {
         href: '/profile/password',
-        name: $t('routes.profile.credentials'),
+        name:'Credentials',
       },
     ]}
   >
@@ -45,7 +45,7 @@
       {#snippet target(attachment)}
         <Button
           {@attach attachment}
-          aria-label={$t('post.actions.more.label')}
+          aria-label=More actions
           size="square-sm"
           color="none"
           class="z-0 text-slate-600 dark:text-zinc-500 hover:bg-slate-100 hover:dark:bg-zinc-800"
@@ -54,13 +54,13 @@
         </Button>
       {/snippet}
       <MenuButton href="/profile/media" icon={Photo}>
-        {$t('routes.profile.media.title')}
+        Media
       </MenuButton>
       <MenuButton href="/profile/voted/up" icon={ArrowUp}>
-        {$t('routes.profile.upvoted')}
+        Upvoted
       </MenuButton>
       <MenuButton href="/profile/voted/down" icon={ArrowDown}>
-        {$t('routes.profile.downvoted')}
+        Downvoted
       </MenuButton>
     </Menu>
   </Tabs>

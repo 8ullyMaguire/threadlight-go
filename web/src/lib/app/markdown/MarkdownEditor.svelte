@@ -17,7 +17,7 @@
     Strikethrough,
   } from 'svelte-hero-icons/dist'
   import type { ClassValue } from 'svelte/elements'
-  import { t } from '../i18n'
+
   import Markdown from './Markdown.svelte'
 
   let textArea: HTMLTextAreaElement | undefined = $state()
@@ -122,7 +122,7 @@
 </script>
 
 {#if uploadingImage && images}
-  <Modal title={$t('form.post.uploadImage')} bind:open={uploadingImage}>
+  <Modal title=Upload image bind:open={uploadingImage}>
     <ImageAttachForm
       bind:image
       onupload={(e) => {
@@ -324,7 +324,7 @@
           <MultiSelect
             bind:selected={previewing}
             options={[false, true]}
-            optionNames={[$t('form.edit'), $t('form.preview')]}
+            optionNames={['Edit','Preview']}
           />
         {/if}
         {@render children?.()}

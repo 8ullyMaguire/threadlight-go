@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import { fullCommunityName } from '$lib/app/util.svelte'
   import { Tabs } from '$lib/ui/layout'
   import type { PageData } from './$types'
@@ -39,11 +39,11 @@
     routes={[
       {
         href: `${communityUrl}/settings`,
-        name: $t('routes.community.settings.settings'),
+        name:'Settings',
       },
       {
         href: `${communityUrl}/settings/team`,
-        name: $t('routes.community.settings.team'),
+        name:'Team',
       },
     ]}
   ></Tabs>

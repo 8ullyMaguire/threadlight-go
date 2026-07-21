@@ -2,7 +2,7 @@
   import { client } from '$lib/api/client.svelte'
   import type { CommunityView } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
-  import { locale, t } from '$lib/app/i18n'
+
   import { fullCommunityName } from '$lib/app/util.svelte'
   import CommonItem from '$lib/ui/layout/CommonItem.svelte'
   import { Button, modal } from 'mono-svelte'
@@ -58,12 +58,12 @@
 >
   {#if !children}
     {#if community.community.deleted}
-      <span title={$t('post.badges.deleted')}>
+      <span title=Deleted>
         <Icon src={Trash} class="text-red-500 inline" micro size="14" />
       </span>
     {/if}
     {#if community.community.nsfw}
-      <span title={$t('post.badges.nsfw')}>
+      <span title=NSFW>
         <Icon
           src={ExclamationTriangle}
           class="text-red-500 inline"
@@ -73,12 +73,12 @@
       </span>
     {/if}
     {#if community.banned_from_community}
-      <span title={$t('comment.banned')}>
+      <span title=You are banned from this community.>
         <Icon src={NoSymbol} class="text-red-500 inline" micro size="14" />
       </span>
     {/if}
     {#if community.community.visibility == 'LocalOnly'}
-      <span title={$t('routes.admin.config.listingType.local')}>
+      <span title=Local>
         <Icon src={MapPin} class="text-green-500 inline" micro size="14" />
       </span>
     {/if}
@@ -86,8 +86,8 @@
       rounding="xl"
       color="ghost"
       onclick={() =>
-        modal({ title: $t('form.post.community'), snippet: communityInfo })}
-      aria-label={$t('common.info')}
+        modal({ title:'Community', snippet: communityInfo })}
+      aria-label=Info
       size="square-md"
     >
       <Icon src={InformationCircle} size="16" mini />
@@ -126,8 +126,8 @@
           }}
           size="custom"
           title={subscribed
-            ? $t('cards.community.subscribed')
-            : $t('cards.community.subscribe')}
+            ?'Subscribed'
+            :'Subscribe'}
           color={subscribed ? 'secondary' : 'primary'}
           rounding="xl"
           class={[
@@ -141,9 +141,9 @@
         >
           <span class={[view == 'compact' && 'hidden', '@md:block']}>
             {#if subscribed}
-              {$t('cards.community.subscribed')}
+              Subscribed
             {:else}
-              {$t('cards.community.subscribe')}
+              Subscribe
             {/if}
           </span>
         </Button>

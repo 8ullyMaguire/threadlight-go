@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { CommentView } from '$lib/api/types'
   import { profile } from '$lib/app/auth'
-  import { t } from '$lib/app/i18n'
+
   import { settings } from '$lib/app/settings.svelte'
   import { Button, Menu, MenuButton } from 'mono-svelte'
   import {
@@ -56,7 +56,7 @@
     disabled={comment.post.locked || disabled || !profile.current.jwt}
     icon={ChatBubbleOvalLeft}
   >
-    {$t('comment.reply')}
+    Reply
   </Button>
   {#if profile.current?.user && (profile.isMod(comment.community) || profile.isAdmin)}
     <CommentModerationMenu bind:item={comment}>
@@ -68,7 +68,7 @@
           size="square-md"
           rounding="pill"
           icon={ShieldCheck}
-          aria-label={$t('moderation.label')}
+          aria-label=Moderation
         />
       {/snippet}
     </CommentModerationMenu>
@@ -77,7 +77,7 @@
     {#snippet target(attachment)}
       <Button
         {@attach attachment}
-        title={$t('comment.actions.label')}
+        title=Actions
         color="tertiary"
         rounding="pill"
         size="square-md"
@@ -95,12 +95,12 @@
       }}
       icon={Share}
     >
-      {$t('post.actions.more.share')}
+      Share
     </MenuButton>
     {#if profile.current?.jwt}
       {#if comment.creator.id == profile.current.user?.local_user_view.person.id}
         <MenuButton onclick={() => onedit?.(comment)} icon={PencilSquare}>
-          {$t('post.actions.more.edit')}
+          Edit
         </MenuButton>
       {/if}
       <MenuButton
@@ -110,7 +110,7 @@
         }}
         icon={comment.saved ? BookmarkSlash : Bookmark}
       >
-        {comment.saved ? $t('post.actions.unsave') : $t('post.actions.save')}
+        {comment.saved ?'Unsave' :'Save'}
       </MenuButton>
       {#if profile.current?.user && profile.current.jwt && profile.current.user.local_user_view.person.id == comment.creator.id}
         <MenuButton
@@ -125,8 +125,8 @@
           icon={Trash}
         >
           {comment.comment.deleted
-            ? $t('post.actions.more.restore')
-            : $t('post.actions.more.delete')}
+            ?'Restore'
+            :'Delete'}
         </MenuButton>
       {/if}
       {#if profile.current.jwt && profile.current.user?.local_user_view.person.id != comment.creator.id}
@@ -135,7 +135,7 @@
           color="danger-subtle"
           icon={Flag}
         >
-          {$t('moderation.report')}
+          Report
         </MenuButton>
       {/if}
     {/if}

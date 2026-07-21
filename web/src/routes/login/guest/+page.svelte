@@ -8,7 +8,7 @@
   } from '$lib/api/base'
   import { profile } from '$lib/app/auth'
   import { errorMessage } from '$lib/app/error'
-  import { t } from '$lib/app/i18n'
+
   import { LINKED_INSTANCE_URL } from '$lib/app/instance.svelte'
   import { DOMAIN_REGEX_FORMS, instanceToURL } from '$lib/app/util.svelte'
   import { Header } from '$lib/ui/layout'
@@ -33,7 +33,7 @@
     client: ClientType
   }>({
     instance: '',
-    username: `${$t('account.guest')} ${profile.meta.profiles.filter((p) => p.jwt == undefined).length + 1}`,
+    username: `$Guest ${profile.meta.profiles.filter((p) => p.jwt == undefined).length + 1}`,
     loading: false,
     client: DEFAULT_CLIENT_TYPE,
   })
@@ -61,7 +61,7 @@
       })
       profile.meta.profile = id
 
-      toast({ content: $t('toast.addAccount'), type: 'success' })
+      toast({ content:'Added that account.', type: 'success' })
 
       goto(ref)
     } catch (err) {
@@ -97,12 +97,12 @@
   <form onsubmit={preventDefault(addGuest)} class="flex flex-col gap-5">
     <div class="flex flex-col gap-2">
       {@render children?.()}
-      <Header>{$t('account.addGuest')}</Header>
+      <Header>Add guest</Header>
     </div>
     <div class="inline-flex items-center gap-2">
       <TextInput
         required
-        label={$t('form.name')}
+        label=Name
         bind:value={form.username}
         placeholder="Guest 2"
         minlength={1}
@@ -119,7 +119,7 @@
           autocapitalize="none"
         >
           {#snippet customLabel()}
-            {$t('form.instance')}
+            Server domain
             <span class="absolute right-0">
               {#if detectedClient}
                 <span
@@ -144,7 +144,7 @@
       loading={form.loading}
       disabled={form.loading}
     >
-      {$t('form.submit')}
+      Submit
     </Button>
   </form>
 </div>

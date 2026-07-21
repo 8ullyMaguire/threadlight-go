@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { t } from '$lib/app/i18n'
+
   import type { Filter } from '$lib/feature/post/filters.svelte'
   import Switch from '$lib/ui/form/Switch.svelte'
   import { Button, TextInput } from 'mono-svelte'
@@ -20,10 +20,7 @@
   ></TextInput>
   <Switch
     options={['hide', 'minimize', 'none']}
-    optionNames={[
-      $t('settings.lemmy.contentFilter.hide'),
-      $t('settings.lemmy.contentFilter.minimize'),
-      $t('settings.lemmy.contentFilter.disabled'),
+    optionNames={['Hide','Minimize','Off',
     ]}
     bind:selected={filter.action}
   />
@@ -31,7 +28,7 @@
     icon={Trash}
     size="square-md"
     onclick={onremove}
-    aria-label={$t('common.remove')}
+    aria-label=Remove
   />
 </li>
 
