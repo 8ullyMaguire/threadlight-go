@@ -1,89 +1,19 @@
 # Getting Started
 
-Let's get you set up.
+Welcome to Threadlight, a place where people share ideas, build connections, and take care of each other. This guide will help you get settled in and find your way around.
 
-## Creating an Account
+To create an account, you need just a few things. An email address, which we only use for your account and never share with anyone unless you choose to make it visible. A username, your public name on Threadlight — pick something that feels like you. And a password at least eight characters long. Once you sign up, a confirmation email will arrive with a link to click. If you do not see it right away, check your spam folder. That one click is all it takes to activate your account and begin your journey.
 
-To join Threadlight, you need three things:
+When you log in for the first time, a short welcome screen greets you with a few friendly questions. You can pick some topics you care about so Threadlight can suggest people and communities you might enjoy. You can follow some suggested users who post about those topics. And you can say hello by making your very first post to introduce yourself. None of these steps are required — you can skip them all and come back later from your settings. The door is always open.
 
-- **An email address.** We only use this for your account. We never share it with anyone
-  unless you choose to make it visible.
-- **A username.** This is your public name. Pick something you like.
-- **A password.** Make it at least 8 characters long.
+Everyone starts as a New User, where you can read posts, follow people, and explore. This gives you time to see how everything works before jumping in. After a few days of being around and taking part, you become a Basic User, which means you can create posts freely. With a couple of weeks of steady participation, you become a Regular, gaining the ability to flag content and vote on tags. After about a month as a thoughtful member of the community, you become a Leader, able to vouch for new users and help guide things. And after months of consistent, positive participation, you become an Elder, carrying the community's deepest trust. Do not worry about rushing through these levels. They happen naturally as you use the platform, like growing closer to people you see every day. The important thing is simply to be yourself and take part.
 
-Once you sign up, you will get a confirmation email. Click the link in that email to
-activate your account. (If you do not see the email, check your spam folder.)
+Your home feed is the first thing you see after logging in. It shows posts from people you follow, communities you have joined, and topics you have subscribed to. You can sort your feed by what is active right now, by the most recent posts first, by the best posts from a certain time period, or by posts from the most trusted people. However you like to read, there is a way that feels right for you.
 
-## Your First Login
+Following someone is easy. Visit their profile and click the follow button. Their posts will then appear in your feed. Following someone does not mean they have to follow you back — it just means you want to hear what they have to say. It is a one-way connection based on your own curiosity, not a trade or a favor.
 
-After you log in for the first time, you will see a short welcome screen. This will ask
-you a few questions to help get you started:
+Communities are groups of people who share an interest. To find them, click the Communities link and browse the list. Each community has its own description, culture, and rules. Some are open to anyone who wants to join. Others are invite-only, meaning you need an invitation from someone who is already a member. When you find one that feels like home, click Join and you are in.
 
-1. **Pick some topics you care about.** This helps Threadlight suggest people and
-   communities you might like.
+To create your first post, click the Create button or type in the post box at the top of your feed. Write whatever you want to say and click Post. That is all there is to it. You can also add tags to your post so people who care about the same things can find what you shared.
 
-2. **Follow some suggested users.** Based on the topics you picked, you will see a list
-   of people who post about those things.
-
-3. **Say hello.** Make your first post to introduce yourself.
-
-You can skip any of these steps and come back to them later from your settings.
-
-## Trust Levels (Quick Look)
-
-Everyone starts at **Level 0** (New User). As you participate over time, you earn more
-freedoms:
-
-| Level | Name | What you can do |
-|-------|------|-----------------|
-| 0 | New | Read posts and do basic things |
-| 1 | Basic | Create posts freely |
-| 2 | Regular | Flag content, vote on tags, more trust |
-| 3 | Leader | Vouch for new users, help moderate |
-| 4 | Elder | Full trust, help with special cases |
-
-Do not worry about rushing through these levels. They happen naturally as you use the
-platform. The important thing is just to be yourself and participate.
-
-## Your Home Feed
-
-The main page you see after logging in is your home feed. It shows posts from:
-
-- People you follow
-- Communities you have joined
-- Topics (tags) you have subscribed to
-
-You can sort your feed by: **Hot** (what is active now), **New** (most recent first),
-**Top** (best posts from a time period), or **Trusted** (posts from highly trusted people).
-
-## Following People
-
-Visit someone's profile and click "Follow." Their posts will appear in your feed.
-Following someone does not mean they have to follow you back. It just means you want
-to see what they have to say.
-
-## Joining Communities
-
-Communities are groups of people who share an interest. To find communities, click the
-"Communities" link. Browse the list, read the rules, and click "Join" to become a member.
-
-Some communities are invite-only, which means you need an invitation from an existing
-member. Others are open to anyone.
-
-## Your First Post
-
-To create a post, click the Create button or type in the post box at the top of your feed.
-Write what you want to say and click Post. That is it.
-
-You can also add tags to your post to help people find it. See the [Posting and
-Tagging](02-posting.md) page for more details.
-
-## What's Next
-
-Now that you are set up, here is what to read next:
-
-- [Posting and Tagging](02-posting.md) — how to create posts, add tags, and use reactions
-- [Trust and Communities](03-trust-and-communities.md) — how trust works and how to be
-  part of communities
-- [Moderation and Safety](04-moderation.md) — the rules and how to stay safe
-- [Feeds and Circles](05-feeds-and-circles.md) — how to customize what you see
+Now that you are set up, you might want to read more about posting and tagging, understand how trust and communities work on a deeper level, learn about moderation and how everyone shares the responsibility of keeping the platform safe, or find out how to customize your feeds and circles. Each of those guides will take you further into the world of Threadlight.

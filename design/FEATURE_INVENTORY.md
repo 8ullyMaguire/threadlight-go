@@ -1,130 +1,49 @@
-# Threadlight — Complete Feature Inventory & Next Steps
+# Threadlight — A Living Map of What We Have and What Comes Next
 
-Based on README, AGENTS.md, ARCHITECTURE.md, DESIGN.md, TODO.md, and all source code.
+This document tells the whole story of Threadlight — what works today, what is halfway to completion, what we dream of building someday, and how we think about what to do first. It is not a checklist or a spreadsheet. It is a living map of a community that is growing every day, made by many hands working together.
 
----
+## What Already Works
 
-## 1. Implemented (core works, may need polish)
+The core of Threadlight is here, working, and ready to welcome people. When someone arrives for the first time, they can sign up with an email and a password, verify that they are a real person, and set up a profile that feels like them — with a display name, a short bio, an avatar, a banner image, a theme color, and privacy settings they control. They can write posts with Markdown formatting, add content warnings for sensitive topics, and schedule them to appear at just the right time. The feed shows everything in the order it was posted, with pagination that works smoothly on any screen size.
 
-| Feature | Description |
-|---------|------------|
-| Auth (register/login/logout) | Email/password with JWT session management |
-| User profiles | Display name, bio, avatar, banner, theme, privacy settings |
-| Text posts | Create/update/delete with content warnings, scheduling, Markdown |
-| Chronological feed | Basic feed ordered by time with pagination |
-| Trust levels 0-2 | Model + DB for Discourse-style trust progression |
-| Reactions | Like/unlike (basic), multi-type reactions model exists |
-| Communities | Create/join/leave with slow-boot, probation, tenure-voting, fork |
-| Search | Full-text with Boolean query parser (AND/OR/NOT/parentheses/phrases), field filters (`author:`, `tag:`, `community:`, `mood:`, `is:`, `before:`, `after:`), tsvector GIN index, trigram autocomplete, facet counts |
-| Email verification | Verification email on signup |
-| Password reset | Token-based (needs SMTP to actually send) |
-| User blocking | Per-user block + shared blocklist JSON import/export |
-| Account deletion | Full account removal |
-| Content filters | Per-user keyword filters to hide posts |
-| Tags CRUD | Create/read/update/delete tags |
-| Collaborative tagging | Anyone can tag any post (post_tags table) |
-| Tag voting API + frontend | Upvote/downvote tags via TagVote.svelte component |
-| Trending | Period-based aggregation of popular topics |
-| Collections | Create collections, add/remove posts |
-| Manual circles | User-created groups of people |
-| Moderation labels (M1) | Insightful/Misleading/Off-Topic/Troll/Flamebright labels |
-| Admin ban/suspend | Direct admin enforcement tools |
-| Reports + review queue | Report content, queue for moderator review |
-| Public mod decision reviews | Fair/Unfair voting on any moderation action, controversy scoring (`(fair+unfair) * min(fair,unfair) / max(fair,unfair)`), `/modlog/controversial` endpoint |
-| Credits economy | Award, spend, getBalance, getHistory |
-| Achievements | Check + award milestones |
-| Leaderboard API | Top users endpoint |
-| Workers (13) | Feed rebuild, trending, trust decay, prune, achievements, notes promote, credits, active stats, scheduled posts, affinity computation, algorithmic list refresh |
-| WebSocket hub | Connection manager exists but not wired to feed yet |
-| Community notes | Fact-check notes on posts with voting |
-| Dockerfile | Multi-stage build at repo root |
-| Migration runner | SQL migrations run on startup (4 migrations) |
-| User lists | Create/manage follow/block lists, add/remove members, subscribe/unsubscribe |
-| Collaborative lists | Editor/viewer roles, invite flow, collaborator management |
-| Algorithmic lists | Criteria-based auto-population (`min_trust_level`, `min_posts_30d`, `max_negative_ratio`, etc.), refresh worker |
-| User affinity | Event-driven Redis accumulator (O(1) badge lookup), on-demand SQL compute + 24h cache (affinity page), 4-component scoring (tag overlap, co-community, reaction agreement, trust distance) |
-| Feed plugins | WASM-sandboxed custom feed algorithms (wazero runtime, 10ms timeout, 1MB memory), plugin marketplace with install/uninstall/review, execution worker |
-| Handler integration tests | 4 tests covering user lists, algorithmic lists, affinity endpoints |
+Communities are the beating heart of the platform. Anyone can create one, join one, or leave one. Inside each community, trust levels zero through two are tracked in the database, ready for automatic promotion as members demonstrate that they care about the space. Members can react to posts with likes, and the model is ready to handle many more kinds of reactions whenever we add them. The search system is surprisingly powerful — it understands queries with AND, OR, NOT, parentheses, and quoted phrases, and it can filter by author, tag, community, mood, and date range. Behind the scenes it uses PostgreSQL's tsvector indexes and even offers trigram-based autocomplete, so typing a few letters brings up the right results. Tags can be created, edited, and deleted by anyone, and any member can add tags to any post. The whole community votes on how useful each tag is through the TagVote component, which makes it easy to give a thumbs up or down. Trending topics are calculated over regular time windows so you always know what people are talking about.
 
-## 2. Partially Built / Needs Finish Work
+When someone needs space from another person, blocking works on an individual level and also through shared blocklists that can be imported and exported as JSON files — communities that trust each other can coordinate to keep harmful people out. If someone wants to leave the platform entirely, full account deletion removes everything cleanly. Content filters let each person hide posts containing words they would rather not see, giving everyone control over their own experience without needing to ask anyone else.
 
-| Feature | Description | What's Needed |
-|---------|------------|--------------|
-| Trust Level auto-progression | Promote users based on time/activity/flags | Cron job to evaluate + promote |
-| SMTP password reset | Email the reset token instead of returning it | SMTP config + email sending |
-| Mod post deletion (frontend) | MODREMOVE endpoint exists | Frontend button + confirmation |
-| M2 Meta-moderation | Jury system exists but not M2-style review | "Was this fair?" prompt logic |
-| Community curators | Scope enforcement without ban power | Endpoint exists, needs frontend |
-| Public moderation log | Transparency for admin actions | Endpoint + frontend |
-| Mod dashboard | Queue for moderators | Frontend pages |
-| Appeal system | Let users contest decisions | Backend + frontend |
-| Positive Algorithm | Non-chronological feed ranker | Weighted scoring by trust/reactions/recency/affinity |
-| "Why this post?" button | Transparency for feed ranking | Frontend tooltip showing rank factors |
-| Custom feeds with RSS | Combine communities/tags/people | Feeds exist, RSS export needed |
-| Full reaction set | Insightful/Helpful/Beautiful/Funny/Wholesome/NeedsSources | Only generic like/unlike works |
-| Tag autocomplete | Suggest tags as user types | Frontend component |
-| Collection visibility layers | Public read / public edit / invite-only | Model exists, UI missing |
-| Auto-generated circles | By interest + proximity | Manual circles exist, auto needs ranker |
-| Credit streak bonuses | Reward consecutive active days | Backend logic |
-| Giftable credits | Transfer credits between users | API + UI |
-| Credit hash-chain ledger | Tamper-evident transaction log | Append-only chain |
-| Leaderboard frontend | Shows real data | Currently uses hardcoded sample data |
-| Achievements frontend | Show badges on profile | No UI for achievements yet |
-| ActivityPub federation | ed25519 keys exist, no inbox/outbox | HTTP Signatures, webfinger, activity delivery |
-| WebSocket live feed | Real-time post updates | Hub exists, wire to feed |
-| Image upload | Model + service exist | Missing endpoint + storage config |
-| Seed data | Sample users/posts/communities for fresh instances | Data + migration |
-| Search frontend redesign | Backend has full Boolean + facets | Replace search page with tabs/filters/snippets/URL-sync UI |
-| Frontend error handling | Many `catch(e) { /* ignore */ }` | Show errors to users |
-| SettingsPage refactor | Monolithic settings page | Split into smaller components |
+Moderation is built on transparency and shared responsibility. Labels called M1 let moderators mark posts as insightful, misleading, off-topic, trolling, or flamebait, so everyone can see why something was flagged. Administrators can ban or suspend accounts when someone genuinely harms the community. Anyone can report content they are worried about, and reports flow into a queue for careful review. The most important part is that every moderation action is open to public review — community members vote on whether each decision was fair or unfair, and a controversy score surfaces the most hotly debated calls so everyone can see where opinions differ.
 
----
+A whole economy of recognition is already running. Credits can be awarded to people for good contributions, spent on community features, and tracked through a full history. Achievements can be checked and awarded when someone reaches a milestone. A leaderboard API keeps score in a friendly way, ready to be connected to a frontend that shows real data.
 
-## 3. Future Features (From Docs / Design)
+Behind the scenes, thirteen background workers keep everything humming — they rebuild feeds, calculate trending topics, decay trust for inactive members, prune old data, check achievements, promote notes, award credits, track active stats, publish scheduled posts, compute affinity between users, and refresh algorithmic lists. A WebSocket connection manager is already built, ready to light up live features when we wire it in. Community notes let people fact-check posts with voting, like a shared annotation system that helps everyone think more carefully together.
 
-| Feature | Description | Next Step |
-|---------|------------|-----------|
-| Federation (ActivityPub) | Interoperate with Mastodon/Pleroma | Wire ed25519 keys to webfinger, implement inbox/outbox |
-| Slashdot-style limited moderation | 5-10 actions/day, no rollover | Already planned in M1 design |
-| Tag categories | Artist/Character/General/Rating booru-style | New DB columns + UI |
-| Tag redirects | Misspelled tags → correct spelling | Tag alias table |
-| Gamified tagging | Earn rep for first to tag a post correctly | Achievement check + bonus |
-| Economy: credit bounties | Offer credits for good posts | Bounty endpoints exist |
-| Slow-boot + curator review | New member posts held for review | Backend done, frontend missing |
-| Invite-only communities | Gated communities with invite codes | Backend partially done |
-| WebSocket presence | See who's online in real time | Hub exists, wire to UI |
-| "No /All feed" option | Community-only content, no global firehose | Feed filter toggle |
-| Mod bot downvote filter | Auto-mod based on bot comment reactions | Custom worker |
-| Community forking with spirit-change | Better fork UX than full copy | Improve fork UX |
-| Reputation vesting (fixed period) | Cap at full member after vesting, not infinite log | Configurable probation |
-| Credit-bounties for community work | Reward mods/curators with credits | Extend bounty system |
-| Multi-instance shared blocklists | Auto-exchange blocklists between trusted servers | ActivityPub extension |
+The technical foundation is solid too. A multi-stage Dockerfile makes deployment straightforward and efficient. Database migrations run automatically on every startup, with four migrations already in place. User lists are fully functional — you can create them, manage members, subscribe and unsubscribe, and batch-follow or batch-block everyone on a list. Lists can be collaborative with editor and viewer roles and an invite flow. Algorithmic lists populate themselves based on rules like minimum trust level, minimum posts in the last thirty days, or maximum negative ratio, and they refresh on a schedule without anyone needing to remember. The user affinity engine is event-driven — it uses Redis counters for instant badge lookups and a twenty-four-hour cache for the full affinity page. It scores connections across four dimensions: tag overlap, shared communities, reaction agreement, and trust distance. Feed plugins run inside a WASM sandbox using the wazero runtime with a ten-millisecond timeout and one megabyte memory limit. They can be installed, reviewed, and executed through a marketplace, and a worker handles execution so the main server stays responsive. Four handler integration tests cover user lists, algorithmic lists, and affinity endpoints, making sure these features stay reliable as we add more.
 
----
+## What Is Halfway There
 
-## 4. Suggested Priority Order
+Several big features are already started and just need that final push. The trust-level auto-progression system has the database model ready but needs a cron job that regularly checks each person and promotes them when they meet the criteria. The password reset flow works but returns the token on screen instead of sending it by email — it needs SMTP configuration and an email-sending step to be truly secure. The MODREMOVE endpoint for moderators to delete bad posts exists on the backend but needs a frontend button and a confirmation dialog.
 
-**Immediate (finish existing frontends):**
-1. User list management pages (CRUD, members, subscribe UI) — backend done
-2. Affinity display page (table + similar users) — backend done
-3. Plugin marketplace frontend (browse, install, review) — backend done
-4. Search frontend redesign (tabs, filters, URL sync, snippets) — backend done
-5. Moderation appeal system
+The meta-moderation system called M2 has a jury foundation but needs the "Was this moderation fair?" prompt logic to be fully wired up. Community curators need a frontend to go with the existing endpoint. A public moderation log needs both an endpoint and a frontend page. The moderator dashboard needs frontend pages for the review queue. The appeal system needs both backend and frontend work so users can contest decisions. The Positive Algorithm — a feed ranker that uses weighted scoring by trust, reactions, recency, and affinity — needs to be built and tuned. The "Why this post?" button needs a frontend tooltip that shows the ranking factors that brought something into your feed. Custom feeds with RSS export need the export layer added. The full set of reactions — insightful, helpful, beautiful, funny, wholesome, needs sources — needs to be activated beyond the current like-or-unlike simplicity.
 
-**Short-term (high user-facing impact):**
-6. Image upload — highest user-facing gap
-7. Trust level auto-progression cron — closes a tier-1 gap
-8. Mod post deletion button (frontend) — quick fix
-9. SMTP config + password reset email — security gap
+Tag autocomplete needs a frontend component that suggests tags as someone types. Collection visibility layers have the model but need the user interface to choose who can read and edit. Auto-generated circles based on interest and proximity need a ranker to sit on top of the manual circle system. Credit streak bonuses for consecutive active days need backend logic. Giftable credits need both an API and a user interface. The credit hash-chain ledger needs an append-only chain. The leaderboard frontend shows hardcoded sample data instead of real scores. Achievements have no frontend at all yet — badges need a home on profiles.
 
-**Medium-term:**
-10. Positive Algorithm + "Why this post?" — replaces chronological feed
-11. M2 meta-moderation UI — closes the accountability loop
-12. Full reaction set — richer interaction
-13. Tag autocomplete — UX polish
+ActivityPub federation has ed25519 keys generated but no inbox or outbox, no HTTP Signatures, no webfinger, and no activity delivery. The WebSocket hub exists but is not wired to the feed yet. Image upload has a model and a service written but needs a missing endpoint and storage configuration. Seed data — sample users, posts, communities, and tags — would make fresh instances feel welcoming from day one. The search frontend needs a redesign with tabs, filters, snippets, and URL-synced state to match the powerful backend. And error handling across the frontend has many places where errors are silently swallowed instead of shown to users, while the monolithic SettingsPage needs to be split into smaller, manageable components.
 
-**Long-term:**
-14. ActivityPub federation
-15. Full economy (streaks, gifting, hash-chain ledger)
-16. WebSocket live feed
-17. Auto-generated circles
+## Possibilities for the Future
+
+Looking further ahead, there are wonderful things Threadlight could become. True ActivityPub federation would let it talk to Mastodon, Pixelfed, and other platforms, making every community part of a global conversation. Slashdot-style limited moderation — where each person gets only five to ten moderation actions per day with no rollover — would encourage thoughtful, careful use of moderation power. Tag categories like Artist, Character, General, and Rating would bring a booru-style organization system for communities that want it. Tag redirects would help people find the right tag even when they misspell it. Gamified tagging would reward the first person to tag a post correctly, turning organization into a friendly game. Credit bounties could be offered for great posts, and the bounty endpoints already exist.
+
+New member posts could be held for review before they appear publicly, giving curators a chance to welcome people gently. Invite-only communities with gated codes would let groups form in private before opening their doors. WebSocket presence would show who is online right now, making the community feel alive and connected. A "No /All feed" option would let people choose to see only their community content instead of the global firehose. A mod bot could automatically downvote posts based on how the community reacts to bot comments. Community forking with spirit-change would make splitting a community feel natural rather than like a painful breakup. Reputation vesting with a fixed probation period would prevent infinite-log problems and make full membership feel earned. Credit bounties for community work would reward moderators and curators for the invisible labor they do every day. And multi-instance shared blocklists would let trusted servers automatically exchange block information, making the whole network safer together.
+
+## How We Decide What to Build Next
+
+Deciding what to build next is not about picking the shiniest idea. It is about understanding what will make the biggest difference for the most people, and then doing that first — carefully, together.
+
+Right now the most important work is finishing the frontends that already have working backends. User list management pages, the affinity display page, the plugin marketplace frontend, and the search frontend redesign all have solid backend foundations just waiting for a user interface. The moderation appeal system is the one big piece in this group that needs both sides built at once.
+
+Next come the things that people will notice and benefit from every day. Image upload closes the biggest gap in how people share. Trust level auto-progression closes a tier-one gap in the community health system. The mod post deletion button is a quick frontend fix that makes a difference. SMTP configuration for password reset emails closes a real security gap.
+
+In the medium term, the Positive Algorithm and its "Why this post?" companion will transform the feed from a simple timeline into a thoughtful curator. The M2 meta-moderation user interface will close the accountability loop that makes moderation truly democratic. The full reaction set will give people richer ways to express themselves. Tag autocomplete will make the simple act of tagging feel effortless.
+
+And in the long run, ActivityPub federation will connect Threadlight to the wider world. The full economy with streaks, gifting, and the hash-chain ledger will make contribution and recognition feel meaningful. WebSocket live feed will make the community feel instant and alive. Auto-generated circles will help people find the others they most belong with.
+
+Every step of this journey is guided by the same idea: that a good community is built by everyone who lives in it, that the tools should serve the people and not the other way around, and that the work of building something together is itself one of the most rewarding things a group of people can do.

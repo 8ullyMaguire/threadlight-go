@@ -1,118 +1,57 @@
-# Threadlight — AI Agent Guide
+# Threadlight — A Guide for AI Helpers
 
-## Overview
-Go/Gin backend + SvelteKit/Vite SPA. Single binary monolith. PostgreSQL 17 + Redis 7.
-25 services, 26 handlers, 30+ models, 13 workers, 30+ Svelte pages, ~110 API endpoints.
-4 database migrations, auto-run on startup.
+If you are an AI agent helping to build or improve Threadlight, this page will help you understand how everything fits together.
 
-## Run Commands
+## The Big Picture
 
-| Component | Command | URL |
-|-----------|---------|-----|
-| Infra | `docker compose up -d` | PG :5433, Redis :6379 |
-| Backend | `go run ./cmd/polaris` | `:8080` |
-| Frontend | `cd web && npm run dev` | `:5173` |
-| Tests | `DATABASE_URL="postgres://polaris:polaris@localhost:5433/polaris?sslmode=disable" go test ./... -count=1` | — |
+Threadlight is one program that does everything. There is no chain of tiny services talking to each other. A single Go binary serves all the API requests, and a SvelteKit application runs in the browser. Behind them sit a PostgreSQL database that stores everything permanently and a Redis cache that keeps frequently used data close at hand.
 
-Vite proxies `/api` → `:8080`. Go CORS allows all origins.
+The code is organized into several sections. The entry point lives in the cmd folder. That single file reads settings from the environment, connects to the database and Redis, wires all the pieces together, and starts the server. Everything else lives in the internal folder. That is where the real work happens.
 
-## Architecture
+The api section handles incoming requests and sends back responses. The services section holds all the business rules and database queries. The model section describes the shapes that data takes as it moves through the system. The db section connects to the database and runs schema changes when the server starts. The search section contains a tool that turns plain-language queries into something the database can understand. The worker section runs tasks on a schedule.
 
-```
-router.go → 26 handlers/*.go → 25 services/*.go → pgx SQL → PostgreSQL
-                      ↑                        ↑↓ Redis
-                      |                 30+ model/*.go
-               search/parser.go         13 worker/*.go
-```
+The web folder holds the front end. It has pages for the feed, your profile, communities, search, settings, and more. Everything in the front end talks to the backend through one shared API client.
 
-### Conventions
-- **No ORM** — raw SQL in services. `pgxpool.Pool` injected via struct fields.
-- **Parser** — `internal/search/parser.go` is a standalone recursive-descent parser for the Boolean query language (used by SearchPosts).
-- **JWT auth** — middleware sets `user_id` in Gin context. Get it: `c.GetInt64("user_id")`.
-- **Error sentinels** — `model.ErrNotFound`, `ErrUnauthorized`, `ErrForbidden`, `ErrConflict`, `ErrValidation`.
-- **Nullable fields** — use `*T` for nullable DB columns (scan with `&field`).
-- **API paths** — `/api/v1/` except `/health`.
-- **Workers** — `scheduler.go` starts 13 goroutines. Each worker gets its own goroutine.
-- **Frontend** — SvelteKit with client-side rendering. API client at `web/src/lib/api/client.svelte.ts`.
-- **Affinity accumulator** — `AffinityAccumulator` writes event-driven Redis counters on user actions (follow, join, react). O(1) badge lookup. 24h TTL cache for full affinity page.
-- **CSS** — Custom CSS variables: `--primary`, `--bg`, `--text`, `--muted`, `--border`, `--radius`.
+## How a Request Travels Through the System
 
-## Backend File Layout
+When you click a button in Threadlight, the browser sends a message to the server. The server has a router that checks the message path and decides which piece of code should handle it. Before that code runs, the auth middleware checks that you are who you say you are by looking at a token stored in your browser.
 
-```
-internal/
-├── api/
-│   ├── router.go                        # ~110 route registrations
-│   └── handlers/ (26 files)             # auth, post, tag, feed, search, collection,
-│                                         # community, circle, note, moderation, blocklist,
-│                                         # filter, credit, achievement, user, block, report,
-│                                         # notification, mod_note, userlist, affinity,
-│                                         # feedplugin, mod_decision, config, health, about
-├── search/
-│   └── parser.go                        # Boolean query parser (recursive descent)
-├── db/                                   # db.go + migrations/ (4 files)
-├── model/ (30+ files including errors.go)
-├── services/ (25 files)                 # all business logic + SQL
-└── worker/ (scheduler.go + 13 workers)
-```
+Then the handler takes over. It reads whatever you sent — a new post, a search query, a vote on a tag — and passes it to a service. The service is where the thinking happens. It checks that your request makes sense, confirms you are allowed to do what you are asking, and then talks to the database. The database answers, the service passes the result back to the handler, and the handler wraps it up and sends it to your browser.
 
-## Key Services
+There is a simple rule. Handlers never talk to the database directly. Services never write responses to the browser. This keeps each piece easy to test and change without breaking anything else.
 
-| Service | DB table(s) | Key methods |
-|---------|------------|-------------|
-| AuthService | users | Register, Login, ForgotPassword, ResetPassword |
-| PostService | posts | CreatePost, UpdatePost, GetFeedPosts, ArchivePost |
-| TagService | tags, post_tags, tag_votes | CreateTag, TagPost, VoteTag, SearchTags |
-| FeedService | — | GetFeed, GetCustomFeed (algorithmic ranking) |
-| SearchService | posts (tsvector) | SearchPosts (Boolean + fielded + facets), SearchUsers (trigram), SearchCommunities, GetSuggestions |
-| CommunityService | communities, community_members, curators | Create, Join, Leave, Fork |
-| ModerationService | moderation_actions, reports, jury_votes | CreateAction, Report, Vote, Jury |
-| BlockService | blocked_users | BlockUser, IsBlocked, Unblock |
-| CreditService | credit_transactions | Award, Spend, GetBalance, Transfer |
-| AchievementService | achievements, user_achievements | CheckAndAward, GetUserAchievements |
-| NotificationService | notifications | Send, MarkRead, GetUnread |
-| UserListService | user_lists, list_members, list_subscriptions, list_collaborators | CreateUserList, AddMember, Subscribe, InviteCollaborator, ApplyListAction |
-| AlgorithmicListService | user_lists (algorithmic) | CreateAlgorithmicList, EvaluateAlgorithmicList |
-| UserAffinityService | user_affinities | ComputeAffinity (batch), GetUserAffinities, GetSimilarUsers |
-| AffinityAccumulator | Redis hashes | RecordFollow, RecordCommunityJoin, RecordReaction, GetPairAffinity (O(1) badge), GetCachedAffinities (24h TTL) |
-| FeedPluginService | feed_plugins, feed_plugin_installs, feed_plugin_reviews | CreatePlugin, Install, Execute, Review |
-| ModDecisionReviewsService | mod_decision_reviews | CastVote, GetControversial, GetActionReviews |
+## What Each Folder Holds
 
-## Key Handlers
+The cmd folder contains the starting point for the whole server. It creates the database connections, builds the scheduler, sets up every handler and every service, and tells the server to start listening for requests.
 
-| Handler | Endpoints |
-|---------|-----------|
-| AuthHandler | POST register, login, forgot, reset, logout; GET session |
-| PostHandler | GET/POST/PUT/DELETE posts; POST archive, remove (mod) |
-| TagHandler | GET/POST/DELETE tags; POST /:id/vote; POST tags/posts/:post_id/tags/:tag_id |
-| SearchHandler | GET /search/posts, /search/users, /search/communities, /search/suggest |
-| CommunityHandler | GET/POST communities; POST /:id/join, /:id/leave, /:id/fork |
-| ModerationHandler | POST/GET actions; POST /:id/jurors, /:id/resolve; POST /jurors/:panel_id/vote |
-| UserListHandler | CRUD lists; POST /:id/members, /:id/subscribe, /:id/collaborators |
-| AffinityHandler | GET /affinity, /affinity/similar |
-| FeedPluginHandler | POST/GET plugins; POST /:id/install, /:id/review, /:id/execute |
-| ModDecisionHandler | POST /modlog/:id/review; GET /modlog/:id/reviews, /modlog/:id/my-review, /modlog/controversial |
+The api section has two parts. The router lists every web path the server responds to and pairs each one with a handler. The handlers are the thinnest layer of the system. They take data from the incoming request, call a service, turn the result into a response, and send it back. Nothing more.
 
-## Database (~40 tables)
+The services section is the heart of the backend. There are about twenty-five services, each focused on one area. The auth service handles signing up, logging in, and resetting passwords. The post service knows how to create, show, update, and archive posts. The tag service lets people create tags and vote on them. The search service runs powerful searches across posts, users, and communities. The community service manages joining, leaving, forking, and curating communities. The moderation service handles reports, jury selection, and moderation actions. The trust service tracks who trusts whom and how trust changes over time. The credit service manages the economy. The achievement service rewards participation. The notification service sends alerts. The user list service helps people create lists of users to follow or block. The affinity service figures out which people and topics someone cares about most. The feed plugin service runs custom feed programs safely in their own sandbox. And a few more services handle everything else.
 
-**Core**: users, posts, communities, tags, post_tags, tag_votes
-**Trust**: trust_connections, trust_score_log, vouches
-**Moderation**: moderation_actions, reports, jury_votes, mod_notes, **mod_decision_reviews**
-**Social**: community_members, community_notes, community_note_votes
-**Interaction**: interactions, hidden_posts
-**Discovery**: collections, collection_posts, circles, circle_members
-**Economy**: credit_transactions, achievements, user_achievements, bounties
-**Safety**: blocked_users, filters, blocklist, blocklist_entries, **user_follows**, **user_lists**, list_members, list_subscriptions, list_collaborators, **user_affinities**
-**Feeds**: custom_feeds, feed_sources, **feed_plugins**, feed_plugin_installs, feed_plugin_reviews
-**Notifications**: user_notifications, email_queue
-**Admin**: site_config, custom_pages, custom_emoji, registration_queue, oauth_states
+Each service holds a connection to the database and takes a context with every method call. This lets the system cancel work that is taking too long or that the user no longer needs.
 
-## Current State
+The model section holds the shapes that describe everything in the system. There are shapes for people, posts, communities, tags, trust connections, replies, notifications, and many more. There are also shapes for data coming in from the browser and shapes for data going back out. All the error types live here too.
 
-**Implemented (latest additions in bold):**
+The db section connects to PostgreSQL and Redis and runs the migration files every time the server starts. The migrations are plain SQL files that run in order and are written to be safe to run many times.
 
-Auth, posts, tags with voting, full-text search with Boolean/fielded search + trigram autocomplete, communities (join/leave/slow-boot/probation/tenure-voting/fork), moderation (M1 labels + admin actions + jury), **public mod decision reviews with controversy scoring**, collections, circles, blocking, content filters, credits, achievements, notifications, onboarding, custom feeds, trending, migration runner, Dockerfile, password reset, email verification, account deletion, **user lists (CRUD + collaborative + algorithmic)**, **user affinity engine (event-driven Redis accumulator + on-demand cache)**, **WASM feed plugin marketplace**, **tag voting frontend**, **handler integration tests for new features**
+The search section has one small but powerful tool. It takes a query written in plain language, with words like and, or, and not, and filters like author or community, and turns it into something the database can search against.
 
-**Missing from docs but not implemented**: M2 meta-moderation (jury system exists but isn't M2-style), Positive Algorithm (feed is chronological), "Why this post?" button, full reaction set (only generic like/unlike), tag autocomplete (frontend), auto-generated circles (manual only), credit hash-chain ledger (simple transactions), ActivityPub (keys exist but no inbox/outbox), WebSocket (hub exists but not wired to feed), image upload (model exists, service exists, no endpoint yet), trust level auto-progression cron, SMTP-sent password reset
+The worker section holds the scheduler and all the background workers. These are the helpers that run on timers rather than waiting for someone to click a button.
 
-**Known issues**: Test cleanup FKs when run in parallel (services + handlers share DB), some pre-existing TypeScript warnings (85+) in frontend from Lemmy API type gaps
+## How to Add a New Feature
+
+Adding something new follows the same order every time. First, figure out what new data needs to be stored and write a migration to add it. Next, create or update the model shape that describes that data. Then add methods to the right service with the business rules and database queries. After that, create a handler that exposes the new feature through the API and add its path to the router. Finally, build the front-end pieces — the API client functions and the pages that people actually see.
+
+Each step depends on the one before it. If you get stuck, trace back up that chain to find the missing piece.
+
+## The Database in Plain Language
+
+The database stores everything that makes Threadlight work. It holds information about people and their posts, the communities they form, and the tags they use to organize things. It tracks who trusts whom and how those feelings change with time. It records moderation decisions and jury votes and keeps them open for public review. It stores collections of posts, circles of friends, custom lists, and saved searches. It handles the economy with credits, achievements, and bounties. It queues up notifications and remembers settings that control how the platform looks and behaves.
+
+The five most important things in the database are people, posts, communities, tags, and trust. Everything else wraps around those core ideas.
+
+## The Background Workers
+
+While people use Threadlight, a team of helpers works in the background without anyone having to think about them. One refreshes the feed every thirty seconds so new posts appear quickly. Another updates trending topics every minute. Every half hour, a worker recomputes algorithmic lists that help people discover new content. Every hour, several workers do their jobs. One figures out which people and topics someone feels most connected to. Another cleans up old data to keep the database tidy. Another hands out credits to active members. Another updates how trust distances are calculated. Every six hours, trust scores slowly adjust so that old connections do not stay frozen forever. Fact-check notes get promoted every five minutes. Achievement checks run every ten minutes. Activity statistics update every fifteen minutes. And every thirty seconds, any posts that were scheduled for future release get published.
+
+Each worker runs in its own space. If one has a problem, the others carry on without interruption.

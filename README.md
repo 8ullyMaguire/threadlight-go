@@ -1,73 +1,19 @@
 # Threadlight
 
-A social platform built for positive connection, transparent moderation, and user-owned discovery.
+Threadlight is a place where people come together to share what matters to them.
 
-No ads, no outrage algorithms, no billionaires. Your feed is yours. Moderation is shared.
+There are no ads here. No tricks to keep you scrolling longer than you want. Nobody owns the conversation except the people having it. Your feed belongs to you, and everyone gets a fair say in how things are run.
 
-## Quick Start
+When you join Threadlight, you can write posts about anything on your mind. You can find communities that match your interests and become part of them. You can build trust with people over time and discover what the people around you care about.
 
-```bash
-# Start PostgreSQL + Redis
-docker compose up -d
+Moderation is something everyone helps with, not something a handful of people do behind closed doors. When a decision needs to be made about a post or a community, regular people like you are chosen to weigh in. The process is open for anyone to see. Everyone gets a chance to vote on whether a decision was fair or not. The choices that spark the most disagreement get the most attention, because that is where honest conversation is needed most.
 
-# Run the backend
-DATABASE_URL="postgres://polaris:polaris@localhost:5433/polaris?sslmode=disable" go run ./cmd/polaris
+You can organize your posts with tags that help others find them. The search tool understands plain language and can narrow down results by author, by tag, or by community. You can save your favorite searches and keep collections of posts you love.
 
-# Start the frontend (another terminal)
-cd web && npm run dev
-```
+Communities on Threadlight grow slowly on purpose. This gives newcomers time to learn the culture before jumping in. Trusted members can become curators who help guide the community. If a community drifts away from what it was meant to be, its members can fork into a new space that better reflects the values they share.
 
-Open **http://localhost:5173**.
+There is an economy built on participation. You earn credits and achievements by being active in the community. You can set up custom feeds that follow your own rules. You can even write small feed programs that run safely inside their own sandbox and share them with others in a marketplace.
 
-## Stack
+Behind the scenes, Threadlight runs on a Go server with a PostgreSQL database holding everything together and a Redis cache keeping things fast. The front end you see in your browser is built with SvelteKit. A team of background workers quietly keeps things moving — refreshing feeds, updating trends, distributing credits, and handling all the other tasks that make the platform feel alive.
 
-| Layer | What |
-|-------|------|
-| Backend | Go 1.26, Gin, pgx v5, go-redis |
-| Frontend | SvelteKit + Vite |
-| Database | PostgreSQL 17 (~40 tables) |
-| Cache | Redis 7 |
-| Workers | 13 goroutine-based background workers |
-| API | ~110 endpoints under `/api/v1` |
-
-## Features
-
-- **Auth** — email/password registration, login, JWT sessions, password reset, email verification
-- **Posts** — text posts with Markdown, content warnings, scheduling, moods, content types
-- **Tags** — collaborative tagging, tag voting (upvote/downvote), tag search
-- **Search** — Boolean query language (AND/OR/NOT/parentheses/phrases), field filters (`author:`, `tag:`, `community:`), facet counts, trigram autocomplete
-- **Communities** — join/leave, slow-boot, probation, tenure-voting, curator system, forking
-- **Moderation** — M1 labels, admin actions, jury system, **public decision reviews** (Fair/Unfair voting with controversy scoring)
-- **Trust** — trust connections, trust levels, trust decay, community trust graphs
-- **User Lists** — create/manage follow/block lists, algorithmic auto-populated lists, collaborative lists with editor/viewer roles
-- **Affinity** — real-time event-driven affinity counters (Redis, O(1) badge lookup), on-demand affinity page with 24h cache
-- **Feed Plugins** — WASM-sandboxed custom feed algorithms, plugin marketplace with install/review
-- **Economy** — credits, achievements, bounties, daily rewards, leaderboards
-- **Social** — circles (manual groups), collections, community notes (fact-checking), saved searches
-- **Safety** — per-user blocking, shared blocklists, content filters, NSFW gating
-
-## Project Layout
-
-```
-cmd/polaris/          # Entry point — wires everything together
-internal/
-  api/                # router.go + 26 handlers + middleware + websocket
-  search/             # Boolean query parser (recursive-descent AST builder)
-  services/           # 25 business logic files (all SQL lives here)
-  model/              # 30+ data structs + errors
-  db/                 # postgres + redis connections + async migrations (4 migrations)
-  worker/             # scheduler + 13 background workers
-web/src/              # SvelteKit SPA
-  lib/api/            # Fetch-based API client (Threadlight adapter)
-  lib/feature/        # Feature components (Post, Comment, TagVote, etc.)
-  routes/             # 30+ page components
-design/               # DESIGN.md, TODO.md, FEATURE_INVENTORY.md
-docs/                 # mdbook documentation
-```
-
-## Design Docs
-
-All in `design/`:
-- `FEATURE_INVENTORY.md` — complete feature inventory with priority order
-- `TODO.md` — feature backlog
-- `DESIGN.md` — platform philosophy and system design
+Threadlight is free and open source. Anyone can see how it works, suggest improvements, and help make it better. That is the whole idea.

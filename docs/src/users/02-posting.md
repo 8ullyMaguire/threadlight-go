@@ -1,75 +1,17 @@
 # Posting and Tagging
 
-This page covers how to share things on Threadlight and how the tagging system works.
+Sharing on Threadlight is like telling a story to people who care about what you have to say. This page explains how to make posts, add tags, and use all the tools available to you.
 
-## Creating a Post
+To create a post, you simply type what you want to say in the post box and click Post. But you can do so much more. You can add links to interesting articles or videos you have found. You can include images in common formats like JPEG, PNG, or GIF. And you can use a simple way of writing called Markdown to make your text stand out. Putting stars around text makes it italic. Putting two stars around text makes it bold. And putting words in brackets followed by a URL in parentheses creates a clickable link. These little touches help your posts come alive and express your meaning more clearly.
 
-To create a post, type what you want to say in the post box and click Post.
+Sometimes you might want to share something that could bother other people, like strong language, difficult topics, or adult themes. Threadlight lets you add a content warning to such posts. When you add a content warning, the post appears blurred behind a button that says Show Anyway. This lets each person decide for themselves whether they want to see what is behind it. It is a way of being considerate without silencing yourself, respecting the boundaries of others while still speaking your truth.
 
-You can also add:
+You can also schedule a post to appear later. When you create a post, you can set a future time for it to be published. Until that moment arrives, it stays safely in your drafts, waiting for the right time to be shared with the world.
 
-- **Links** to interesting articles or videos
-- **Images** (JPEG, PNG, or GIF)
-- **Basic formatting** using Markdown (it is a simple way to make text bold or italic)
+Tags are how people discover your posts. If you write about gardening, you can add the tag gardening so people who love gardening can find what you wrote. Threadlight does tagging differently than most platforms. Tagging here is a shared activity — anyone can add a tag to any post. You do not own the tags on your own post. If someone else thinks your post is about something you did not notice, they can add that tag too. Then the whole community votes on which tags are the most accurate. This means tags reflect what a post is really about, not just what the author decided to call it. It is a form of shared understanding, built together by everyone.
 
-Here is how the formatting works:
+When you see a post you like, you can react to it in ways that say more than just I liked this. You can tell the world that the post made you think about something, that it was useful to you, that it was lovely or touching, that it made you laugh, or that it made you feel good inside. There is even a reaction that says this post makes claims that should be backed up with evidence. Each reaction tells the feed algorithm something different about the value you found, so the whole system learns what kind of content people truly appreciate. The reactions themselves are part of how the community guides what rises and what fades.
 
-- Put `*stars around*` text to make it italic
-- Put `**two stars around**` text to make it bold
-- Put `[words in brackets](a URL)` to make a clickable link
+Collections let you group posts around a theme, like a reading list or a playlist for writing. You can keep a collection private so only you can see it, or make it public so anyone can read what you have gathered. You can even make a collection that anyone can add to, turning it into a shared space where everyone helps curate the best content around a topic. It is collaborative curation, open to anyone who wants to contribute.
 
-## Content Warnings
-
-If your post contains something that might bother people — strong language, violence, or
-adult themes — you can add a **content warning.** The post will appear blurred behind a
-click that says "Show anyway." This lets people choose whether they want to see it.
-
-## Scheduling Posts
-
-You can schedule a post for later. When you create a post, you can set a future time for
-it to be published. Until then, it stays in your drafts.
-
-## Tags
-
-Tags are how people find your posts. If you write about gardening, you can add the tag
-"gardening" so people who like gardening can find what you wrote.
-
-Tagging on Threadlight is special: **anyone can add a tag to any post.** You do not own
-the tags on your own post. If someone else thinks your post is about something you did not
-notice, they can add that tag too. And the community votes on which tags are the most
-accurate.
-
-See [Trust and Communities](03-trust-and-communities.md) for more about how tag voting
-works.
-
-## Reactions
-
-When you see a post you like, you can react to it. But Threadlight has more than just a
-"like" button. You can tell everyone *why* you liked it:
-
-- **Insightful** — this post made me think about something
-- **Helpful** — this post was useful to me
-- **Beautiful** — this post is lovely or touching
-- **Funny** — this post made me laugh
-- **Wholesome** — this post made me feel good
-- **Needs Sources** — this post makes claims that should be backed up
-
-Each reaction tells the feed algorithm something different about the value you found.
-
-## Collections
-
-Collections let you group posts around a theme. Think of them as reading lists or
-playlists for posts.
-
-Collections can be:
-
-- **Private** — only you can see it
-- **Public to read** — anyone can see it but only you can change it
-- **Public to edit** — anyone can see and add posts
-- **Anyone can edit** — fully open for anyone to curate
-
-## Community Notes
-
-If a post seems misleading or is missing important information, you can add a **community
-note.** This is a short correction or explanation attached to the post. Other people vote
-on whether the note is helpful. Helpful notes move to the top; unhelpful ones fade away.
+If a post seems misleading or is missing important information, you can add a community note. This is a short correction or explanation that gets attached to the post. Other people then vote on whether the note is helpful. Helpful notes rise to the top where everyone can see them, while unhelpful notes fade away. It is a way for the community to keep each other informed, without any single person or gatekeeper having the final say over what is true.

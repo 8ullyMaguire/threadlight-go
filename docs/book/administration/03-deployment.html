@@ -35,10 +35,10 @@
             const path_to_root = "../";
             const default_light_theme = "ayu";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-a40e2f30.js";
+            window.path_to_searchindex_js = "../searchindex-8f86a2ef.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-70cab93a.js"></script>
+        <script src="../toc-7eef858d.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -181,153 +181,24 @@
                 <div id="mdbook-content" class="content">
                     <main>
                         <h1 id="deployment"><a class="header" href="#deployment">Deployment</a></h1>
-<p>This page covers how to deploy Threadlight for public access.</p>
-<h2 id="running-as-a-system-service"><a class="header" href="#running-as-a-system-service">Running as a System Service</a></h2>
-<p>The best way to run Threadlight in production is as a systemd service so it starts automatically when your server boots.</p>
-<p>Create a file at <code>/etc/systemd/system/polaris.service</code>:</p>
-<pre><code class="language-ini">[Unit]
-Description=Threadlight Social Network
-After=network.target postgresql.service redis-server.service
-
-[Service]
-Type=simple
-User=polaris
-WorkingDirectory=/opt/polaris
-ExecStart=/opt/polaris/polaris
-Restart=always
-RestartSec=5
-EnvironmentFile=/opt/polaris/.env
-
-[Install]
-WantedBy=multi-user.target
-</code></pre>
-<p>Then enable and start the service:</p>
-<pre><code class="language-bash">sudo systemctl daemon-reload
-sudo systemctl enable --now polaris
-</code></pre>
-<h2 id="making-threadlight-accessible-from-the-internet"><a class="header" href="#making-threadlight-accessible-from-the-internet">Making Threadlight Accessible from the Internet</a></h2>
-<p>There are several ways to make your Threadlight server accessible from the internet.</p>
-<h3 id="option-1-direct-connection-with-a-public-ip"><a class="header" href="#option-1-direct-connection-with-a-public-ip">Option 1: Direct Connection (with a Public IP)</a></h3>
-<p>If your server has a public IP address:</p>
-<ol>
-<li>Set up a domain name pointing to that IP</li>
-<li>Set up a reverse proxy (like Nginx or Caddy) to handle SSL certificates</li>
-<li>Forward port 443 (HTTPS) from your router to your server</li>
-</ol>
-<p>Example Nginx config:</p>
-<pre><code class="language-nginx">server {
-    listen 443 ssl;
-    server_name polaris.yourdomain.com;
-
-    ssl_certificate /etc/letsencrypt/live/polaris.yourdomain.com/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/polaris.yourdomain.com/privkey.pem;
-
-    location / {
-        proxy_pass http://localhost:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-}
-</code></pre>
-<h3 id="option-2-cloudflare-tunnel-recommended-for-home-servers"><a class="header" href="#option-2-cloudflare-tunnel-recommended-for-home-servers">Option 2: Cloudflare Tunnel (Recommended for Home Servers)</a></h3>
-<p>If your server is on a home network without a public IP (like an Orange Pi), Cloudflare Tunnel is the easiest option.</p>
-<p><strong>Step 1: Install cloudflared</strong></p>
-<pre><code class="language-bash"># Download for ARM (Orange Pi)
-wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-arm64
-sudo mv cloudflared-linux-arm64 /usr/local/bin/cloudflared
-sudo chmod +x /usr/local/bin/cloudflared
-</code></pre>
-<p><strong>Step 2: Authenticate</strong></p>
-<pre><code class="language-bash">cloudflared tunnel login
-</code></pre>
-<p>This opens a browser window where you log in to Cloudflare and select your domain.</p>
-<p><strong>Step 3: Create a tunnel</strong></p>
-<pre><code class="language-bash">cloudflared tunnel create polaris
-</code></pre>
-<p>This creates a tunnel with a unique ID.</p>
-<p><strong>Step 4: Configure the tunnel</strong></p>
-<p>Create a config file at <code>~/.cloudflared/config.yml</code>:</p>
-<pre><code class="language-yaml">tunnel: your-tunnel-id
-credentials-file: /home/youruser/.cloudflared/your-tunnel-id.json
-
-ingress:
-  - hostname: polaris.yourdomain.com
-    service: http://localhost:8080
-  # Documentation hosted as a subdomain
-  - hostname: docs.yourdomain.com
-    service: http://localhost:9000
-  - service: http_status:404
-</code></pre>
-<p><strong>Step 5: Add DNS records</strong></p>
-<pre><code class="language-bash">cloudflared tunnel route dns polaris polaris.yourdomain.com
-cloudflared tunnel route dns polaris docs.yourdomain.com
-</code></pre>
-<p><strong>Step 6: Run the tunnel as a service</strong></p>
-<pre><code class="language-bash">sudo cloudflared service install
-sudo systemctl enable --now cloudflared
-</code></pre>
-<p>Now your Threadlight server is accessible at <code>https://polaris.yourdomain.com</code>!</p>
-<h3 id="serving-documentation-as-a-subdomain"><a class="header" href="#serving-documentation-as-a-subdomain">Serving Documentation as a Subdomain</a></h3>
-<p>If you want to serve the documentation from a separate subdomain (like <code>docs.yourdomain.com</code>), you have two options:</p>
-<h4 id="option-a-serve-docs-from-a-separate-web-server"><a class="header" href="#option-a-serve-docs-from-a-separate-web-server">Option A: Serve Docs from a Separate Web Server</a></h4>
-<ol>
-<li>Copy the <code>docs/</code> directory to your server</li>
-<li>Install a simple static file server:</li>
-</ol>
-<pre><code class="language-bash"># Using Python (simple, no installation needed for Python 3)
-cd /path/to/docs
-python3 -m http.server 9000
-
-# Or using nginx to serve the built mdbook output
-</code></pre>
-<ol start="3">
-<li>Add a second ingress rule in your Cloudflare tunnel config (as shown above)</li>
-</ol>
-<h4 id="option-b-build-and-serve-with-mdbook"><a class="header" href="#option-b-build-and-serve-with-mdbook">Option B: Build and Serve with mdbook</a></h4>
-<pre><code class="language-bash"># Install mdbook
-cargo install mdbook
-
-# Build the documentation
-cd /path/to/polaris/docs
-mdbook build
-
-# The output is in docs/book/
-# Serve it with any static file server
-cd book
-python3 -m http.server 9000
-</code></pre>
-<p>Then in your Cloudflare tunnel config, point <code>docs.yourdomain.com</code> to <code>http://localhost:9000</code>.</p>
-<h2 id="docker-deployment"><a class="header" href="#docker-deployment">Docker Deployment</a></h2>
-<p>A Dockerfile is not yet provided, but you can create one easily:</p>
-<pre><code class="language-dockerfile">FROM golang:1.23 AS builder
-WORKDIR /build
-COPY . .
-RUN go build -o polaris ./cmd/polaris
-
-FROM node:20 AS frontend-builder
-WORKDIR /build
-COPY web/ ./web/
-RUN cd web &amp;&amp; pnpm install &amp;&amp; pnpm build
-
-FROM debian:bookworm-slim
-RUN apt update &amp;&amp; apt install -y ca-certificates &amp;&amp; rm -rf /var/lib/apt/lists/*
-COPY --from=builder /build/polaris /usr/local/bin/
-COPY --from=frontend-builder /build/web/dist/ /var/www/polaris/
-COPY docs/ /opt/polaris/docs/
-CMD ["polaris"]
-</code></pre>
-<h2 id="security-checklist"><a class="header" href="#security-checklist">Security Checklist</a></h2>
-<p>Before opening your server to the public:</p>
-<ul>
-<li><input disabled="" type="checkbox"> Change the JWT secret to a strong random value</li>
-<li><input disabled="" type="checkbox"> Use a strong database password</li>
-<li><input disabled="" type="checkbox"> Enable HTTPS (through a reverse proxy or Cloudflare tunnel)</li>
-<li><input disabled="" type="checkbox"> Keep your server and dependencies updated</li>
-<li><input disabled="" type="checkbox"> Regularly back up your database</li>
-<li><input disabled="" type="checkbox"> Monitor your server’s resource usage</li>
-</ul>
+<p>Once you have Threadlight running on your computer, you will probably want to make it available for other people to visit. This page walks through the common ways to turn your local server into a real public space that your community can reach from anywhere.</p>
+<h2 id="running-threadlight-as-a-system-service"><a class="header" href="#running-threadlight-as-a-system-service">Running Threadlight as a System Service</a></h2>
+<p>The most reliable way to run Threadlight in production is to register it as a system service. This means the operating system itself keeps an eye on the server and starts it automatically whenever the computer boots up. If the server ever crashes for any reason, the system notices right away and starts it again. You do not have to log in and run anything by hand.</p>
+<p>To set this up, you create a plain text file called a service unit. This file tells the operating system what program to run, which folder to run it from, and how to behave if the program stops. You give the service a name like threadlight, and you point it to the Threadlight binary you built earlier. You also tell it to load your configuration from a dotenv file that lives next to the binary. Once this file is in place, you ask the system to enable the service, which means register it to start on boot, and then start it right now. From that moment on, Threadlight runs in the background, waking up when your computer does and staying up until you tell it to stop.</p>
+<h2 id="making-threadlight-reachable-from-the-internet"><a class="header" href="#making-threadlight-reachable-from-the-internet">Making Threadlight Reachable from the Internet</a></h2>
+<p>Your Threadlight server is now running and listening for visitors, but it is probably only reachable from inside your own home network. To let people from the wider internet connect, you have a few choices. Which one works best depends on whether your internet provider gives you a public address that the whole internet can see.</p>
+<h3 id="option-one-direct-connection-using-a-public-address"><a class="header" href="#option-one-direct-connection-using-a-public-address">Option One: Direct Connection Using a Public Address</a></h3>
+<p>If your server has its own public internet address, the path is straightforward. You register a domain name, which is a friendly name like yourcommunity dot example dot com, and point it to your servers address. Then you set up a tool called a reverse proxy, which sits in front of Threadlight and handles secure connections for you. The reverse proxy takes care of the complicated parts of web security, like encrypting all the traffic between your visitors browsers and your server using something called SSL certificates. You can get these certificates for free from an organization called Let’s Encrypt. Once the reverse proxy is configured, you forward one specific port from your home router to your Threadlight server, and your community can reach the server by typing your domain name into their browser.</p>
+<h3 id="option-two-using-a-tunnel-for-home-servers"><a class="header" href="#option-two-using-a-tunnel-for-home-servers">Option Two: Using a Tunnel for Home Servers</a></h3>
+<p>If your server lives on a home network and does not have a public address, you can use a tunnel service like the one offered by Cloudflare. A tunnel creates a secure pathway between your server and the Cloudflare network, so visitors connect to Cloudflare and Cloudflare forwards their requests to your server through the tunnel. This is a great choice for small computers like single board devices that sit on your desk at home.</p>
+<p>Setting up a tunnel involves downloading a small program called the tunnel client, authenticating it with your Cloudflare account, and then creating a tunnel with a name that makes sense to you, like threadlight. You then create a configuration file that tells the tunnel which web addresses to forward to which services on your computer. For example, you might tell it that visits to threadlight dot yourdomain dot com should go to your Threadlight server, and visits to docs dot yourdomain dot com should go to the documentation server if you run one separately. After that, you add DNS records that connect your domain name to the tunnel, and finally you install the tunnel client as a system service so it starts automatically just like Threadlight does.</p>
+<p>Once the tunnel is running, your Threadlight server is accessible at whatever domain name you chose, even though it is sitting on a home network with no public address. The tunnel handles all the encryption and security automatically.</p>
+<h2 id="serving-documentation-on-a-separate-address"><a class="header" href="#serving-documentation-on-a-separate-address">Serving Documentation on a Separate Address</a></h2>
+<p>If you want to offer the Threadlight documentation at a separate address like docs dot yourdomain dot com, you can run a small static file server alongside Threadlight. You copy the documentation files to a folder on your server and use a simple file server program to make them available on a different port. Then you add a rule to your tunnel or reverse proxy configuration that directs traffic for that subdomain to the documentation server instead of Threadlight. Both services can run side by side without interfering with each other.</p>
+<h2 id="running-threadlight-in-a-container"><a class="header" href="#running-threadlight-in-a-container">Running Threadlight in a Container</a></h2>
+<p>Some people prefer to run applications inside lightweight containers that package the application together with everything it needs to run. Threadlight can absolutely run this way. You would create a container image that starts from a Go build environment, compiles the Threadlight source code, and then copies the finished binary into a smaller, clean container image. The container image also includes any frontend files and documentation that Threadlight serves. Running Threadlight in a container gives you a portable, self contained unit that you can deploy to any server that supports containers, and it makes updates very predictable because the entire environment is defined in the container configuration.</p>
+<h2 id="keeping-your-community-safe"><a class="header" href="#keeping-your-community-safe">Keeping Your Community Safe</a></h2>
+<p>Before you open your server to the public, there are a few things worth checking. Make sure your JWT secret is set to a strong, random value that nobody can guess. Use a strong password for your database. Make sure every connection between visitors and your server is encrypted using HTTPS, which the reverse proxy or tunnel will handle for you. Keep your server and all its dependencies up to date with the latest security patches. Set up regular database backups so you never lose your community’s content. And keep an eye on how much disk space, memory, and processing power your server is using, so you can catch problems before they affect your visitors. These simple habits go a long way toward keeping your Threadlight community safe and welcoming.</p>
 
                     </main>
 

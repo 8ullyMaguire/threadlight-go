@@ -1,97 +1,45 @@
-# Threadlight — TODO
+# Threadlight — What We Are Building
 
-Priority tiers. Tier 1 = ship-blocking. Tier 5 = nice-to-have.
+Threadlight is growing step by step, and this page tells the story of what already works, what we are working on right now, and what comes next. The work is ordered by what matters most to a healthy, welcoming community — starting with the things every group needs to feel like home, then reaching outward toward richer ways to connect, discover, play, and grow beyond a single server.
 
----
+## The Foundation Is Solid
 
-## Tier 1 — Core Experience (Ship Without These and People Complain)
+The heart of Threadlight is already here and ready to use. Anyone can sign up with an email address and a password, and their account is verified to make sure they are real. If someone forgets their password, they can get a reset link — though right now the link appears on screen instead of arriving in their email inbox, which is something we plan to fix soon. Every person can set up a profile with a display name, a short bio, and an avatar that feels like them. They can write text posts with Markdown formatting, add content warnings for topics that need gentle handling, and even schedule posts to publish later when the timing feels right.
 
-- [x] Email/password registration + login
-- [x] User profiles (display name, bio, avatar)
-- [x] Text posts with content warnings + scheduling
-- [x] Basic chronological feed
-- [x] Trust levels 0-2 (model + database)
-- [x] Basic reactions (like/unlike)
-- [x] Communities (create/join/leave)
-- [x] Search (PostgreSQL full-text with Boolean operators, field filters, trigram autocomplete)
-- [x] Email verification
-- [x] Password reset
-- [x] User blocking + shared blocklist
-- [x] Account deletion
-- [x] Content filters (per-user keyword filters)
-- [x] Feed pagination
-- [x] Responsive layout (CSS variables, media queries)
-- [x] Tag voting UI (frontend TagVote component)
-- [ ] Trust Level auto-progression (cron job that promotes users based on time/activity/flags)
-- [ ] Email-sent password reset (currently returns token directly — needs SMTP config + email sending)
-- [ ] Mod post deletion (MODREMOVE endpoint exists, needs frontend button)
+Communities are already here too. Anyone can create a new community, join one that looks interesting, or step away when it no longer fits. Inside communities, members earn trust levels as they spend time and participate — the database remembers levels zero, one, and two — and the system is ready to promote people automatically based on how long they have been around and how they have contributed. That automatic promotion just needs a regular checkup job to actually run.
 
-## Tier 2 — Community Health
+When someone shares something thoughtful, you can react with a like. When someone acts in ways that do not belong, you can block them, and your block list can be shared with other community members in a format that moves between servers easily. If you ever need to leave entirely, full account deletion works cleanly. Content filters let each person hide posts that contain words they prefer not to see, using simple keywords they choose for themselves.
 
-- [x] Moderation labels (M1)
-- [x] Admin ban/suspend
-- [x] Reports + review queue
-- [x] Public moderation decision reviews (Fair/Unfair voting + controversy scoring)
-- [ ] Meta-moderation (M2) — jury-on-moderation system
-- [ ] Community curators (scope tag enforcement without ban power)
-- [ ] Community tenure-weighted voting
-- [ ] Community probation for new members
-- [ ] Public moderation log endpoint
-- [ ] Mod dashboard (frontend queue)
-- [ ] Appeal system
+Finding things is easy and even fun. The search system understands full sentences with words like AND, OR, and NOT. It can filter by author, tag, community, mood, and date range. It suggests completions as you type, showing you results from every corner of the community. Tags can be added to any post by anyone, and the whole community votes on which tags are most useful — the frontend makes this quick with a simple up-or-down vote on each tag. The feed scrolls smoothly and works on any device, from a big desktop screen to a small phone.
 
-## Tier 3 — Discovery & Curation
+A few important pieces are nearly finished but need just a little more care. The trust-level system needs a background job that checks everyone regularly and gives them their next level when they earn it. The password reset flow needs a real email server configured so the link actually arrives in someone's mailbox. And moderators have a command to hide bad posts, but they need a button in the frontend to use it without typing commands.
 
-- [x] Tags (CRUD, associate with posts)
-- [x] Collaborative tagging (anyone can tag, post_tags table)
-- [x] Tag voting API + frontend (vote up/down)
-- [x] Search (boolean, fielded, date range, facets, autocomplete)
-- [x] Trending (period-based aggregation)
-- [x] Collections (create, add/remove posts)
-- [x] Circles (manual groups)
-- [x] User lists (CRUD, collaborative, algorithmic)
-- [x] User affinity engine (event-driven Redis + on-demand cache)
-- [x] Feed plugins (WASM marketplace sandbox)
-- [ ] The Positive Algorithm (non-chronological feed ranker)
-- [ ] "Why this post?" button
-- [ ] Custom feeds with RSS export
-- [ ] Full reaction set (Insightful, Helpful, Beautiful, etc.)
-- [ ] Tag autocomplete (frontend)
-- [ ] Collection visibility layers (public read, public edit)
-- [ ] Auto-generated circles (by interest + proximity)
+## Keeping the Community Healthy Together
 
-## Tier 4 — Gamification & Economy
+A healthy community is one where everyone feels safe, where decisions about what crosses the line are made openly, and where every voice matters in shaping the rules. Threadlight already has moderation labels that help people understand why something was flagged — whether it is misleading, off-topic, trolling, or just needs a second look. Administrators can block or suspend accounts when someone genuinely hurts the community. Anyone can report content they are worried about, and those reports go into a queue where moderators can review them carefully. Every moderation decision is open to public review — community members can vote on whether a decision was fair or unfair, and the system shows which decisions are most controversial.
 
-- [x] Credits (award, spend, getBalance, getHistory)
-- [x] Achievements (check + award)
-- [x] Leaderboard API
-- [ ] Credit streak bonuses
-- [ ] Giftable credits (transfer between users)
-- [ ] Credit hash-chain ledger (tamper-evident transaction log)
-- [ ] Leaderboard frontend (currently uses sample data)
-- [ ] Achievements frontend (show badges on profile)
+The next layer of accountability is meta-moderation, which lets the community weigh in on whether a moderation action itself was reasonable — kind of like having a check on the people who do the checking. Community curators will be able to enforce tag rules without needing the power to ban anyone. New members will have a probation period where they learn the community norms before they can vote on important matters. Longer-serving members will have their votes weighted by how long they have been part of things, because experience with a community's history matters when making tough calls. A public log of every moderation action will make everything transparent — sunlight is the best disinfectant, after all. A moderator dashboard will make the review queue easy to navigate. And when someone disagrees with a decision, an appeal system will give them a fair hearing so that no one is silenced by mistake.
 
-## Tier 5 — Federation & Scale
+## Discovering Good Things
 
-- [x] Shared blocklist (JSON import/export)
-- [x] Dockerfile (multi-stage build)
-- [x] Migration runner (runs on startup, 4 migrations)
-- [ ] ActivityPub (ed25519 keys, actor_id, inbox/outbox, HTTP Signatures)
-- [ ] WebSocket (live feed, chat, presence)
-- [ ] Image upload (model exists, service exists, needs endpoint + CDN/storage config)
-- [ ] Seed data (sample users, posts, communities, tags for fresh instances)
-- [ ] Test coverage (currently ~50% on backend, <10% on frontend)
-- [ ] CI/CD pipeline (Forgejo Actions)
+Good content deserves to be found. Tags are fully functional — anyone can create them, edit them, or add them to posts, and the community votes on which tags are most useful so the best ones rise to the top. The search engine is powerful, handling complex queries with date ranges, field filters, and suggestions that appear as you type. Trending topics are calculated over regular intervals so you always know what the community is talking about right now.
 
-## Recently Completed
+Collections let you gather posts around a theme that matters to you, like a reading list or a highlight reel. Circles let you group the people you trust most for focused sharing. User lists can be created, shared among friends, and even populated automatically based on rules — like minimum trust level or how many thoughtful posts someone has shared recently. An affinity engine quietly learns which users tend to appreciate the same kinds of content and gently surfaces connections between them. Feed plugins let anyone write custom feed-sorting algorithms that run safely inside a sandboxed environment, so people can explore different ways of seeing the community.
 
-| Item | Status | Notes |
-|------|--------|-------|
-| Tag voting frontend | ✅ | TagVote.svelte with upvote/downvote, integrated into PostMeta |
-| User lists | ✅ | CRUD, members, subscriptions, collaborators, batch follow/block |
-| Algorithmic lists | ✅ | Criteria-based auto-population, refresh worker |
-| User affinity | ✅ | Event-driven Redis counters (badge) + on-demand cache (page) |
-| Feed plugins | ✅ | WASM marketplace, install, sandbox execution, reviews |
-| Mod decision reviews | ✅ | Fair/Unfair voting, controversy scoring, /modlog/controversial |
-| Search redesign | ✅ | Boolean parser, tsvector, trigram autocomplete, facets |
-| Handler integration tests | ✅ | 4 new handler tests for lists, affinity |
+Still to come is the Positive Algorithm — a feed ranker that lifts up quality content instead of just showing whatever is newest. A "Why this post?" button will show you exactly why something appeared in your feed, turning the algorithm from a mystery into an open book. Custom feeds with RSS export will let you combine communities, tags, and people into a single stream you can follow anywhere. The full set of reactions — insightful, helpful, beautiful, funny, wholesome — will give people richer ways to respond to each other beyond a simple like. Tag autocomplete will make tagging faster and more accurate. Collections will gain visibility layers so you can choose who gets to see and edit them. And circles will eventually be suggested for you based on shared interests and how close you live to one another.
+
+## Recognizing Contribution
+
+Threadlight believes that people who give to the community should be recognized. A credits system lets the community award points for good contributions, spend them, and track where they came from. Achievements can be unlocked for reaching milestones. A leaderboard API keeps friendly track of who is doing what.
+
+Coming soon are streak bonuses for visiting and contributing many days in a row, the ability to gift credits to other people as a thank-you, and a hash-chain ledger that makes every credit transaction tamper-evident — so the whole history is trustworthy forever. The leaderboard frontend currently shows sample data and needs to be connected to the real system. Achievements need a visible home on user profiles so everyone can see the badges their neighbors have earned.
+
+## Reaching Beyond One Server
+
+Threadlight is built to connect, not to isolate. The shared blocklist can already be imported and exported as JSON so communities that trust each other can coordinate. A multi-stage Dockerfile makes deployment smooth and repeatable. Database migrations run automatically when the server starts, keeping the schema up to date without manual steps.
+
+The really exciting work is still ahead. ActivityPub federation will let Threadlight talk to Mastodon, Pixelfed, and other platforms — so your community is part of a broader conversation, not a walled garden. WebSocket support will bring live updates to the feed, real-time chat, and a sense of who is present with you right now. Image uploads have a model and a service already written but need an endpoint and storage configuration before they can be used. Seed data with sample users, posts, communities, and tags will help new instances feel lived-in and welcoming from day one. Test coverage is healthy on the backend but still needs love on the frontend, and a CI/CD pipeline using Forgejo Actions will make sure every change is solid before it reaches real users.
+
+## What We Just Wrapped Up
+
+The most recent stretch of work was full of good progress. The tag voting frontend now works beautifully with the TagVote component handling both upvotes and downvotes right where posts are displayed. User lists are fully functional with create, read, update, and delete, plus member management, subscriptions, collaborators, and batch actions for following or blocking many people at once. Algorithmic lists can fill themselves based on rules like minimum trust level or recent activity and refresh on a schedule without anyone lifting a finger. The user affinity engine uses event-driven Redis counters for instant badge lookups and a 24-hour cache for the full affinity page, so connections between people are surfaced quickly and efficiently. Feed plugins now run safely in a WASM sandbox with a marketplace where anyone can browse, install, review, and uninstall them. Moderation decision reviews are live with fair and unfair voting and a controversy score that highlights the decisions the community feels most strongly about. The search system was completely rebuilt with a Boolean parser, PostgreSQL tsvector indexes, trigram autocomplete, and faceted results that let you narrow down exactly what you are looking for. And four new handler integration tests make sure all of these features keep working as Threadlight grows.

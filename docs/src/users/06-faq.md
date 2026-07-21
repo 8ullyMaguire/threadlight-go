@@ -1,92 +1,25 @@
-# Frequently Asked Questions
+# All About Threadlight
 
-## Is Threadlight free?
+Threadlight is a place where people come together to share what matters. It is free to use, there are no ads, and nothing is hidden behind a paywall. Running the server does cost money, and if you find the platform useful and have a little to spare, you can donate. But donating does not get you anything special. It does not boost your posts, it does not give you a badge, it does not let you skip any rules. Everyone here is equal, and that is the way it should be.
 
-Yes. There are no ads and nothing you have to pay for. The server costs money to run. If
-you find it useful and can afford to donate, you can. But donating does not get you any
-special treatment. Everyone is equal here.
+You might be wondering how Threadlight is different from the other social networks you have tried. Twitter, which is now called X, runs on an algorithm that learns what makes you angry because angry people stay on the site longer and see more ads. Threadlight does not have ads and it does not want to make you angry. Its feed system is designed to show you things that are meaningful. Every post carries a Why This Post button so you can see exactly why it appeared in your feed, with no secrets and no tricks. Reddit gives the moderators of each community a lot of power over you. They can ban you for any reason, and there is not much you can do about it. Threadlight shares moderation across the community so that no single person holds all the power, and even moderators are held accountable for their decisions. Mastodon is split into many different servers, each with its own rules and its own features. Threadlight is one server with one set of rules and every feature available in one place, so you never have to shop around for a home.
 
-## How is Threadlight different from Twitter or Reddit?
+When you first join, you start as a newcomer. Over time, as you participate and help the community, you move through trust levels from zero all the way up to four. Each level gives you new abilities. You can flag content that does not belong. You can vote on tags to help organize posts. Eventually you can vouch for other people and help with moderation. Your trust level is not something you earn by buying anything or by being popular. It comes from being a good neighbor over time.
 
-**Twitter/X** uses an algorithm designed to make you angry because angry people stay on
-the site longer. Threadlight's feed system is designed to show you things that are
-meaningful, not things that make you angry. Every post has a "Why this post?" button so
-you can see exactly why it was shown to you.
+The highest level of trust is called Leader, and Leaders can do something very special. They can vouch for other people. When a Leader says I trust this person, they are putting their own reputation on the line. If the person they vouched for breaks the rules a lot, it affects the Leader too. This is called the Web of Trust, and it makes it very hard for bots or bad actors to sneak in. Someone cannot just create a hundred fake accounts and take over. They would need real people to risk their own standing for them, and no one is going to do that for a spammer.
 
-**Reddit** gives individual moderators of each community a lot of power. They can ban you
-for any reason. Threadlight shares moderation across the community, and moderators
-themselves are held accountable.
+Moderation on Threadlight happens in two layers. In the first layer, trusted users can label posts. They might call a post Insightful or Misleading, or use other labels that help the community understand what they are looking at. Posts with helpful labels get seen more. Posts with correction labels get seen less. In the second layer, moderators review each other. If a moderator makes unfair decisions, they lose their moderation powers. The people who hold power are held to the same standards as everyone else, and that transparency is what keeps the system fair.
 
-**Mastodon** is split across many different servers with different rules. Threadlight is
-one server with one set of rules and all features in one place.
+When you react to a post, you have more choices than just a like. You can say a post is Insightful, Helpful, Beautiful, Funny, Wholesome, or that it Needs Sources. Each reaction tells the feed algorithm something different about what the post is worth. A post that gets a lot of Insightful reactions will be seen by more people. A post that gets a lot of Needs Sources reactions might be seen by fewer until the author adds them. Every reaction is a little vote for the kind of community you want to live in.
 
-## How do trust levels work?
+You can save and organize posts too. Collections let you group posts together into reading lists. You can keep a collection private for your own reference, or make it public so others can discover what you have found valuable. You can also schedule your posts to go out at a future time. When you write something, you can tell Threadlight to hold it until a certain moment, and it will sit quietly in your drafts until then.
 
-You start at Level 0 and progress to Level 4 by participating constructively over time.
-Each level unlocks new abilities like flagging content, voting on tags, vouching for
-other users, and helping with moderation. See the [Trust and Communities](03-trust-and-communities.md)
-page for details.
+Sometimes a post contains something sensitive, and you want to give people a choice about whether to see it. Content warnings let you blur your post behind a click that says Show Anyway. The person reading decides for themselves if they are ready to see what is behind the blur. It is a small act of care that makes the whole space safer for everyone.
 
-## What is the Web of Trust?
+Finding interesting content on Threadlight is easy. You can browse trending topics, which the system discovers by actually reading what people are posting about instead of just counting hashtags. You can use search to find posts, people, and communities, narrowing things down however you like. You can explore circles, which are groups of people near you who share your interests. You do not have to join a circle. You just browse, find someone interesting, and follow them. It is discovery without pressure.
 
-When you reach Leader level, you can vouch for other users. This means you are saying "I
-trust this person to be a good member of the community." If someone you vouched for breaks
-rules a lot, it affects your trust too. This makes it very hard for bots to take over
-the platform.
+Every feed, every tag, every community, and every collection can be exported as RSS or Atom. That means you can subscribe to anything on Threadlight using any news reader you like. You are not trapped inside one app. The door is always open.
 
-## How does moderation work?
+Your privacy is respected here. Threadlight collects only what it needs to run. It does not sell your data. It does not track you across the web. Your email address is never shared unless you choose to make it visible. The system belongs to you and your community, not to advertisers or data brokers.
 
-There are two tiers. In the first tier, trusted users can label posts as "Insightful"
-or "Misleading," among other labels. Posts with helpful labels get seen more. Posts with
-correction labels get seen less. In the second tier, moderators review each other's
-decisions. Moderators who make unfair decisions lose their moderation privileges.
-
-## What kinds of reactions are there?
-
-Beyond a simple "like," you can react with: Insightful, Helpful, Beautiful, Funny,
-Wholesome, or Needs Sources. Each one tells the feed algorithm something different about
-the value of the post.
-
-## Can I save or organize posts?
-
-Yes. **Collections** let you group posts together, like a reading list. You can make
-collections private or public.
-
-## Can I schedule posts?
-
-Yes. When you create a post, you can set it to publish at a future time. It will stay
-in your drafts until then.
-
-## What are content warnings?
-
-A content warning blurs your post behind a click that says "Show anyway." You can add
-one if your post contains sensitive material. This lets people choose whether they want
-to see it.
-
-## How do I find interesting content?
-
-Browse **trending topics** (detected from what people are posting about, not from hashtags),
-use **search** with boolean operators and fielded search, or explore **circles** of people
-near you who share your interests.
-
-## What are circles?
-
-Circles are groups of nearby people who like the same things you like. They are
-automatically suggested by the system. You do not have to join — just browse, find
-interesting people, and follow them.
-
-## Can I use an RSS reader?
-
-Yes. Every feed, tag, community, and collection has an RSS/Atom export. You can subscribe
-in any RSS reader.
-
-## Is my data private?
-
-We collect only what is needed to run the service. We do not sell your data. We do not
-track you across the web. Your email is never shared publicly unless you choose to make
-it visible.
-
-## There are 138 million children in child labor worldwide.
-
-Many of them make products for the countries that bomb their neighborhoods. If this does
-not bother you, we would prefer you do not use this platform.
+There are one hundred and thirty eight million children in child labor worldwide. Many of them make products for the countries that bomb their neighborhoods. If this does not bother you, we would prefer you do not use this platform.
