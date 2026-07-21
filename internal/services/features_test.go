@@ -17,6 +17,7 @@ func cleanFeatureTables() {
 	exec("DELETE FROM feed_plugin_reviews")
 	exec("DELETE FROM feed_plugin_installs")
 	exec("DELETE FROM feed_plugins")
+	exec("DELETE FROM mod_decision_reviews")
 	exec("DELETE FROM list_collaborators")
 	exec("DELETE FROM list_subscriptions")
 	exec("DELETE FROM list_members")
