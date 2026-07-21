@@ -10,15 +10,33 @@ import (
 )
 
 type CommunityHandler struct {
-	svc *services.CommunityService
+	svc       *services.CommunityService
+	configSvc *services.ConfigService
 }
 
-func NewCommunityHandler(svc *services.CommunityService) *CommunityHandler {
-	return &CommunityHandler{svc: svc}
+func NewCommunityHandler(svc *services.CommunityService, configSvc *services.ConfigService) *CommunityHandler {
+	return &CommunityHandler{svc: svc, configSvc: configSvc}
 }
 
 func (h *CommunityHandler) Create(c *gin.Context) {
 	userID, _ := c.Get("user_id")
+
+	// Check trust-level privilege: user must meet the minimum trust level
+	// for creating communities (configurable via site_config, default 0).
+	cfg, cfgErr := h.configSvc.Get(c.Request.Context())
+	if cfgErr == nil && cfg.MinTrustLevelForCommunityCreate > 0 {
+		var userTrustLevel int16
+		err := h.svc.GetUserTrustLevel(c.Request.Context(), userID.(int64), &userTrustLevel)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to verify trust level"})
+			return
+		}
+		if userTrustLevel < cfg.MinTrustLevelForCommunityCreate {
+			c.JSON(http.StatusForbidden, gin.H{"error": "insufficient trust level to create a community"})
+			return
+		}
+	}
+
 	var req model.Community
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -169,6 +187,21 @@ func (h *CommunityHandler) AddCurator(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid user_id"})
 		return
+	}
+
+	// Check trust-level privilege: curator candidate must meet the minimum
+	// trust level (configurable via site_config, default level 1).
+	cfg, cfgErr := h.configSvc.Get(c.Request.Context())
+	if cfgErr == nil && cfg.MinTrustLevelForCurator > 0 {
+		var targetTrustLevel int16
+		if err := h.svc.GetUserTrustLevel(c.Request.Context(), userID, &targetTrustLevel); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to verify trust level"})
+			return
+		}
+		if targetTrustLevel < cfg.MinTrustLevelForCurator {
+			c.JSON(http.StatusForbidden, gin.H{"error": "user does not meet the minimum trust level to become a curator"})
+			return
+		}
 	}
 
 	curator, err := h.svc.AddCurator(c.Request.Context(), community.ID, userID, 1)

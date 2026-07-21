@@ -57,7 +57,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	blocklistHandler := handlers.NewBlocklistHandler(blocklistSvc)
 	circleHandler := handlers.NewCircleHandler(circleSvc)
 	collectionHandler := handlers.NewCollectionHandler(collectionSvc)
-	communityHandler := handlers.NewCommunityHandler(communitySvc)
+	communityHandler := handlers.NewCommunityHandler(communitySvc, configSvc)
 	creditHandler := handlers.NewCreditHandler(creditSvc)
 	filterHandler := handlers.NewFilterHandler(filterSvc)
 	configHandler := handlers.NewConfigHandler(configSvc)
@@ -72,7 +72,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	affinityHandler := handlers.NewAffinityHandler(affinitySvc)
 	feedPluginHandler := handlers.NewFeedPluginHandler(feedPluginSvc)
 	aboutHandler := handlers.NewAboutHandler(configSvc)
-	modDecisionHandler := handlers.NewModDecisionHandler(modDecisionSvc)
+	modDecisionHandler := handlers.NewModDecisionHandler(modDecisionSvc, configSvc)
 
 	r.GET("/health", healthHandler.Health)
 

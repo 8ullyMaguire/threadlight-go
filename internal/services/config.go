@@ -32,7 +32,10 @@ func (s *ConfigService) Get(ctx context.Context) (*model.SiteConfig, error) {
 			COALESCE(defederation_policy_url, ''), COALESCE(donation_url, ''), COALESCE(donate_text, ''),
 			COALESCE(prune_age_days, 180), COALESCE(prune_min_interactions, 3),
 			COALESCE(unfair_threshold_pct, 0.70), COALESCE(unfair_penalty_amount, 15.0),
-			COALESCE(unfair_min_reviews, 5), COALESCE(unfair_penalty_cooldown_hrs, 24), updated_at
+			COALESCE(unfair_min_reviews, 5), COALESCE(unfair_penalty_cooldown_hrs, 24),
+			COALESCE(min_trust_level_for_review_voting, 1),
+			COALESCE(min_trust_level_for_community_create, 0),
+			COALESCE(min_trust_level_for_curator, 1), updated_at
 		FROM site_config WHERE id = 1`,
 	).Scan(&cfg.ID, &cfg.RegistrationMode,
 		&cfg.InviteLimitThreshold0, &cfg.InviteLimitThreshold1, &cfg.InviteLimitThreshold2,
@@ -43,7 +46,9 @@ func (s *ConfigService) Get(ctx context.Context) (*model.SiteConfig, error) {
 		&cfg.DefederationPolicyURL, &cfg.DonationURL, &cfg.DonateText,
 		&cfg.PruneAgeDays, &cfg.PruneMinInteractions,
 		&cfg.UnfairThresholdPct, &cfg.UnfairPenaltyAmount,
-		&cfg.UnfairMinReviews, &cfg.UnfairPenaltyCooldownHrs, &cfg.UpdatedAt)
+		&cfg.UnfairMinReviews, &cfg.UnfairPenaltyCooldownHrs,
+		&cfg.MinTrustLevelForReviewVoting, &cfg.MinTrustLevelForCommunityCreate,
+		&cfg.MinTrustLevelForCurator, &cfg.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -170,6 +175,15 @@ func (s *ConfigService) Update(ctx context.Context, req model.UpdateConfigReques
 	}
 	if req.UnfairPenaltyCooldownHrs != nil {
 		addField("unfair_penalty_cooldown_hrs", *req.UnfairPenaltyCooldownHrs)
+	}
+	if req.MinTrustLevelForReviewVoting != nil {
+		addField("min_trust_level_for_review_voting", *req.MinTrustLevelForReviewVoting)
+	}
+	if req.MinTrustLevelForCommunityCreate != nil {
+		addField("min_trust_level_for_community_create", *req.MinTrustLevelForCommunityCreate)
+	}
+	if req.MinTrustLevelForCurator != nil {
+		addField("min_trust_level_for_curator", *req.MinTrustLevelForCurator)
 	}
 
 	query += ` WHERE id = 1`

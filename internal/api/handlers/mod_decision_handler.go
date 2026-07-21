@@ -10,11 +10,12 @@ import (
 )
 
 type ModDecisionHandler struct {
-	svc *services.ModDecisionReviewsService
+	svc      *services.ModDecisionReviewsService
+	configSvc *services.ConfigService
 }
 
-func NewModDecisionHandler(svc *services.ModDecisionReviewsService) *ModDecisionHandler {
-	return &ModDecisionHandler{svc: svc}
+func NewModDecisionHandler(svc *services.ModDecisionReviewsService, configSvc *services.ConfigService) *ModDecisionHandler {
+	return &ModDecisionHandler{svc: svc, configSvc: configSvc}
 }
 
 // CastVote   POST /api/v1/modlog/:id/review
@@ -25,6 +26,22 @@ func (h *ModDecisionHandler) CastVote(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid action id"})
 		return
 	}
+
+	// Check trust-level privilege: user must meet the minimum trust level
+	// for review voting (configurable via site_config, default level 1).
+	cfg, cfgErr := h.configSvc.Get(c.Request.Context())
+	if cfgErr == nil && cfg.MinTrustLevelForReviewVoting > 0 {
+		var userTrustLevel int16
+		if err := h.svc.GetUserTrustLevel(c.Request.Context(), userID, &userTrustLevel); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to verify trust level"})
+			return
+		}
+		if userTrustLevel < cfg.MinTrustLevelForReviewVoting {
+			c.JSON(http.StatusForbidden, gin.H{"error": "insufficient trust level to vote on moderation reviews"})
+			return
+		}
+	}
+
 	var req struct {
 		Vote int16 `json:"vote"`
 	}

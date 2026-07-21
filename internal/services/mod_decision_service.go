@@ -156,6 +156,26 @@ func (s *ModDecisionReviewsService) GetControversial(ctx context.Context, limit,
 	return decisions, nil
 }
 
+// ── Trust-Level Privilege Helpers ───────────────────────────────────
+
+// GetUserTrustLevel reads a user's current trust_level from the database.
+func (s *ModDecisionReviewsService) GetUserTrustLevel(ctx context.Context, userID int64, level *int16) error {
+	return s.pg.QueryRow(ctx, `SELECT trust_level FROM users WHERE id = $1`, userID).Scan(level)
+}
+
+// GetConfigTrustLevel reads a named trust-level threshold from site_config.
+// Returns the configured minimum level, defaulting to 1 if unset.
+func (s *ModDecisionReviewsService) GetConfigTrustLevel(ctx context.Context, configColumn string) (int16, error) {
+	var level int16
+	err := s.pg.QueryRow(ctx,
+		`SELECT COALESCE(`+configColumn+`::smallint, 1) FROM site_config WHERE id = 1`,
+	).Scan(&level)
+	if err != nil {
+		return 1, nil // safe default
+	}
+	return level, nil
+}
+
 // ── Trust Penalty for Unfair Moderation ─────────────────────────────
 
 // EvaluateUnfairPenalty checks whether a moderation action has crossed the

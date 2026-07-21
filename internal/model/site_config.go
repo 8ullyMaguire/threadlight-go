@@ -27,7 +27,10 @@ type SiteConfig struct {
 	UnfairThresholdPct     float64   `json:"unfair_threshold_pct"`
 	UnfairPenaltyAmount    float64   `json:"unfair_penalty_amount"`
 	UnfairMinReviews       int       `json:"unfair_min_reviews"`
-	UnfairPenaltyCooldownHrs int     `json:"unfair_penalty_cooldown_hrs"`
+	UnfairPenaltyCooldownHrs int       `json:"unfair_penalty_cooldown_hrs"`
+	MinTrustLevelForReviewVoting  int16 `json:"min_trust_level_for_review_voting"`
+	MinTrustLevelForCommunityCreate int16 `json:"min_trust_level_for_community_create"`
+	MinTrustLevelForCurator       int16 `json:"min_trust_level_for_curator"`
 	AdminUsers             []string  `json:"admin_users,omitempty"`
 	UpdatedAt              time.Time `json:"updated_at"`
 }
@@ -65,6 +68,9 @@ type UpdateConfigRequest struct {
 	UnfairPenaltyAmount     *float64 `json:"unfair_penalty_amount,omitempty"`
 	UnfairMinReviews        *int    `json:"unfair_min_reviews,omitempty"`
 	UnfairPenaltyCooldownHrs *int   `json:"unfair_penalty_cooldown_hrs,omitempty"`
+	MinTrustLevelForReviewVoting  *int16 `json:"min_trust_level_for_review_voting,omitempty"`
+	MinTrustLevelForCommunityCreate *int16 `json:"min_trust_level_for_community_create,omitempty"`
+	MinTrustLevelForCurator       *int16 `json:"min_trust_level_for_curator,omitempty"`
 }
 
 type AboutResponse struct {

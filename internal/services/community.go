@@ -344,3 +344,8 @@ func (s *CommunityService) ForkCommunity(ctx context.Context, sourceID, initiate
 	).Scan(&forkRecord.ID, &forkRecord.SourceID, &forkRecord.ForkID, &forkRecord.InitiatedBy, &forkRecord.Reason, &forkRecord.MemberCount, &forkRecord.CreatedAt)
 	return forkRecord, err
 }
+
+// GetUserTrustLevel reads a user's trust_level for privilege checking.
+func (s *CommunityService) GetUserTrustLevel(ctx context.Context, userID int64, level *int16) error {
+	return s.pg.QueryRow(ctx, `SELECT trust_level FROM users WHERE id = $1`, userID).Scan(level)
+}
