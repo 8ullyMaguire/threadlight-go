@@ -11,11 +11,12 @@ import (
 )
 
 type CommunityService struct {
-	pg *pgxpool.Pool
+	pg      *pgxpool.Pool
+	affAcc  AffinityAccumulatorInterface
 }
 
-func NewCommunityService(pg *pgxpool.Pool) *CommunityService {
-	return &CommunityService{pg: pg}
+func NewCommunityService(pg *pgxpool.Pool, affAcc AffinityAccumulatorInterface) *CommunityService {
+	return &CommunityService{pg: pg, affAcc: affAcc}
 }
 
 func (s *CommunityService) CreateCommunity(ctx context.Context, req model.Community) (*model.Community, error) {
@@ -126,7 +127,14 @@ func (s *CommunityService) JoinCommunity(ctx context.Context, communityID, userI
 	_, err = s.pg.Exec(ctx,
 		`UPDATE communities SET member_count = (SELECT COUNT(*) FROM community_members WHERE community_id = $1 AND status = 1) WHERE id = $1`,
 		communityID)
-	return err
+	if err != nil {
+		return err
+	}
+	// Record community join in affinity accumulator
+	if s.affAcc != nil {
+		s.affAcc.RecordCommunityJoin(ctx, userID, communityID)
+	}
+	return nil
 }
 
 func (s *CommunityService) LeaveCommunity(ctx context.Context, communityID, userID int64) error {
@@ -139,6 +147,13 @@ func (s *CommunityService) LeaveCommunity(ctx context.Context, communityID, user
 	_, err = s.pg.Exec(ctx,
 		`UPDATE communities SET member_count = (SELECT COUNT(*) FROM community_members WHERE community_id = $1 AND status = 1) WHERE id = $1`,
 		communityID)
+	if err != nil {
+		return err
+	}
+	// Record community leave in affinity accumulator
+	if s.affAcc != nil {
+		s.affAcc.RecordCommunityLeave(ctx, userID, communityID)
+	}
 	return err
 }
 

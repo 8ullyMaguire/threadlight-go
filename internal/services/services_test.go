@@ -48,11 +48,23 @@ func migrate(pg *pgxpool.Pool) {
 	}
 
 	// Clean up any leftover test data: delete from referencing tables first
+	pg.Exec(context.Background(), `DELETE FROM feed_plugin_reviews WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM feed_plugin_installs WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM feed_plugins WHERE author_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM list_collaborators WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM list_subscriptions WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM list_members WHERE added_by IN (SELECT id FROM users WHERE email LIKE '%@test.com') OR target_user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM user_lists WHERE owner_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM user_affinities WHERE user_a_id IN (SELECT id FROM users WHERE email LIKE '%@test.com') OR user_b_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM blocked_users WHERE blocker_id IN (SELECT id FROM users WHERE email LIKE '%@test.com') OR blocked_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM user_follows WHERE follower_id IN (SELECT id FROM users WHERE email LIKE '%@test.com') OR followee_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM user_achievements WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM community_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM trust_connections WHERE truster_id IN (SELECT id FROM users WHERE email LIKE '%@test.com') OR trustee_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM moderation_actions WHERE target_user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM user_invites WHERE inviter_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM post_tags WHERE post_id IN (SELECT id FROM posts WHERE author_id IN (SELECT id FROM users WHERE email LIKE '%@test.com'))`)
+	pg.Exec(context.Background(), `DELETE FROM posts WHERE author_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	_, err = pg.Exec(context.Background(),
 		`DELETE FROM users WHERE email LIKE '%@test.com'`)
 	if err != nil {
@@ -65,6 +77,16 @@ func timePtr(t time.Time) *time.Time { return &t }
 func cleanTables(pg *pgxpool.Pool) {
 	ctx := context.Background()
 	exec := func(q string) { pg.Exec(ctx, q) }
+	exec("DELETE FROM feed_plugin_reviews")
+	exec("DELETE FROM feed_plugin_installs")
+	exec("DELETE FROM feed_plugins")
+	exec("DELETE FROM list_collaborators")
+	exec("DELETE FROM list_subscriptions")
+	exec("DELETE FROM list_members")
+	exec("DELETE FROM user_lists")
+	exec("DELETE FROM user_affinities")
+	exec("DELETE FROM user_follows")
+	exec("DELETE FROM blocked_users")
 	exec("DELETE FROM post_tags")
 	exec("DELETE FROM community_note_votes")
 	exec("DELETE FROM community_notes")
@@ -439,7 +461,7 @@ func TestPostService_EmptyBody(t *testing.T) {
 func TestCommunityService_CreateAndGet(t *testing.T) {
 	cleanTables(testPG)
 	ctx := context.Background()
-	svc := services.NewCommunityService(testPG)
+	svc := services.NewCommunityService(testPG, nil)
 	user := newUser(t, testPG, fmt.Sprintf("com_%d", time.Now().UnixNano()),
 		fmt.Sprintf("com_%d@test.com", time.Now().UnixNano()))
 
@@ -467,7 +489,7 @@ func TestCommunityService_CreateAndGet(t *testing.T) {
 func TestCommunityService_GetCommunityBySlug(t *testing.T) {
 	cleanTables(testPG)
 	ctx := context.Background()
-	svc := services.NewCommunityService(testPG)
+	svc := services.NewCommunityService(testPG, nil)
 	user := newUser(t, testPG, fmt.Sprintf("cslug_%d", time.Now().UnixNano()),
 		fmt.Sprintf("cslug_%d@test.com", time.Now().UnixNano()))
 
@@ -494,7 +516,7 @@ func TestCommunityService_GetCommunityBySlug(t *testing.T) {
 func TestCommunityService_NotFound(t *testing.T) {
 	cleanTables(testPG)
 	ctx := context.Background()
-	svc := services.NewCommunityService(testPG)
+	svc := services.NewCommunityService(testPG, nil)
 
 	_, err := svc.GetCommunity(ctx, 99999)
 	if err == nil {
@@ -510,7 +532,7 @@ func TestCommunityService_NotFound(t *testing.T) {
 func TestCommunityService_UpdateCommunity(t *testing.T) {
 	cleanTables(testPG)
 	ctx := context.Background()
-	svc := services.NewCommunityService(testPG)
+	svc := services.NewCommunityService(testPG, nil)
 	user := newUser(t, testPG, fmt.Sprintf("cupd_%d", time.Now().UnixNano()),
 		fmt.Sprintf("cupd_%d@test.com", time.Now().UnixNano()))
 
@@ -535,7 +557,7 @@ func TestCommunityService_UpdateCommunity(t *testing.T) {
 func TestCommunityService_JoinAndLeave(t *testing.T) {
 	cleanTables(testPG)
 	ctx := context.Background()
-	svc := services.NewCommunityService(testPG)
+	svc := services.NewCommunityService(testPG, nil)
 	owner := newUser(t, testPG, fmt.Sprintf("cown_%d", time.Now().UnixNano()),
 		fmt.Sprintf("cown_%d@test.com", time.Now().UnixNano()))
 	member := newUser(t, testPG, fmt.Sprintf("cmem_%d", time.Now().UnixNano()),
@@ -585,7 +607,7 @@ func TestCommunityService_JoinAndLeave(t *testing.T) {
 func TestCommunityService_GetMembers(t *testing.T) {
 	cleanTables(testPG)
 	ctx := context.Background()
-	svc := services.NewCommunityService(testPG)
+	svc := services.NewCommunityService(testPG, nil)
 	owner := newUser(t, testPG, fmt.Sprintf("cmown_%d", time.Now().UnixNano()),
 		fmt.Sprintf("cmown_%d@test.com", time.Now().UnixNano()))
 
@@ -609,7 +631,7 @@ func TestCommunityService_JoinNonExistent(t *testing.T) {
 	ctx := context.Background()
 	user := newUser(t, testPG, fmt.Sprintf("badjoin_%d", time.Now().UnixNano()),
 		fmt.Sprintf("badjoin_%d@test.com", time.Now().UnixNano()))
-	svc := services.NewCommunityService(testPG)
+	svc := services.NewCommunityService(testPG, nil)
 
 	if err := svc.JoinCommunity(ctx, 99999, user.ID, 1, 1); err == nil {
 		t.Error("expected error joining non-existent community")
@@ -623,7 +645,7 @@ func TestCommunityService_JoinNonExistent(t *testing.T) {
 func TestBlockService_BlockAndIsBlocked(t *testing.T) {
 	cleanTables(testPG)
 	ctx := context.Background()
-	svc := services.NewBlockService(testPG)
+	svc := services.NewBlockService(testPG, nil)
 	u1 := newUser(t, testPG, fmt.Sprintf("blk1_%d", time.Now().UnixNano()),
 		fmt.Sprintf("blk1_%d@test.com", time.Now().UnixNano()))
 	u2 := newUser(t, testPG, fmt.Sprintf("blk2_%d", time.Now().UnixNano()),
@@ -663,7 +685,7 @@ func TestBlockService_BlockAndIsBlocked(t *testing.T) {
 func TestBlockService_IsBlocked_NotBlocked(t *testing.T) {
 	cleanTables(testPG)
 	ctx := context.Background()
-	svc := services.NewBlockService(testPG)
+	svc := services.NewBlockService(testPG, nil)
 	u1 := newUser(t, testPG, fmt.Sprintf("nblk1_%d", time.Now().UnixNano()),
 		fmt.Sprintf("nblk1_%d@test.com", time.Now().UnixNano()))
 	u2 := newUser(t, testPG, fmt.Sprintf("nblk2_%d", time.Now().UnixNano()),
@@ -1015,7 +1037,7 @@ func TestCreditService_Bounty(t *testing.T) {
 	cleanTables(testPG)
 	ctx := context.Background()
 	creditsvc := services.NewCreditService(testPG)
-	intsvc := services.NewInteractionService(testPG)
+	intsvc := services.NewInteractionService(testPG, nil)
 	user := newUser(t, testPG, fmt.Sprintf("bty_%d", time.Now().UnixNano()),
 		fmt.Sprintf("bty_%d@test.com", time.Now().UnixNano()))
 	post := newPost(t, testPG, user.ID, "Bounty Post", "Body")
@@ -1214,7 +1236,7 @@ func TestFilterService_CreateAndCheck(t *testing.T) {
 func TestInteractionService_CreateAndCheck(t *testing.T) {
 	cleanTables(testPG)
 	ctx := context.Background()
-	svc := services.NewInteractionService(testPG)
+	svc := services.NewInteractionService(testPG, nil)
 	user := newUser(t, testPG, fmt.Sprintf("int_%d", time.Now().UnixNano()),
 		fmt.Sprintf("int_%d@test.com", time.Now().UnixNano()))
 	post := newPost(t, testPG, user.ID, "Interaction Post", "Body")

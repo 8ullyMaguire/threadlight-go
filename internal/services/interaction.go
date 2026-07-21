@@ -8,11 +8,12 @@ import (
 )
 
 type InteractionService struct {
-	pg *pgxpool.Pool
+	pg      *pgxpool.Pool
+	affAcc  AffinityAccumulatorInterface
 }
 
-func NewInteractionService(pg *pgxpool.Pool) *InteractionService {
-	return &InteractionService{pg: pg}
+func NewInteractionService(pg *pgxpool.Pool, affAcc AffinityAccumulatorInterface) *InteractionService {
+	return &InteractionService{pg: pg, affAcc: affAcc}
 }
 
 func (s *InteractionService) CreateInteraction(ctx context.Context, req model.Interaction) (*model.Interaction, error) {
@@ -31,7 +32,15 @@ func (s *InteractionService) CreateInteraction(ctx context.Context, req model.In
 		`UPDATE posts SET interaction_count = interaction_count + 1,
 		                  cumulative_interactions = cumulative_interactions + 1
 		 WHERE id = $1`, req.PostID)
-	return interaction, err
+	if err != nil {
+		return interaction, err
+	}
+
+	// Record reaction in affinity accumulator
+	if s.affAcc != nil {
+		s.affAcc.RecordReaction(ctx, req.UserID, req.PostID, req.InteractionType)
+	}
+	return interaction, nil
 }
 
 func (s *InteractionService) GetPostInteractions(ctx context.Context, postID int64, interactionType int16) ([]model.Interaction, error) {
@@ -57,17 +66,25 @@ func (s *InteractionService) GetPostInteractions(ctx context.Context, postID int
 }
 
 func (s *InteractionService) RemoveInteraction(ctx context.Context, interactionID int64) error {
-	var postID int64
+	var req model.Interaction
 	err := s.pg.QueryRow(ctx,
-		`DELETE FROM interactions WHERE id = $1 RETURNING post_id`,
-		interactionID).Scan(&postID)
+		`DELETE FROM interactions WHERE id = $1 RETURNING user_id, post_id, interaction_type`,
+		interactionID).Scan(&req.UserID, &req.PostID, &req.InteractionType)
 	if err != nil {
 		return err
 	}
 
 	_, err = s.pg.Exec(ctx,
-		`UPDATE posts SET interaction_count = GREATEST(interaction_count - 1, 0) WHERE id = $1`, postID)
-	return err
+		`UPDATE posts SET interaction_count = GREATEST(interaction_count - 1, 0) WHERE id = $1`, req.PostID)
+	if err != nil {
+		return err
+	}
+
+	// Remove reaction from affinity accumulator
+	if s.affAcc != nil {
+		s.affAcc.RemoveReaction(ctx, req.UserID, req.PostID, req.InteractionType)
+	}
+	return nil
 }
 
 func (s *InteractionService) HasUserInteracted(ctx context.Context, userID, postID int64, interactionType int16) (bool, error) {

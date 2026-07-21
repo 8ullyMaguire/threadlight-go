@@ -14,14 +14,16 @@ import (
 func cleanFeatureTables() {
 	ctx := context.Background()
 	exec := func(q string) { testPG.Exec(ctx, q) }
+	exec("DELETE FROM feed_plugin_reviews")
+	exec("DELETE FROM feed_plugin_installs")
+	exec("DELETE FROM feed_plugins")
 	exec("DELETE FROM list_collaborators")
 	exec("DELETE FROM list_subscriptions")
 	exec("DELETE FROM list_members")
 	exec("DELETE FROM user_lists")
 	exec("DELETE FROM user_affinities")
-	exec("DELETE FROM feed_plugin_reviews")
-	exec("DELETE FROM feed_plugin_installs")
-	exec("DELETE FROM feed_plugins")
+	exec("DELETE FROM user_follows")
+	exec("DELETE FROM blocked_users")
 	exec("DELETE FROM posts")
 	exec("DELETE FROM users")
 }
@@ -32,7 +34,7 @@ func TestULS_CreateAndGet(t *testing.T) {
 	cleanTables(testPG)
 	cleanFeatureTables()
 	ctx := context.Background()
-	svc := services.NewUserListService(testPG)
+	svc := services.NewUserListService(testPG, nil)
 
 	u := newUser(t, testPG, "ulg1", fmt.Sprintf("ulg1_%d@test.com", time.Now().UnixNano()))
 
@@ -56,7 +58,7 @@ func TestULS_List(t *testing.T) {
 	cleanTables(testPG)
 	cleanFeatureTables()
 	ctx := context.Background()
-	svc := services.NewUserListService(testPG)
+	svc := services.NewUserListService(testPG, nil)
 
 	u := newUser(t, testPG, "ul21", fmt.Sprintf("ul21_%d@test.com", time.Now().UnixNano()))
 
@@ -73,7 +75,7 @@ func TestULS_UpdateDelete(t *testing.T) {
 	cleanTables(testPG)
 	cleanFeatureTables()
 	ctx := context.Background()
-	svc := services.NewUserListService(testPG)
+	svc := services.NewUserListService(testPG, nil)
 
 	u := newUser(t, testPG, "ul31", fmt.Sprintf("ul31_%d@test.com", time.Now().UnixNano()))
 
@@ -97,7 +99,7 @@ func TestULS_Members(t *testing.T) {
 	cleanTables(testPG)
 	cleanFeatureTables()
 	ctx := context.Background()
-	svc := services.NewUserListService(testPG)
+	svc := services.NewUserListService(testPG, nil)
 
 	o := newUser(t, testPG, "ul41", fmt.Sprintf("ul41_%d@test.com", time.Now().UnixNano()))
 	tg := newUser(t, testPG, "ul42", fmt.Sprintf("ul42_%d@test.com", time.Now().UnixNano()))
@@ -128,7 +130,7 @@ func TestULS_Subscribe(t *testing.T) {
 	cleanTables(testPG)
 	cleanFeatureTables()
 	ctx := context.Background()
-	svc := services.NewUserListService(testPG)
+	svc := services.NewUserListService(testPG, nil)
 
 	o := newUser(t, testPG, "ul_sb_o", fmt.Sprintf("ul_sb_o_%d@test.com", time.Now().UnixNano()))
 	s := newUser(t, testPG, "ul_sb_u", fmt.Sprintf("ul_sb_u_%d@test.com", time.Now().UnixNano()))
@@ -163,7 +165,7 @@ func TestULS_Collaborators(t *testing.T) {
 	cleanTables(testPG)
 	cleanFeatureTables()
 	ctx := context.Background()
-	svc := services.NewUserListService(testPG)
+	svc := services.NewUserListService(testPG, nil)
 
 	o := newUser(t, testPG, "ul61", fmt.Sprintf("ul61_%d@test.com", time.Now().UnixNano()))
 	e := newUser(t, testPG, "ul62", fmt.Sprintf("ul62_%d@test.com", time.Now().UnixNano()))
@@ -194,7 +196,7 @@ func TestULS_Forbidden(t *testing.T) {
 	cleanTables(testPG)
 	cleanFeatureTables()
 	ctx := context.Background()
-	svc := services.NewUserListService(testPG)
+	svc := services.NewUserListService(testPG, nil)
 
 	o := newUser(t, testPG, "ul71", fmt.Sprintf("ul71_%d@test.com", time.Now().UnixNano()))
 	x := newUser(t, testPG, "ul72", fmt.Sprintf("ul72_%d@test.com", time.Now().UnixNano()))
@@ -216,7 +218,7 @@ func TestULS_MultiSub(t *testing.T) {
 	cleanTables(testPG)
 	cleanFeatureTables()
 	ctx := context.Background()
-	svc := services.NewUserListService(testPG)
+	svc := services.NewUserListService(testPG, nil)
 
 	o := newUser(t, testPG, "ul81", fmt.Sprintf("ul81_%d@test.com", time.Now().UnixNano()))
 	a := newUser(t, testPG, "ul82", fmt.Sprintf("ul82_%d@test.com", time.Now().UnixNano()))
@@ -241,7 +243,7 @@ func TestULS_Meta(t *testing.T) {
 	cleanTables(testPG)
 	cleanFeatureTables()
 	ctx := context.Background()
-	svc := services.NewUserListService(testPG)
+	svc := services.NewUserListService(testPG, nil)
 
 	o := newUser(t, testPG, "ul91", fmt.Sprintf("ul91_%d@test.com", time.Now().UnixNano()))
 	v := newUser(t, testPG, "ul92", fmt.Sprintf("ul92_%d@test.com", time.Now().UnixNano()))
@@ -264,7 +266,7 @@ func TestULS_ApplyAction(t *testing.T) {
 	cleanTables(testPG)
 	cleanFeatureTables()
 	ctx := context.Background()
-	svc := services.NewUserListService(testPG)
+	svc := services.NewUserListService(testPG, nil)
 
 	o := newUser(t, testPG, "ul101", fmt.Sprintf("ul101_%d@test.com", time.Now().UnixNano()))
 	m := newUser(t, testPG, "ul102", fmt.Sprintf("ul102_%d@test.com", time.Now().UnixNano()))

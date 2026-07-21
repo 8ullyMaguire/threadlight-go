@@ -9,11 +9,12 @@ import (
 )
 
 type BlockService struct {
-	pg *pgxpool.Pool
+	pg      *pgxpool.Pool
+	affAcc  AffinityAccumulatorInterface
 }
 
-func NewBlockService(pg *pgxpool.Pool) *BlockService {
-	return &BlockService{pg: pg}
+func NewBlockService(pg *pgxpool.Pool, affAcc AffinityAccumulatorInterface) *BlockService {
+	return &BlockService{pg: pg, affAcc: affAcc}
 }
 
 func (s *BlockService) BlockUser(ctx context.Context, blockerID, blockedID int64) (*model.BlockedUser, error) {
@@ -39,6 +40,10 @@ func (s *BlockService) BlockUser(ctx context.Context, blockerID, blockedID int64
 	).Scan(&block.ID, &block.BlockerID, &block.BlockedID, &block.CreatedAt)
 	if err != nil {
 		return nil, err
+	}
+	// Record unfollow in affinity accumulator
+	if s.affAcc != nil {
+		s.affAcc.RecordUnfollow(ctx, blockerID, blockedID)
 	}
 	return block, nil
 }

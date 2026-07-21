@@ -10,11 +10,12 @@ import (
 )
 
 type UserListService struct {
-	pg *pgxpool.Pool
+	pg     *pgxpool.Pool
+	affAcc AffinityAccumulatorInterface
 }
 
-func NewUserListService(pg *pgxpool.Pool) *UserListService {
-	return &UserListService{pg: pg}
+func NewUserListService(pg *pgxpool.Pool, affAcc AffinityAccumulatorInterface) *UserListService {
+	return &UserListService{pg: pg, affAcc: affAcc}
 }
 
 // ── Permission helpers ─────────────────────────────────────────────
@@ -479,6 +480,9 @@ func (s *UserListService) ApplyListAction(ctx context.Context, subscriptionID in
 				sub.UserID, targetID)
 			if err != nil {
 				return err
+			}
+			if s.affAcc != nil {
+				s.affAcc.RecordFollow(ctx, sub.UserID, targetID)
 			}
 		}
 	} else {
