@@ -119,6 +119,9 @@ export interface Tag {
   is_wiki: boolean
   created_by: number
   created_at: string
+  total_votes?: number
+  vote_score?: number
+  user_vote?: number
 }
 
 export interface PostTag {

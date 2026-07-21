@@ -897,3 +897,83 @@ func TestListInvites(t *testing.T) {
 		t.Errorf("expected 200, got %d: %s", w.Code, w.Body.String())
 	}
 }
+
+// ─── User Lists ──────────────────────────────────────────────
+
+func TestCreateUserList(t *testing.T) {
+	token, uid := mustToken(t)
+	w := request("POST", "/api/v1/lists", jsonBody(map[string]interface{}{
+		"name":       "My List " + unique(),
+		"list_type":  0,
+		"visibility": 1,
+	}), token)
+	if w.Code != http.StatusCreated {
+		t.Fatalf("expected 201, got %d: %s", w.Code, w.Body.String())
+	}
+	var resp map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &resp)
+	if resp["name"] == "" {
+		t.Error("expected list name in response")
+	}
+	ownerID, ok := resp["owner_id"].(float64)
+	if !ok || int64(ownerID) != uid {
+		t.Errorf("expected owner_id %d, got %v", uid, resp["owner_id"])
+	}
+}
+
+func TestCreateAlgorithmicList(t *testing.T) {
+	token, _ := mustToken(t)
+	w := request("POST", "/api/v1/lists/algorithmic", jsonBody(map[string]interface{}{
+		"name":        "Algo List " + unique(),
+		"description": "algorithmic list",
+		"list_type":   0,
+		"visibility":  1,
+		"scope":       0,
+		"criteria": map[string]interface{}{
+			"min_trust_level":    1,
+			"min_positive_ratio": 0.5,
+			"max_freshness_days": 30,
+			"min_posts_30d":      5,
+		},
+		"refresh": "24h",
+	}), token)
+	if w.Code != http.StatusCreated {
+		t.Fatalf("expected 201, got %d: %s", w.Code, w.Body.String())
+	}
+	var resp map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &resp)
+	if isAlgo, ok := resp["is_algorithmic"].(bool); !ok || !isAlgo {
+		t.Error("expected is_algorithmic=true in response")
+	}
+}
+
+// ─── Affinity ────────────────────────────────────────────────
+
+func TestGetAffinities(t *testing.T) {
+	token, _ := mustToken(t)
+	w := request("GET", "/api/v1/affinity", nil, token)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var resp []interface{}
+	json.Unmarshal(w.Body.Bytes(), &resp)
+	if len(resp) != 0 {
+		t.Logf("got %d affinities (expected 0 initially)", len(resp))
+	}
+}
+
+func TestGetSimilarUsers(t *testing.T) {
+	token, _ := mustToken(t)
+	w := request("GET", "/api/v1/affinity/similar", nil, token)
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
+	}
+	var resp map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &resp)
+	userIDs, ok := resp["user_ids"].([]interface{})
+	if !ok {
+		t.Error("expected user_ids field in response")
+	} else if len(userIDs) != 0 {
+		t.Logf("got %d similar users (expected 0 initially)", len(userIDs))
+	}
+}

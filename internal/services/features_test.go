@@ -130,22 +130,32 @@ func TestULS_Subscribe(t *testing.T) {
 	ctx := context.Background()
 	svc := services.NewUserListService(testPG)
 
-	o := newUser(t, testPG, "ul51", fmt.Sprintf("ul51_%d@test.com", time.Now().UnixNano()))
-	s := newUser(t, testPG, "ul52", fmt.Sprintf("ul52_%d@test.com", time.Now().UnixNano()))
+	o := newUser(t, testPG, "ul_sb_o", fmt.Sprintf("ul_sb_o_%d@test.com", time.Now().UnixNano()))
+	s := newUser(t, testPG, "ul_sb_u", fmt.Sprintf("ul_sb_u_%d@test.com", time.Now().UnixNano()))
 
-	list, _ := svc.CreateUserList(ctx, o.ID, model.CreateUserListRequest{Name: "Sub", ListType: 0, Visibility: 1})
+	list, _ := svc.CreateUserList(ctx, o.ID, model.CreateUserListRequest{Name: "Subs", ListType: 0, Visibility: 1})
 
 	sub, _ := svc.Subscribe(ctx, list.ID, s.ID)
 	if sub.UserID != s.ID {
-		t.Errorf("got %d", sub.UserID)
+		t.Errorf("expected user %d, got %d", s.ID, sub.UserID)
 	}
-	if _, err := svc.Subscribe(ctx, list.ID, s.ID); err == nil {
-		t.Error("expected error on duplicate")
+
+	// Re-subscribe should upsert (idempotent), not error
+	sub2, err := svc.Subscribe(ctx, list.ID, s.ID)
+	if err != nil {
+		t.Errorf("unexpected error on re-subscribe: %v", err)
 	}
+	if sub2.UserID != s.ID {
+		t.Errorf("expected user %d, got %d", s.ID, sub2.UserID)
+	}
+	if !sub2.Active {
+		t.Error("expected active=true after re-subscribe")
+	}
+
 	svc.Unsubscribe(ctx, list.ID, s.ID)
 	subs, _ := svc.ListSubscribers(ctx, list.ID)
 	if len(subs) != 0 {
-		t.Errorf("expected 0, got %d", len(subs))
+		t.Errorf("expected 0 after unsubscribe, got %d", len(subs))
 	}
 }
 

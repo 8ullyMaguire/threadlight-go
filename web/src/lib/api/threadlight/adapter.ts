@@ -9,6 +9,8 @@ import {
   type PostResponse,
   type Community,
   type Tag,
+  type TagVote,
+  type TagVoteRequest,
   type SearchResults,
   type User,
   type Post,
@@ -948,8 +950,24 @@ export class ThreadlightClient extends BaseClient {
         name: t.name,
         description: t.description,
         category: t.category,
+        total_votes: t.total_votes ?? 0,
+        vote_score: t.vote_score ?? 0,
+        user_vote: t.user_vote ?? 0,
       })),
     } as unknown as Lemmy.GetTagsResponse
+  }
+
+  async voteOnTag(tagId: number, vote: number): Promise<Tag> {
+    return this.#api<Tag>(`/tags/${tagId}/vote`, {
+      method: 'POST',
+      body: { vote } as TagVoteRequest,
+    })
+  }
+
+  async removeTagVote(tagId: number): Promise<{ message: string }> {
+    return this.#api<{ message: string }>(`/tags/${tagId}/vote`, {
+      method: 'DELETE',
+    })
   }
 
   async searchPostLikes(form: { post_id: number; page?: number; limit?: number }): Promise<Lemmy.SearchResponse> {

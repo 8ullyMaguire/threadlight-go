@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS user_lists (
     criteria_json JSONB,                     -- rules for algorithmic lists
     scope       SMALLINT DEFAULT 0,          -- 0=global, 1=per-tag
     tag_id      BIGINT REFERENCES tags(id) ON DELETE SET NULL,
-    refresh_interval INTERVAL DEFAULT '24h',
+    refresh_interval TEXT DEFAULT '24h',
     last_refreshed_at TIMESTAMPTZ,
     created_at  TIMESTAMPTZ DEFAULT NOW(),
     updated_at  TIMESTAMPTZ DEFAULT NOW()
@@ -120,3 +120,14 @@ CREATE TABLE IF NOT EXISTS feed_plugin_reviews (
 );
 
 CREATE INDEX IF NOT EXISTS idx_plugin_reviews_plugin ON feed_plugin_reviews(plugin_id);
+
+-- User follows (for batch follow via ApplyListAction)
+CREATE TABLE IF NOT EXISTS user_follows (
+    id          BIGSERIAL PRIMARY KEY,
+    follower_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    followee_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at  TIMESTAMPTZ DEFAULT NOW(),
+    UNIQUE (follower_id, followee_id)
+);
+CREATE INDEX IF NOT EXISTS idx_user_follows_follower ON user_follows(follower_id);
+CREATE INDEX IF NOT EXISTS idx_user_follows_followee ON user_follows(followee_id);

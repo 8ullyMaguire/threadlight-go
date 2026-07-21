@@ -40,7 +40,7 @@ func RunAlgorithmicListRefresh(ctx context.Context, pg *pgxpool.Pool) error {
 		WHERE is_algorithmic = true
 		  AND (
 		      last_refreshed_at IS NULL
-		      OR last_refreshed_at + refresh_interval < NOW()
+		      OR last_refreshed_at + refresh_interval::INTERVAL < NOW()
 		  )
 	`)
 	if err != nil {

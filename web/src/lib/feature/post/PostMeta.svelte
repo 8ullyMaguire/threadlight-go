@@ -26,6 +26,7 @@
   import { SvelteMap } from 'svelte/reactivity'
   import CommunityLink from '../community/CommunityLink.svelte'
   import UserLink from '../user/UserLink.svelte'
+  import TagVote from '$lib/feature/tags/TagVote.svelte'
 
   type BadgeType =
     | 'nsfw'
@@ -97,6 +98,13 @@
     // Badges
     badges?: Record<BadgeType, boolean>
     tags?: Tag[]
+    tagVotes?: Array<{
+      tagId: number
+      name: string
+      totalVotes: number
+      voteScore: number
+      userVote: number
+    }>
     style?: string
     titleClass?: string
     extraBadges?: import('svelte').Snippet
@@ -125,6 +133,7 @@
       admin: false,
     },
     tags = [],
+    tagVotes = [],
     postUrl,
     style = '',
     titleClass = '',
@@ -339,6 +348,17 @@
             {tag.content}
           </Badge>
         </svelte:element>
+      {/each}
+    {/if}
+    {#if tagVotes.length > 0}
+      {#each tagVotes as voteData}
+        <TagVote
+          tagId={voteData.tagId}
+          name={voteData.name}
+          totalVotes={voteData.totalVotes}
+          voteScore={voteData.voteScore}
+          userVote={voteData.userVote}
+        />
       {/each}
     {/if}
     {#each Object.keys(badges)
