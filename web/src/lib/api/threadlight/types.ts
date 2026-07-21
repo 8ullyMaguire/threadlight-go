@@ -256,6 +256,99 @@ export interface SearchResults {
   tags: Tag[]
 }
 
+// ── New Search API types ─────────────────────────────────────
+
+export interface SearchPostsParams {
+  q: string
+  author?: string
+  community?: string
+  tags?: string
+  date_from?: string
+  date_to?: string
+  mood?: string
+  content_type?: string
+  is_educational?: string
+  is_nsfw?: string
+  sort?: string
+  page?: number
+  limit?: number
+}
+
+export interface SearchUsersParams {
+  q: string
+  page?: number
+  limit?: number
+}
+
+export interface SearchCommunitiesParams {
+  q: string
+  page?: number
+  limit?: number
+}
+
+export interface SearchResultAuthor {
+  id: number
+  name: string
+  display_name?: string | null
+  avatar_url?: string | null
+}
+
+export interface SearchResultCommunity {
+  id: number
+  name: string
+  slug: string
+  icon_url?: string | null
+}
+
+export interface SearchResultTag {
+  id: number
+  name: string
+}
+
+export interface SearchResultItem {
+  id: number
+  type: 'post' | 'user' | 'community'
+  /** Title (post title, user/community name) */
+  title?: string
+  /** Body / description snippet */
+  body?: string
+  /** Highlighted snippet with <mark> tags */
+  snippet?: string
+  author?: SearchResultAuthor
+  community?: SearchResultCommunity
+  tags?: SearchResultTag[]
+  score?: number
+  comment_count?: number
+  created_at?: string
+  avatar_url?: string | null
+  banner_url?: string | null
+  member_count?: number
+  post_count?: number
+  is_nsfw?: boolean
+  is_educational?: boolean
+  mood?: number
+  content_type?: number
+}
+
+export interface SearchFacets {
+  authors?: { name: string; count: number }[]
+  communities?: { name: string; count: number }[]
+  tags?: { name: string; count: number }[]
+  moods?: { name: string; count: number }[]
+}
+
+export interface SearchResponse {
+  results: SearchResultItem[]
+  total: number
+  page: number
+  limit: number
+  facets?: SearchFacets
+}
+
+export interface SearchSuggestResponse {
+  suggestions: string[]
+}
+
 export interface RegisterRequest {
   username: string
   email: string

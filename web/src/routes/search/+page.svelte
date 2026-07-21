@@ -1,47 +1,149 @@
 <script lang="ts">
-  import { navigating, page } from '$app/state'
+  import { page } from '$app/state'
   import { client } from '$lib/api/client.svelte'
   import { t } from '$lib/app/i18n'
-  import { searchParam } from '$lib/app/util.svelte'
-  import CommentItem from '$lib/feature/comment/CommentItem.svelte'
-  import CommunityItem from '$lib/feature/community/CommunityItem.svelte'
-  import Sort from '$lib/feature/filter/Sort.svelte'
-  import {
-    isCommentView,
-    isCommunityView,
-    isPostView,
-    isUser,
-  } from '$lib/feature/legacy/item'
-  import { PostItem } from '$lib/feature/post'
-  import UserAutocomplete from '$lib/feature/user/UserAutocomplete.svelte'
-  import UserItem from '$lib/feature/user/UserItem.svelte'
-  import ObjectAutocomplete from '$lib/ui/form/ObjectAutocomplete.svelte'
-  import Skeleton from '$lib/ui/generic/Skeleton.svelte'
+  import { ThreadlightClient } from '$lib/api/threadlight/adapter'
+  import type { SearchResultItem } from '$lib/api/threadlight/types'
+  import { Tabs, CommonList, Header, SearchBar } from '$lib/ui/layout'
+  import { Button, Option, TextInput, Switch, Select } from 'mono-svelte'
   import Placeholder from '$lib/ui/info/Placeholder.svelte'
-  import { CommonList, Header, Pageination, SearchBar } from '$lib/ui/layout'
-  import { Button, Option, Select, TextLoader } from 'mono-svelte'
-  import Menu from 'mono-svelte/popover/Menu.svelte'
   import {
-    AdjustmentsHorizontal,
-    BarsArrowDown,
-    GlobeAmericas,
-    Icon,
     MagnifyingGlass,
+    GlobeAmericas,
+    AdjustmentsHorizontal,
+    ChevronDown,
+    ChevronUp,
+    Icon,
   } from 'svelte-hero-icons/dist'
-  import { expoOut } from 'svelte/easing'
-  import { fly, slide } from 'svelte/transition'
+  import { slide } from 'svelte/transition'
 
   let { data } = $props()
 
-  let searchElement: HTMLInputElement | undefined = $state()
   let form = $state<HTMLFormElement>()
-</script>
+  let filtersOpen = $state(false)
+  let loadingMore = $state(false)
 
-<svelte:window
-  onkeydown={(e) => {
-    if (e.target == document.body) searchElement?.focus()
-  }}
-/>
+  // Local state for accumulated "Load More" results
+  let localResults = $state<SearchResultItem[]>([])
+  let localTotal = $state(0)
+  let localPage = $state(1)
+
+  // Reset local state when navigation changes the data
+  $effect(() => {
+    if (data.results) {
+      localResults = [...data.results.value]
+      localTotal = data.total
+      localPage = data.page
+    } else {
+      localResults = []
+      localTotal = 0
+      localPage = 1
+    }
+  })
+
+  // Derived state
+  let filters = $derived(data.filters.value)
+  let hasMore = $derived(localResults.length < localTotal)
+
+  // ── URL sync helpers ───────────────────────────────────────
+
+  function applyFilters() {
+    const f = filters
+    const url = new URL(page.url)
+    url.searchParams.set('q', f.query || '')
+    url.searchParams.set('tab', f.tab)
+    if (f.author) url.searchParams.set('author', f.author)
+    else url.searchParams.delete('author')
+    if (f.community) url.searchParams.set('community', f.community)
+    else url.searchParams.delete('community')
+    if (f.tags) url.searchParams.set('tags', f.tags)
+    else url.searchParams.delete('tags')
+    if (f.dateFrom) url.searchParams.set('dateFrom', f.dateFrom)
+    else url.searchParams.delete('dateFrom')
+    if (f.dateTo) url.searchParams.set('dateTo', f.dateTo)
+    else url.searchParams.delete('dateTo')
+    if (f.mood) url.searchParams.set('mood', f.mood)
+    else url.searchParams.delete('mood')
+    if (f.contentType) url.searchParams.set('contentType', f.contentType)
+    else url.searchParams.delete('contentType')
+    if (f.isEducational) url.searchParams.set('isEducational', 'true')
+    else url.searchParams.delete('isEducational')
+    if (f.isNsfw) url.searchParams.set('isNsfw', 'true')
+    else url.searchParams.delete('isNsfw')
+    if (f.sort && f.sort !== 'relevance') url.searchParams.set('sort', f.sort)
+    else url.searchParams.delete('sort')
+    url.searchParams.delete('page')
+    import('$app/navigation').then(({ goto }) => goto(url))
+  }
+
+  // ── Load more ──────────────────────────────────────────────
+
+  async function loadMore() {
+    if (loadingMore || !hasMore || !data.results) return
+    loadingMore = true
+    try {
+      const api = client()
+      const f = filters
+      const nextPage = localPage + 1
+
+      if (api instanceof ThreadlightClient) {
+        let resp
+        if (f.tab === 'posts') {
+          resp = await api.searchPosts({
+            q: f.query,
+            ...(f.author && { author: f.author }),
+            ...(f.community && { community: f.community }),
+            ...(f.tags && { tags: f.tags }),
+            ...(f.dateFrom && { date_from: f.dateFrom }),
+            ...(f.dateTo && { date_to: f.dateTo }),
+            ...(f.mood && { mood: f.mood }),
+            ...(f.contentType && { content_type: f.contentType }),
+            ...(f.isEducational && { is_educational: 'true' }),
+            ...(f.isNsfw && { is_nsfw: 'true' }),
+            ...(f.sort && { sort: f.sort }),
+            page: nextPage,
+            limit: 20,
+          })
+        } else if (f.tab === 'users') {
+          resp = await api.searchUsers({ q: f.query, page: nextPage, limit: 20 })
+        } else {
+          resp = await api.searchCommunities({ q: f.query, page: nextPage, limit: 20 })
+        }
+        if (resp?.results) {
+          localResults = [...localResults, ...resp.results]
+          localTotal = resp.total
+          localPage = nextPage
+        }
+      }
+    } catch (err) {
+      console.error('Load more error:', err)
+    } finally {
+      loadingMore = false
+    }
+  }
+
+  // ── Highlight snippet renderer ─────────────────────────────
+
+  function highlightSnippet(html: string | undefined): string {
+    if (!html) return ''
+    // The API returns <mark> tags for highlights; sanitize everything else
+    return html
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/&lt;mark&gt;/g, '<mark>')
+      .replace(/&lt;\/mark&gt;/g, '</mark>')
+  }
+
+  function formatDate(iso: string | undefined): string {
+    if (!iso) return ''
+    return new Date(iso).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
+  }
+</script>
 
 <svelte:head>
   <title>{$t('routes.search.title')}</title>
@@ -50,153 +152,322 @@
 <Header pageHeader>
   {$t('routes.search.title')}
   {#snippet extended()}
-    {@const clientType = client().type.name}
     <form method="get" action="/search" class="contents" bind:this={form}>
-      <SearchBar bind:query={data.filters.value.query} />
-      <div class="flex flex-row flex-wrap items-center gap-4">
-        <Select
-          name="type"
-          bind:value={data.filters.value.type}
-          onchange={() => form?.requestSubmit()}
+      <SearchBar bind:query={filters.query} />
+
+      <!-- Boolean syntax hint -->
+      {#if filters.query}
+        <div
+          class="text-xs text-slate-400 dark:text-zinc-500 -mt-1 mb-1 italic"
         >
-          {#snippet customLabel()}
-            <span class="flex items-center gap-1">
-              <Icon src={AdjustmentsHorizontal} mini size="15" />
-              {$t('filter.type')}
-            </span>
-          {/snippet}
-          {#if clientType == 'lemmy'}
-            <Option value="All">{$t('content.all')}</Option>
-          {/if}
-          <Option value="Posts">{$t('content.posts')}</Option>
-          {#if clientType == 'lemmy'}
-            <Option value="Comments">{$t('content.comments')}</Option>
-          {/if}
-          <Option value="Communities">{$t('content.communities')}</Option>
-          <Option value="Users">{$t('content.users')}</Option>
-          <Option value="Url">{$t('content.url')}</Option>
-        </Select>
-        <Sort
-          name="sort"
-          bind:selected={data.filters.value.sort}
-          onchange={() => form?.requestSubmit()}
-        />
-        <Menu placement="bottom">
-          {#snippet target(attachment)}
-            <Button
-              {@attach attachment}
-              aria-label={$t('post.actions.more.label')}
-              icon={BarsArrowDown}
-              size="custom"
-              class="self-end h-8.5 aspect-square"
-            />
-          {/snippet}
-          {@render extraOptions()}
-        </Menu>
+          {$t('routes.search.booleanHint') || 'Use AND, OR, NOT, "phrases", author:name, tag:tagname, community:name'}
+        </div>
+      {/if}
+
+      <div class="flex flex-row flex-wrap items-center gap-2">
+        <Button
+          onclick={() => (filtersOpen = !filtersOpen)}
+          color="tertiary"
+          size="sm"
+          class="flex items-center gap-1"
+        >
+          <Icon src={AdjustmentsHorizontal} mini size="15" />
+          {$t('filter.filters') || 'Filters'}
+          <Icon src={filtersOpen ? ChevronUp : ChevronDown} mini size="12" />
+        </Button>
       </div>
     </form>
   {/snippet}
 </Header>
 
-{#snippet extraOptions()}
-  <div class="p-2 flex flex-col gap-4" data-autoclose="false">
-    <ObjectAutocomplete
-      label={$t('nav.create.community')}
-      listing_type="All"
-      onselect={(c) =>
-        searchParam(
-          page.url,
-          'community',
-          c?.community.id || undefined,
-          'page',
-        )}
-    />
-    <UserAutocomplete
-      label={$t('post.actions.more.creator')}
-      listing_type="All"
-      showWhenEmpty={true}
-      onselect={(c) =>
-        searchParam(page.url, 'creator', c?.id.toString() ?? '', 'page')}
-    />
-  </div>
-{/snippet}
+<!-- Tabs -->
+<Tabs
+  routes={[
+    { href: '?tab=posts', name: $t('content.posts') },
+    { href: '?tab=users', name: $t('content.users') },
+    { href: '?tab=communities', name: $t('content.communities') },
+  ]}
+  margin={false}
+/>
 
-{#if !data.results}
-  {#if navigating.to?.route.id == '/search'}
-    <div class="flex flex-col gap-3 mt-6">
-      {#each new Array(5) as _, index}
-        {_}
-        <div
-          in:fly|global={{
-            duration: 800,
-            easing: expoOut,
-            y: 12,
-            delay: index * 100,
-          }}
-          style="width: {(1 / ((index + 1) % 3)) * 100}%"
-        >
-          <Skeleton />
-        </div>
-      {/each}
-    </div>
-  {:else}
-    <div class="my-auto">
-      <Placeholder
-        icon={data.results ? MagnifyingGlass : GlobeAmericas}
-        title={$t('routes.search.noResults.title')}
-        description={data.results
-          ? $t('routes.search.noResults.description')
-          : $t('routes.search.noResults.alt')}
+<!-- Collapsible filters panel -->
+{#if filtersOpen}
+  <div
+    in:slide={{ axis: 'y', duration: 200 }}
+    out:slide={{ axis: 'y', duration: 150 }}
+    class="filters-panel bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 mb-4 space-y-3"
+  >
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <TextInput
+        label={$t('post.author') || 'Author'}
+        bind:value={filters.author}
+        placeholder="author:username"
+        size="sm"
+      />
+      <TextInput
+        label={$t('nav.create.community')}
+        bind:value={filters.community}
+        placeholder="community:name"
+        size="sm"
       />
     </div>
-  {/if}
-{:else}
-  {#await data.streamed.object}
-    <div
-      class="flex gap-2 items-center my-4"
-      out:slide={{ axis: 'y', easing: expoOut }}
-    >
-      <TextLoader>{$t('routes.search.federating')}</TextLoader>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+      <TextInput
+        label={$t('common.tags') || 'Tags'}
+        bind:value={filters.tags}
+        placeholder="tag1, tag2"
+        size="sm"
+      />
+      <TextInput
+        label={$t('filter.dateFrom') || 'Date from'}
+        type="date"
+        bind:value={filters.dateFrom}
+        size="sm"
+      />
+      <TextInput
+        label={$t('filter.dateTo') || 'Date to'}
+        type="date"
+        bind:value={filters.dateTo}
+        size="sm"
+      />
     </div>
-  {:then object}
-    {#if object}
-      <div
-        transition:slide={{ axis: 'y', easing: expoOut }}
-        class="divide-y divide-slate-200 dark:divide-zinc-900 my-4"
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <Select
+        label={$t('filter.mood') || 'Mood'}
+        bind:value={filters.mood}
+        size="sm"
       >
-        {#if object.community}
-          <CommunityItem community={object.community} showCounts={false} />
-        {/if}
-        {#if object.post}
-          <PostItem post={object.post} />
-        {/if}
-        {#if object.comment}
-          <CommentItem comment={object.comment} />
-        {/if}
-        {#if object.person}
-          <UserItem user={object.person} />
-        {/if}
+        <Option value="">{$t('content.all') || 'Any'}</Option>
+        <Option value="0">Neutral</Option>
+        <Option value="1">Happy</Option>
+        <Option value="2">Sad</Option>
+        <Option value="3">Angry</Option>
+        <Option value="4">Funny</Option>
+        <Option value="5">Informative</Option>
+      </Select>
+      <Select
+        label={$t('filter.sort') || 'Sort'}
+        bind:value={filters.sort}
+        size="sm"
+      >
+        <Option value="relevance">{$t('filter.relevance') || 'Relevance'}</Option>
+        <Option value="newest">{$t('filter.newest') || 'Newest'}</Option>
+        <Option value="oldest">{$t('filter.oldest') || 'Oldest'}</Option>
+        <Option value="top">{$t('filter.top') || 'Top'}</Option>
+      </Select>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 items-end">
+      <div class="flex items-center gap-2">
+        <Switch bind:checked={filters.isEducational}>
+          {$t('filter.educational') || 'Educational'}
+        </Switch>
       </div>
-    {/if}
-  {/await}
-  <CommonList items={data.results.value}>
-    {#snippet item(result)}
-      {#if isPostView(result)}
-        <PostItem post={result} />
-      {:else if isCommentView(result)}
-        <CommentItem comment={result} />
-      {:else if isCommunityView(result)}
-        <CommunityItem community={result} showCounts={false} />
-      {:else if isUser(result)}
-        <UserItem user={result} showCounts={false} />
-      {/if}
-    {/snippet}
-  </CommonList>
-  <div class="mt-4"></div>
-  {#if data.results.value.length > 0}
-    <Pageination
-      bind:page={data.filters.value.page}
-      href={(page) => `?page=${page}`}
+      <div class="flex items-center gap-2">
+        <Switch bind:checked={filters.isNsfw}>
+          {$t('filter.nsfw') || 'NSFW'}
+        </Switch>
+      </div>
+    </div>
+    <div class="flex gap-2 pt-1">
+      <Button onclick={applyFilters} color="primary" size="sm">
+        {$t('common.apply') || 'Apply Filters'}
+      </Button>
+    </div>
+  </div>
+{/if}
+
+<!-- Results area -->
+{#if !data.results}
+  <!-- Initial state (no query yet) or loading -->
+  <div class="my-auto">
+    <Placeholder
+      icon={GlobeAmericas}
+      title={$t('routes.search.noResults.title')}
+      description={$t('routes.search.noResults.alt')}
     />
+  </div>
+{:else if localResults && localResults.length === 0}
+  <!-- Empty results -->
+  <div class="my-auto">
+    <Placeholder
+      icon={MagnifyingGlass}
+      title={$t('routes.search.noResults.title')}
+      description={$t('routes.search.noResults.description')}
+    />
+  </div>
+{:else}
+  <!-- Results list -->
+  {#if filters.tab === 'posts'}
+    <CommonList items={localResults} animate={false}>
+      {#snippet item(result: SearchResultItem)}
+        <a
+          href={`/post/${result.id}`}
+          class="block no-underline text-inherit"
+        >
+          <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-2">
+              {#if result.is_nsfw}
+                <span
+                  class="text-xs px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 font-medium"
+                >NSFW</span>
+              {/if}
+              {#if result.is_educational}
+                <span
+                  class="text-xs px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 font-medium"
+                >Edu</span>
+              {/if}
+              <span class="text-xs text-slate-400 dark:text-zinc-500">
+                {result.community?.slug ?? ''}
+              </span>
+            </div>
+            <h3 class="text-base font-semibold leading-tight">
+              {result.title}
+            </h3>
+            {#if result.snippet}
+              <p class="text-sm text-slate-600 dark:text-zinc-400 line-clamp-2">
+                {@html highlightSnippet(result.snippet)}
+              </p>
+            {:else if result.body}
+              <p class="text-sm text-slate-600 dark:text-zinc-400 line-clamp-2">
+                {result.body}
+              </p>
+            {/if}
+            <div class="flex items-center gap-3 text-xs text-slate-400 dark:text-zinc-500 mt-1">
+              {#if result.author}
+                <span>{result.author.name}</span>
+              {/if}
+              {#if result.created_at}
+                <span>{formatDate(result.created_at)}</span>
+              {/if}
+              {#if result.score !== undefined}
+                <span>{result.score} pts</span>
+              {/if}
+              {#if result.comment_count !== undefined}
+                <span>{result.comment_count} comments</span>
+              {/if}
+            </div>
+            {#if result.tags && result.tags.length > 0}
+              <div class="flex flex-wrap gap-1 mt-1">
+                {#each result.tags as tag}
+                  <span
+                    class="text-xs px-2 py-0.5 rounded-full bg-slate-100 dark:bg-zinc-800 text-slate-500 dark:text-zinc-400"
+                  >{tag.name}</span>
+                {/each}
+              </div>
+            {/if}
+          </div>
+        </a>
+      {/snippet}
+    </CommonList>
+  {:else if filters.tab === 'users'}
+    <CommonList items={localResults} animate={false}>
+      {#snippet item(result: SearchResultItem)}
+        <a
+          href={`/u/${result.author?.name ?? result.id}`}
+          class="block no-underline text-inherit"
+        >
+          <div class="flex items-center gap-3">
+            {#if result.avatar_url}
+              <img
+                src={result.avatar_url}
+                alt={result.title ?? ''}
+                class="w-10 h-10 rounded-full object-cover"
+              />
+            {:else}
+              <div
+                class="w-10 h-10 rounded-full bg-slate-200 dark:bg-zinc-700 flex items-center justify-center text-slate-500 dark:text-zinc-400 text-sm font-medium"
+              >
+                {(result.title ?? '?')[0]}
+              </div>
+            {/if}
+            <div class="flex-1 min-w-0">
+              <div class="font-medium truncate">{result.title}</div>
+              {#if result.body}
+                <div class="text-sm text-slate-500 dark:text-zinc-400 truncate">
+                  {result.body}
+                </div>
+              {/if}
+            </div>
+            <div class="text-xs text-slate-400 dark:text-zinc-500 text-right shrink-0">
+              {#if result.post_count !== undefined}
+                <div>{result.post_count} posts</div>
+              {/if}
+              {#if result.member_count !== undefined}
+                <div>{result.member_count} members</div>
+              {/if}
+            </div>
+          </div>
+        </a>
+      {/snippet}
+    </CommonList>
+  {:else if filters.tab === 'communities'}
+    <CommonList items={localResults} animate={false}>
+      {#snippet item(result: SearchResultItem)}
+        <a
+          href={`/c/${result.community?.slug ?? result.id}`}
+          class="block no-underline text-inherit"
+        >
+          <div class="flex items-center gap-3">
+            {#if result.community?.icon_url}
+              <img
+                src={result.community.icon_url}
+                alt={result.title ?? ''}
+                class="w-10 h-10 rounded-lg object-cover"
+              />
+            {:else}
+              <div
+                class="w-10 h-10 rounded-lg bg-slate-200 dark:bg-zinc-700 flex items-center justify-center text-slate-500 dark:text-zinc-400 text-sm font-medium"
+              >
+                {(result.title ?? '?')[0]}
+              </div>
+            {/if}
+            <div class="flex-1 min-w-0">
+              <div class="font-medium truncate">{result.title}</div>
+              {#if result.body}
+                <div class="text-sm text-slate-500 dark:text-zinc-400 line-clamp-1">
+                  {result.body}
+                </div>
+              {/if}
+            </div>
+            <div class="text-xs text-slate-400 dark:text-zinc-500 text-right shrink-0">
+              {#if result.member_count !== undefined}
+                <div>{result.member_count} members</div>
+              {/if}
+              {#if result.post_count !== undefined}
+                <div>{result.post_count} posts</div>
+              {/if}
+            </div>
+          </div>
+        </a>
+      {/snippet}
+    </CommonList>
+  {/if}
+
+  <!-- Load more -->
+  {#if hasMore}
+    <div class="flex justify-center mt-4 mb-8">
+      <Button
+        onclick={loadMore}
+        color="tertiary"
+        size="md"
+        rounding="pill"
+        loading={loadingMore}
+        class="px-6"
+      >
+        {loadingMore
+          ? ($t('common.loading') || 'Loading...')
+          : ($t('common.loadMore') || 'Load More')}
+      </Button>
+    </div>
   {/if}
 {/if}
+
+<style>
+  @reference '../../../app.css';
+
+  .filters-panel {
+    :global(input[type="date"]) {
+      color-scheme: inherit;
+    }
+  }
+</style>

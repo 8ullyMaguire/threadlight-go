@@ -13,7 +13,7 @@ Priority tiers. Tier 1 = ship-blocking. Tier 5 = nice-to-have.
 - [x] Trust levels 0-2 (model + database)
 - [x] Basic reactions (like/unlike)
 - [x] Communities (create/join/leave)
-- [x] Search (PostgreSQL full-text)
+- [x] Search (PostgreSQL full-text with Boolean operators, field filters, trigram autocomplete)
 - [x] Email verification
 - [x] Password reset
 - [x] User blocking + shared blocklist
@@ -21,16 +21,17 @@ Priority tiers. Tier 1 = ship-blocking. Tier 5 = nice-to-have.
 - [x] Content filters (per-user keyword filters)
 - [x] Feed pagination
 - [x] Responsive layout (CSS variables, media queries)
+- [x] Tag voting UI (frontend TagVote component)
 - [ ] Trust Level auto-progression (cron job that promotes users based on time/activity/flags)
 - [ ] Email-sent password reset (currently returns token directly — needs SMTP config + email sending)
 - [ ] Mod post deletion (MODREMOVE endpoint exists, needs frontend button)
-- [ ] Collaborative tag voting (tag_votes table + API exist, needs frontend UI)
 
 ## Tier 2 — Community Health
 
 - [x] Moderation labels (M1)
 - [x] Admin ban/suspend
 - [x] Reports + review queue
+- [x] Public moderation decision reviews (Fair/Unfair voting + controversy scoring)
 - [ ] Meta-moderation (M2) — jury-on-moderation system
 - [ ] Community curators (scope tag enforcement without ban power)
 - [ ] Community tenure-weighted voting
@@ -43,16 +44,19 @@ Priority tiers. Tier 1 = ship-blocking. Tier 5 = nice-to-have.
 
 - [x] Tags (CRUD, associate with posts)
 - [x] Collaborative tagging (anyone can tag, post_tags table)
-- [x] Tag voting API (vote up/down)
-- [x] Advanced search (boolean, fielded, date range)
+- [x] Tag voting API + frontend (vote up/down)
+- [x] Search (boolean, fielded, date range, facets, autocomplete)
 - [x] Trending (period-based aggregation)
 - [x] Collections (create, add/remove posts)
 - [x] Circles (manual groups)
+- [x] User lists (CRUD, collaborative, algorithmic)
+- [x] User affinity engine (event-driven Redis + on-demand cache)
+- [x] Feed plugins (WASM marketplace sandbox)
 - [ ] The Positive Algorithm (non-chronological feed ranker)
 - [ ] "Why this post?" button
 - [ ] Custom feeds with RSS export
 - [ ] Full reaction set (Insightful, Helpful, Beautiful, etc.)
-- [ ] Tag search with autocomplete
+- [ ] Tag autocomplete (frontend)
 - [ ] Collection visibility layers (public read, public edit)
 - [ ] Auto-generated circles (by interest + proximity)
 
@@ -71,7 +75,7 @@ Priority tiers. Tier 1 = ship-blocking. Tier 5 = nice-to-have.
 
 - [x] Shared blocklist (JSON import/export)
 - [x] Dockerfile (multi-stage build)
-- [x] Migration runner (runs on startup)
+- [x] Migration runner (runs on startup, 4 migrations)
 - [ ] ActivityPub (ed25519 keys, actor_id, inbox/outbox, HTTP Signatures)
 - [ ] WebSocket (live feed, chat, presence)
 - [ ] Image upload (model exists, service exists, needs endpoint + CDN/storage config)
@@ -79,18 +83,15 @@ Priority tiers. Tier 1 = ship-blocking. Tier 5 = nice-to-have.
 - [ ] Test coverage (currently ~50% on backend, <10% on frontend)
 - [ ] CI/CD pipeline (Forgejo Actions)
 
-## Currently Incomplete (Needs Finish Work)
+## Recently Completed
 
-| Item | Status | What's Missing |
-|------|--------|----------------|
-| Onboarding wizard | BACKEND ONLY | All 3 onboarding API endpoints exist? Suggest active posters from tag picks + recommend circles |
-| Password reset | DONE | Features implemented. Needs SMTP to actually send the email. |
-| Admin seeding | DONE | `seedAdmin` creates admin user on first start if env vars set. |
-| Worker system | DONE | 11 workers running on scheduler. |
-| CORS | DONE | Middleware exists in `internal/api/middleware/cors.go`. |
-| Vite proxy | DONE | Configured in `vite.config.js` for dev. |
-| Dockerfile | DONE | Multi-stage build at repo root. |
-| Advanced search | DONE | Boolean + fielded operators, date range filtering. |
-| Tag voting | DONE | `tag_votes` table + API. Needs frontend UI. |
-| Mod post removal | DONE | `POST /posts/:id/remove` endpoint + handler. Needs frontend UI. |
-| Migration runner | DONE | `internal/db/migrations.go` runs `.sql` files on startup. |
+| Item | Status | Notes |
+|------|--------|-------|
+| Tag voting frontend | ✅ | TagVote.svelte with upvote/downvote, integrated into PostMeta |
+| User lists | ✅ | CRUD, members, subscriptions, collaborators, batch follow/block |
+| Algorithmic lists | ✅ | Criteria-based auto-population, refresh worker |
+| User affinity | ✅ | Event-driven Redis counters (badge) + on-demand cache (page) |
+| Feed plugins | ✅ | WASM marketplace, install, sandbox execution, reviews |
+| Mod decision reviews | ✅ | Fair/Unfair voting, controversy scoring, /modlog/controversial |
+| Search redesign | ✅ | Boolean parser, tsvector, trigram autocomplete, facets |
+| Handler integration tests | ✅ | 4 new handler tests for lists, affinity |

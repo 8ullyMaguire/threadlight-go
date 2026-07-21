@@ -14,6 +14,11 @@ import {
   type SearchResults,
   type User,
   type Post,
+  type SearchResponse,
+  type SearchPostsParams,
+  type SearchUsersParams,
+  type SearchCommunitiesParams,
+  type SearchSuggestResponse,
 } from './types'
 
 function mapUser(u: User): Lemmy.PersonView {
@@ -525,6 +530,45 @@ export class ThreadlightClient extends BaseClient {
       users: (data.users ?? []).map(mapUser),
       type_: form.type_,
     } as Lemmy.SearchResponse
+  }
+
+  // ── New search endpoints ──────────────────────────────────
+
+  async searchPosts(params: SearchPostsParams): Promise<SearchResponse> {
+    const apiParams: Record<string, string> = { q: params.q }
+    if (params.author) apiParams['author'] = params.author
+    if (params.community) apiParams['community'] = params.community
+    if (params.tags) apiParams['tags'] = params.tags
+    if (params.date_from) apiParams['date_from'] = params.date_from
+    if (params.date_to) apiParams['date_to'] = params.date_to
+    if (params.mood) apiParams['mood'] = params.mood
+    if (params.content_type) apiParams['content_type'] = params.content_type
+    if (params.is_educational !== undefined) apiParams['is_educational'] = params.is_educational
+    if (params.is_nsfw !== undefined) apiParams['is_nsfw'] = params.is_nsfw
+    if (params.sort) apiParams['sort'] = params.sort
+    if (params.page) apiParams['page'] = params.page.toString()
+    if (params.limit) apiParams['limit'] = params.limit.toString()
+    return this.#api<SearchResponse>('/search/posts', { params: apiParams })
+  }
+
+  async searchUsers(params: SearchUsersParams): Promise<SearchResponse> {
+    const apiParams: Record<string, string> = { q: params.q }
+    if (params.page) apiParams['page'] = params.page.toString()
+    if (params.limit) apiParams['limit'] = params.limit.toString()
+    return this.#api<SearchResponse>('/search/users', { params: apiParams })
+  }
+
+  async searchCommunities(params: SearchCommunitiesParams): Promise<SearchResponse> {
+    const apiParams: Record<string, string> = { q: params.q }
+    if (params.page) apiParams['page'] = params.page.toString()
+    if (params.limit) apiParams['limit'] = params.limit.toString()
+    return this.#api<SearchResponse>('/search/communities', { params: apiParams })
+  }
+
+  async searchSuggest(q: string): Promise<SearchSuggestResponse> {
+    return this.#api<SearchSuggestResponse>('/search/suggest', {
+      params: { q },
+    })
   }
 
   async getReplies(form: Lemmy.GetReplies): Promise<Lemmy.GetRepliesResponse> {

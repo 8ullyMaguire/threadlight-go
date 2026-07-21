@@ -23,14 +23,16 @@ Go + PostgreSQL + Redis.
 ```
 polaris/
 ├── cmd/polaris/main.go        # Entry point: wires everything together
-├── internal/                  # Go backend (not importable by external modules)
+|── internal/                  # Go backend (not importable by external modules)
 │   ├── api/
 │   │   ├── router.go          # Gin routes + middleware setup
 │   │   └── handlers/          # HTTP handlers (thin layer, calls services)
 │   ├── db/
 │   │   ├── db.go              # PostgreSQL + Redis connection, migration runner
-│   │   └── migrations/        # SQL files run in order on startup
+│   │   └── migrations/        # SQL files run in order on startup (4 migrations)
 │   ├── model/                 # Go structs + error types (shared everywhere)
+│   ├── search/
+│   │   └── parser.go          # Boolean query parser (recursive-descent AST)
 │   ├── services/              # Business logic (all database queries live here)
 │   └── worker/                # Background workers (scheduler + individual workers)
 ├── web/                       # Svelte frontend (separate Vite build)
@@ -311,10 +313,17 @@ Single-row table with instance settings (name, description, contact email, etc.)
 
 ### Migrations
 Migrations are plain SQL files in `internal/db/migrations/`. They run in filename order
-on every server startup. New columns are added with `ALTER TABLE ... ADD COLUMN IF NOT EXISTS`
-to make migrations idempotent. To add a new migration:
+on every server startup. Current migrations:
 
-1. Create `internal/db/migrations/002_your_feature.sql`
+1. `001_initial.sql` — core schema (users, posts, communities, tags, etc.)
+2. `002_tag_votes.sql` — tag voting
+3. `003_features.sql` — user lists, user_affinities, feed_plugins, collaborative lists
+4. `004_mod_decision_reviews.sql` — public moderation decision reviews
+
+New columns are added with `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` to make migrations
+idempotent. To add a new migration:
+
+1. Create `internal/db/migrations/005_your_feature.sql`
 2. Write `ALTER TABLE ... ADD COLUMN ...` or `CREATE TABLE ...` statements
 3. Restart the server — it runs automatically
 
@@ -453,17 +462,20 @@ The scheduler (`internal/worker/scheduler.go`) is a list of (name, interval, fun
 jobs := []struct{
     Name     string
     Interval time.Duration
-    Run      func(context.Context)
+    Run      func(context.Context, *pgxpool.Pool)
 }{
-    {"feed_refresh",   30 * time.Second, func(ctx) { RebuildFeeds(ctx, pg) }},
-    {"trending",       60 * time.Second, func(ctx) { UpdateTrending(ctx, pg) }},
-    {"trust_decay",    6 * time.Hour,    func(ctx) { DecayTrust(ctx, pg) }},
-    {"prune",          1 * time.Hour,    func(ctx) { RunPrune(ctx, pg) }},
-    {"achievements",   10 * time.Minute, func(ctx) { CheckAchievements(ctx, pg) }},
-    {"notes_promote",  5 * time.Minute,  func(ctx) { PromoteNotes(ctx, pg) }},
-    {"credits",        1 * time.Hour,    func(ctx) { DistributeCredits(ctx, pg) }},
-    {"active_stats",   15 * time.Minute, func(ctx) { UpdateActiveStats(ctx, pg) }},
-    {"scheduled_posts", 30 * time.Second,func(ctx) { PublishScheduled(ctx, pg) }},
+    {"affinity_computation",  1 * time.Hour,     RunAffinityComputation},
+    {"affinity_trust_dists",  1 * time.Hour,     RunAffinityTrustDistances},
+    {"algorithmic_lists",     30 * time.Minute,   RunAlgorithmicListRefresh},
+    {"feed_refresh",          30 * time.Second,   RebuildFeeds},
+    {"trending",              60 * time.Second,   UpdateTrending},
+    {"trust_decay",           6 * time.Hour,      DecayTrust},
+    {"prune",                 1 * time.Hour,      RunPrune},
+    {"achievements",          10 * time.Minute,   CheckAchievements},
+    {"notes_promote",         5 * time.Minute,    PromoteNotes},
+    {"credits",               1 * time.Hour,      DistributeCredits},
+    {"active_stats",          15 * time.Minute,   UpdateActiveStats},
+    {"scheduled_posts",       30 * time.Second,   PublishScheduled},
 }
 ```
 
