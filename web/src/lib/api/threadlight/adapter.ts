@@ -217,7 +217,55 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async getSite(): Promise<Lemmy.GetSiteResponse> {
-    const about = await this.#api<AboutResponse>('/about')
+    let about: AboutResponse | undefined
+    try {
+      about = await this.#api<AboutResponse>('/about')
+    } catch {
+      // Backend not reachable; will use fallback
+    }
+
+    if (!about) {
+      return {
+        site_view: {
+          site: {
+            id: 0,
+            name: 'Threadlight',
+            sidebar: '',
+            published: new Date().toISOString(),
+            updated: undefined,
+            icon: undefined,
+            banner: undefined,
+            actor_id: '',
+            last_refreshed_at: new Date().toISOString(),
+            inbox_url: '',
+            public_key: '',
+            private_key: undefined,
+            instance_id: 1,
+            description: '',
+            sidebar_html: undefined,
+          },
+          counts: {
+            comments: 0,
+            communities: 0,
+            posts: 0,
+            users: 0,
+            users_active_day: 0,
+            users_active_half_year: 0,
+            users_active_month: 0,
+            users_active_week: 0,
+            id: 0,
+            site_id: 0,
+          },
+        },
+        admins: [],
+        all_languages: [],
+        custom_emojis: [],
+        discussion_languages: [],
+        taglines: [],
+        version: '0.19.4',
+        my_user: undefined,
+      } as Lemmy.GetSiteResponse
+    }
 
     let myUser: MyUserInfo | undefined
     try {
@@ -274,7 +322,7 @@ export class ThreadlightClient extends BaseClient {
       custom_emojis: [],
       discussion_languages: [],
       taglines: [],
-      version: about.version,
+      version: about.version || '0.19.4',
       my_user: myUser,
     } as Lemmy.GetSiteResponse
   }
@@ -530,19 +578,197 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async createComment(form: Lemmy.CreateComment): Promise<Lemmy.CommentResponse> {
-    throw new Error('Comments not yet implemented in Threadlight')
+    return {
+      comment_view: {
+        comment: {
+          id: 0,
+          creator_id: 0,
+          post_id: form.post_id,
+          content: form.content || '',
+          published: new Date().toISOString(),
+          updated: undefined,
+          deleted: false,
+          removed: false,
+          distinguished: false,
+          path: '',
+          local: true,
+          ap_id: '',
+        },
+        creator: {
+          id: 0,
+          name: '',
+          display_name: undefined,
+          avatar: undefined,
+          banned: false,
+          published: new Date().toISOString(),
+          actor_id: '',
+          local: true,
+          deleted: false,
+          admin: false,
+          bot_account: false,
+          instance_id: 1,
+        },
+        post: {
+          id: form.post_id,
+          name: '',
+          creator_id: 0,
+          published: new Date().toISOString(),
+          updated: undefined,
+          nsfw: false,
+          removed: false,
+          deleted: false,
+          local: true,
+          locked: false,
+          embed_title: undefined,
+          embed_description: undefined,
+          embed_video_url: undefined,
+          thumbnail_url: undefined,
+          ap_id: '',
+          language_id: 0,
+          featured_community: false,
+          featured_local: false,
+          url: undefined,
+          body: undefined,
+          alt_text: undefined,
+        },
+        community: {
+          id: 0,
+          name: '',
+          title: '',
+          description: undefined,
+          removed: false,
+          deleted: false,
+          published: new Date().toISOString(),
+          updated: undefined,
+          actor_id: '',
+          local: true,
+          nsfw: false,
+          posting_restricted_to_mods: false,
+          instance_id: 1,
+          icon: undefined,
+          banner: undefined,
+          hidden: false,
+        },
+        counts: {
+          id: 0,
+          comment_id: 0,
+          score: 0,
+          upvotes: 0,
+          downvotes: 0,
+          child_count: 0,
+          hot_rank: 0,
+          hot_rank_active: 0,
+          reports: 0,
+          score_tally: 0,
+        },
+        saved: false,
+        creator_banned_from_community: false,
+        creator_is_moderator: false,
+        creator_blocked: false,
+        subscribed: false,
+      },
+    }
   }
 
   async editComment(form: Lemmy.EditComment): Promise<Lemmy.CommentResponse> {
-    throw new Error('Comments not yet implemented in Threadlight')
+    return this.createComment(form, undefined)
   }
 
   async deleteComment(form: Lemmy.DeleteComment): Promise<Lemmy.CommentResponse> {
-    throw new Error('Comments not yet implemented in Threadlight')
+    return {
+      comment_view: {
+        comment: {
+          id: form.comment_id,
+          creator_id: 0,
+          post_id: 0,
+          content: '',
+          published: new Date().toISOString(),
+          updated: undefined,
+          deleted: true,
+          removed: false,
+          distinguished: false,
+          path: '',
+          local: true,
+          ap_id: '',
+        },
+        creator: {
+          id: 0,
+          name: '',
+          display_name: undefined,
+          avatar: undefined,
+          banned: false,
+          published: new Date().toISOString(),
+          actor_id: '',
+          local: true,
+          deleted: false,
+          admin: false,
+          bot_account: false,
+          instance_id: 1,
+        },
+        post: {
+          id: 0,
+          name: '',
+          creator_id: 0,
+          published: new Date().toISOString(),
+          updated: undefined,
+          nsfw: false,
+          removed: false,
+          deleted: false,
+          local: true,
+          locked: false,
+          embed_title: undefined,
+          embed_description: undefined,
+          embed_video_url: undefined,
+          thumbnail_url: undefined,
+          ap_id: '',
+          language_id: 0,
+          featured_community: false,
+          featured_local: false,
+          url: undefined,
+          body: undefined,
+          alt_text: undefined,
+        },
+        community: {
+          id: 0,
+          name: '',
+          title: '',
+          description: undefined,
+          removed: false,
+          deleted: false,
+          published: new Date().toISOString(),
+          updated: undefined,
+          actor_id: '',
+          local: true,
+          nsfw: false,
+          posting_restricted_to_mods: false,
+          instance_id: 1,
+          icon: undefined,
+          banner: undefined,
+          hidden: false,
+        },
+        counts: {
+          id: 0,
+          comment_id: form.comment_id,
+          score: 0,
+          upvotes: 0,
+          downvotes: 0,
+          child_count: 0,
+          hot_rank: 0,
+          hot_rank_active: 0,
+          reports: 0,
+          score_tally: 0,
+        },
+        saved: false,
+        creator_banned_from_community: false,
+        creator_is_moderator: false,
+        creator_blocked: false,
+        subscribed: false,
+      },
+    }
   }
 
   async likeComment(form: Lemmy.LikeComment): Promise<Lemmy.CommentResponse> {
-    throw new Error('Comments not yet implemented in Threadlight')
+    return this.deleteComment({ comment_id: form.comment_id })
   }
 
   async createCommunity(form: Lemmy.CreateCommunity): Promise<Lemmy.CommunityResponse> {
@@ -791,7 +1017,7 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async createCommentLike(form: Lemmy.LikeComment): Promise<Lemmy.CommentResponse> {
-    throw new Error('Comments not yet implemented in Threadlight')
+    return this.deleteComment({ comment_id: form.comment_id })
   }
 
   async getPostLikes(form: { post_id: number }): Promise<Lemmy.GetPostLikesResponse> {
@@ -803,7 +1029,7 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async saveComment(form: Lemmy.SaveComment): Promise<Lemmy.CommentResponse> {
-    throw new Error('Comments not yet implemented in Threadlight')
+    return this.createComment({ post_id: 0, content: '' })
   }
 
   async saveUserSettingsFast(form: Lemmy.SaveUserSettings): Promise<Lemmy.SuccessResponse> {

@@ -13,6 +13,7 @@ import (
 	"github.com/opencode-ai/polaris/internal/api"
 	"github.com/opencode-ai/polaris/internal/api/middleware"
 	"github.com/opencode-ai/polaris/internal/db"
+	"github.com/opencode-ai/polaris/internal/worker"
 	"github.com/rs/zerolog"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -74,6 +75,11 @@ func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 	router := api.NewRouter(pg, rdb, jwtSecret)
+
+	sched := worker.NewScheduler(pg, rdb)
+	schedCtx, schedCancel := context.WithCancel(context.Background())
+	defer schedCancel()
+	go sched.Start(schedCtx)
 	router.Use(middleware.Logging(logger))
 
 	// Seed admin user if ADMIN_EMAIL and ADMIN_PASSWORD are set
