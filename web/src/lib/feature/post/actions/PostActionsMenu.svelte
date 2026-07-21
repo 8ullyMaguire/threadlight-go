@@ -5,7 +5,7 @@
 
   import { settings } from '$lib/app/settings.svelte'
   import { deleteItem, markAsRead } from '$lib/feature/legacy/contentview'
-  import { report } from '$lib/feature/moderation/moderation'
+  import { report, remove } from '$lib/feature/moderation/moderation'
   import { MenuButton } from 'mono-svelte'
   import {
     ArrowTopRightOnSquare,
@@ -13,6 +13,7 @@
     EyeSlash,
     Flag,
     PencilSquare,
+    ShieldExclamation,
     Trash,
     XMark,
   } from 'svelte-hero-icons/dist'
@@ -80,6 +81,17 @@
       {post.post.deleted
         ?'Restore'
         :'Delete'}
+    </MenuButton>
+  {/if}
+  {#if profile.isMod(post.community) || profile.isAdmin}
+    <MenuButton
+      onclick={() => remove(post)}
+      color="danger-subtle"
+      icon={ShieldExclamation}
+    >
+      {post.post.removed
+        ?'Restore'
+        :'Remove'}
     </MenuButton>
   {/if}
   {#if profile.current.user?.local_user_view.person.id != post.creator.id}

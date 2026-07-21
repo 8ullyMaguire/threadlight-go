@@ -36,6 +36,11 @@ func (s *Scheduler) Start(ctx context.Context) {
 	}{
 		{"feed-rebuild", 5 * time.Minute, func(c context.Context) { RunFeedRebuild(c, s.pg) }},
 		{"trust-decay", 1 * time.Hour, func(c context.Context) { RunTrustDecay(c, s.pg) }},
+		{"trust-progression", 1 * time.Hour, func(c context.Context) {
+			if err := RunTrustProgression(c, s.pg); err != nil {
+				log.Printf("scheduler: trust-progression error: %v", err)
+			}
+		}},
 		{"achievement-check", 30 * time.Minute, func(c context.Context) { RunAchievementCheck(c, s.pg) }},
 		{"scheduled-post", 1 * time.Minute, func(c context.Context) { RunScheduledPostPublisher(c, s.pg) }},
 		{"community-notes", 15 * time.Minute, func(c context.Context) { RunCommunityNotesProcessor(c, s.pg) }},

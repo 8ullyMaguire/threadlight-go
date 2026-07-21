@@ -6,16 +6,24 @@ export interface User {
   avatar_url: string | null
   banner_url: string | null
   bio: string | null
-  role: number
+  role?: number
   trust_level: number
+  trust_score?: number
+  reputation?: number
   credits: number
-  post_count: number
-  comment_count: number
-  like_count: number
-  is_private: boolean
+  post_count?: number
+  comment_count?: number
+  like_count?: number
+  is_private?: boolean
   is_deleted: boolean
+  is_active?: boolean
+  is_local?: boolean
+  onboarding_stage?: number
+  email_verified?: boolean
+  theme?: string | null
+  hide_read_posts?: boolean
   created_at: string
-  updated_at: string | null
+  updated_at?: string | null
 }
 
 export interface Post {
@@ -80,17 +88,24 @@ export interface Community {
   name: string
   slug: string
   description: string
-  icon_url: string | null
-  banner_url: string | null
-  primary_tag_id: number | null
-  owner_id: number
+  tags?: string[]
+  icon_url?: string | null
+  banner_url?: string | null
+  primary_tag_id?: number | null
+  owner_id?: number
+  created_by?: number
   member_count: number
-  post_count: number
-  is_private: boolean
-  is_moderated: boolean
+  post_count?: number
+  is_private?: boolean
+  invite_only?: boolean
+  is_moderated?: boolean
+  curator_lock?: boolean
   slow_boot_days: number
+  min_trust_score?: number
+  forked_from?: number | null
   created_at: string
-  updated_at: string | null
+  updated_at?: string | null
+  archived_at?: string | null
 }
 
 export interface CommunityMember {
@@ -267,17 +282,18 @@ export interface SiteConfig {
 }
 
 export interface AboutResponse {
-  title: string
+  instance_name: string
+  short_description: string
   description: string
   version: string
-  source_url: string
-  registration_open: boolean
-  invite_only: boolean
-  max_upload_size: number
-  default_language: string
-  post_count: number
-  user_count: number
-  community_count: number
+  admin_contact_email: string
+  privacy_policy_url: string
+  terms_url: string
+  code_of_conduct_url: string
+  defederation_policy_url: string
+  donation_url: string
+  donate_text: string
+  admin_users: string[]
 }
 
 export interface AuthResponse {
@@ -368,10 +384,9 @@ export interface SearchResultItem {
 }
 
 export interface SearchFacets {
-  authors?: { name: string; count: number }[]
-  communities?: { name: string; count: number }[]
-  tags?: { name: string; count: number }[]
-  moods?: { name: string; count: number }[]
+  tags?: Record<string, number>
+  mood?: Record<number, number>
+  content_type?: Record<number, number>
 }
 
 export interface SearchResponse {
@@ -456,11 +471,22 @@ export interface UserList {
   id: number
   name: string
   description: string
-  list_type: 'follow' | 'block' | 'algorithmic'
-  visibility: 'private' | 'public'
+  list_type: number | 'follow' | 'block' | 'algorithmic'
+  visibility: number | 'private' | 'public'
   owner_id: number
+  is_algorithmic?: boolean
+  criteria_json?: string | null
+  scope?: number
+  tag_id?: number | null
+  refresh_interval?: string
+  last_refreshed_at?: string | null
   created_at: string
-  updated_at: string | null
+  updated_at?: string | null
+}
+
+export interface UserListWithMeta extends UserList {
+  is_subscribed: boolean
+  member_count: number
 }
 
 export interface CreateListRequest {
@@ -477,6 +503,8 @@ export interface CreateAlgorithmicListRequest {
   visibility: 'private' | 'public'
   scope: string
   criteria: string
+  tag_id?: number | null
+  refresh?: string
 }
 
 export interface AddListMemberRequest {
@@ -505,9 +533,12 @@ export interface UserListCollaborator {
 
 // ── Affinity types ──────────────────────────────────────────
 export interface AffinityEntry {
+  user_a_id?: number
   user_b_id: number
   affinity_score: number
-  breakdown: string
+  recency_factor?: number
+  breakdown?: string | null
+  computed_at?: string
 }
 
 export interface AffinitySimilarResponse {
@@ -520,14 +551,18 @@ export interface FeedPlugin {
   name: string
   description: string
   version: string
-  plugin_type: string
-  wasm_url: string
+  plugin_type: number | string
+  author_id?: number
+  wasm_url?: string
+  wasm_sha256?: string
+  price_credits?: number
   rating: number
   install_count: number
+  enabled?: boolean
   reviewed: boolean
-  user_id: number
+  user_id?: number
   created_at: string
-  updated_at: string | null
+  updated_at?: string | null
 }
 
 export interface FeedPluginReview {

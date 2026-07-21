@@ -145,7 +145,10 @@ func (s *SearchService) SearchPosts(ctx context.Context, q model.SearchPostsQuer
 	selectCols := `p.id, p.author_id, p.title, p.body, p.content_type, p.mood,
 		p.is_educational, p.is_entertaining, p.is_nsfw, p.content_warning,
 		p.interaction_count, p.cumulative_interactions, p.status,
-		p.scheduled_at, p.created_at, p.updated_at, p.archived_at, p.is_deleted`
+		p.scheduled_at, p.created_at, p.updated_at, p.archived_at, p.is_deleted,
+		COALESCE(u.username, '') AS author_name,
+		COALESCE(c.slug, '') AS community_slug,
+		COALESCE(tag_agg.tag_names, '') AS tag_names`
 
 	var conditions []string
 	var args []interface{}
@@ -250,6 +253,14 @@ func (s *SearchService) SearchPosts(ctx context.Context, q model.SearchPostsQuer
 
 	querySQL := fmt.Sprintf(`SELECT %s, %s, COUNT(*) OVER() AS total_count
 FROM posts p
+LEFT JOIN users u ON u.id = p.author_id
+LEFT JOIN communities c ON c.id = p.moved_from_community_id
+LEFT JOIN LATERAL (
+	SELECT string_agg(t.name, ',') AS tag_names
+	FROM post_tags pt
+	JOIN tags t ON t.id = pt.tag_id
+	WHERE pt.post_id = p.id
+) tag_agg ON true
 WHERE %s%s LIMIT $%d OFFSET $%d`,
 		selectCols, headlineExpr, whereClause, orderClause, argIdx, argIdx+1)
 	args = append(args, q.Limit, offset)
@@ -269,6 +280,7 @@ WHERE %s%s LIMIT $%d OFFSET $%d`,
 			&ph.IsEducational, &ph.IsEntertaining, &ph.IsNsfw, &ph.ContentWarning,
 			&ph.InteractionCount, &ph.CumulativeInteractions, &ph.Status,
 			&ph.ScheduledAt, &ph.CreatedAt, &ph.UpdatedAt, &ph.ArchivedAt, &ph.IsDeleted,
+			&ph.AuthorName, &ph.CommunitySlug, &ph.TagNames,
 			&ph.Headline, &total,
 		)
 		if err != nil {
@@ -314,12 +326,12 @@ WHERE (username ILIKE $1 OR display_name ILIKE $1) AND is_deleted = FALSE`
 		return nil, 0, fmt.Errorf("count users: %w", err)
 	}
 
-	querySQL := `SELECT id, username, display_name, bio, email, password_hash,
+	querySQL := `SELECT id, COALESCE(username, ''), COALESCE(display_name, ''), COALESCE(bio, ''), COALESCE(email, ''), COALESCE(password_hash, ''),
 		trust_level, trust_score, reputation, invited_by, invite_code, credits,
-		is_active, last_active_at, public_key, actor_id, is_local, onboarding_stage,
-		proximity_opt_out, location_hash, avatar_url, banner_url, bio_html,
-		email_verified, email_verify_token, email_verify_sent_at,
-		password_reset_token, password_reset_sent_at, theme, hide_read_posts,
+		is_active, COALESCE(last_active_at, 'epoch'::timestamptz), COALESCE(public_key, ''), COALESCE(actor_id, ''), is_local, onboarding_stage,
+		proximity_opt_out, COALESCE(location_hash, ''), avatar_url, banner_url, COALESCE(bio_html, ''),
+		email_verified, COALESCE(email_verify_token, ''), email_verify_sent_at,
+		COALESCE(password_reset_token, ''), password_reset_sent_at, COALESCE(theme, ''), hide_read_posts,
 		is_deleted, deleted_at, created_at
 FROM users
 WHERE (username ILIKE $1 OR display_name ILIKE $1) AND is_deleted = FALSE

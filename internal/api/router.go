@@ -297,6 +297,10 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 		{
 			search.GET("", searchHandler.Search)
 			search.POST("/advanced", searchHandler.AdvancedSearch)
+			search.GET("/posts", searchHandler.SearchPosts)
+			search.GET("/users", searchHandler.SearchUsers)
+			search.GET("/communities", searchHandler.SearchCommunities)
+			search.GET("/suggest", searchHandler.SearchSuggest)
 		}
 
 		blocks := apiV1.Group("/blocks")

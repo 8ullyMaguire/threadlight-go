@@ -11,7 +11,6 @@ import {
   type Tag,
   type TagVote,
   type TagVoteRequest,
-  type SearchResults,
   type User,
   type Post,
   type SearchResponse,
@@ -19,7 +18,9 @@ import {
   type SearchUsersParams,
   type SearchCommunitiesParams,
   type SearchSuggestResponse,
+  type SearchResultItem,
   type UserList,
+  type UserListWithMeta,
   type CreateListRequest,
   type CreateAlgorithmicListRequest,
   type AddListMemberRequest,
@@ -51,7 +52,7 @@ function mapUser(u: User): Lemmy.PersonView {
       local: true,
       deleted: u.is_deleted,
       matrix_user_id: undefined,
-      admin: u.role >= 100,
+      admin: (u.role ?? u.trust_level ?? 0) >= 100,
       bot_account: false,
       ban_expires: undefined,
       banned: false,
@@ -60,9 +61,9 @@ function mapUser(u: User): Lemmy.PersonView {
     counts: {
       id: u.id,
       person_id: u.id,
-      post_count: u.post_count,
-      comment_count: u.comment_count,
-      post_score: u.like_count,
+      post_count: u.post_count ?? 0,
+      comment_count: u.comment_count ?? 0,
+      post_score: u.like_count ?? 0,
       comment_score: 0,
     },
   } as Lemmy.PersonView
@@ -83,6 +84,7 @@ function mapPost(p: Post): Lemmy.PostView {
       published: p.created_at ?? new Date().toISOString(),
       updated: p.updated_at ?? undefined,
       deleted: p.is_deleted,
+      removed: p.archived_at != null,
       locked: p.locked,
       stickied: p.sticky,
       language_id: 1,
@@ -132,7 +134,7 @@ function mapCommunity(c: Community): Lemmy.CommunityView {
       published: c.created_at,
       updated: c.updated_at ?? undefined,
       deleted: false,
-      nsfw: c.is_private,
+      nsfw: c.is_private ?? c.invite_only ?? false,
       actor_id: '',
       local: true,
       hidden: false,
@@ -144,7 +146,7 @@ function mapCommunity(c: Community): Lemmy.CommunityView {
       id: c.id,
       community_id: c.id,
       subscribers: c.member_count,
-      posts: c.post_count,
+      posts: c.post_count ?? 0,
       comments: 0,
       published: c.created_at,
       users_active_day: 0,
@@ -311,7 +313,7 @@ export class ThreadlightClient extends BaseClient {
       site_view: {
         site: {
           id: 1,
-          name: about.title,
+          name: about.instance_name,
           sidebar: about.description,
           published: new Date().toISOString(),
           updated: undefined,
@@ -328,9 +330,9 @@ export class ThreadlightClient extends BaseClient {
         },
         counts: {
           comments: 0,
-          communities: about.community_count,
-          posts: about.post_count,
-          users: about.user_count,
+          communities: 0,
+          posts: 0,
+          users: 0,
           users_active_day: 0,
           users_active_half_year: 0,
           users_active_month: 0,
@@ -417,7 +419,7 @@ export class ThreadlightClient extends BaseClient {
       else if (form.sort === 'TopDay') params['sort'] = 'top_day'
     }
 
-    const path = form.community_id ? '/posts' : '/feed'
+    const path = '/posts'
     const data = await this.#api<Post[] | { posts: Post[] }>(path, { params })
     const posts = Array.isArray(data) ? data : data.posts ?? []
     return {
@@ -518,7 +520,8 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async getPerson(form: Lemmy.GetPersonDetails): Promise<Lemmy.GetPersonDetailsResponse> {
-    const data = await this.#api<UserProfile>(`/users/${form.person_id}`)
+    const identifier = (form as any).username ?? form.person_id
+    const data = await this.#api<UserProfile>(`/users/${identifier}`)
     return {
       person_view: mapUser(data.user),
       comments: [],
@@ -537,12 +540,12 @@ export class ThreadlightClient extends BaseClient {
     const params: Record<string, string> = { q: form.q }
     if (form.limit) params['limit'] = form.limit.toString()
     if (form.page) params['page'] = form.page.toString()
-    const data = await this.#api<SearchResults>('/search', { params })
+    const data = await this.#api<Post[]>('/search', { params })
     return {
-      posts: (data.posts ?? []).map(mapPost),
+      posts: (data ?? []).map(mapPost),
       comments: [],
-      communities: (data.communities ?? []).map(mapCommunity),
-      users: (data.users ?? []).map(mapUser),
+      communities: [],
+      users: [],
       type_: form.type_,
     } as Lemmy.SearchResponse
   }
@@ -553,7 +556,7 @@ export class ThreadlightClient extends BaseClient {
     const apiParams: Record<string, string> = { q: params.q }
     if (params.author) apiParams['author'] = params.author
     if (params.community) apiParams['community'] = params.community
-    if (params.tags) apiParams['tags'] = params.tags
+    if (params.tags) apiParams['tag'] = params.tags
     if (params.date_from) apiParams['date_from'] = params.date_from
     if (params.date_to) apiParams['date_to'] = params.date_to
     if (params.mood) apiParams['mood'] = params.mood
@@ -563,21 +566,94 @@ export class ThreadlightClient extends BaseClient {
     if (params.sort) apiParams['sort'] = params.sort
     if (params.page) apiParams['page'] = params.page.toString()
     if (params.limit) apiParams['limit'] = params.limit.toString()
-    return this.#api<SearchResponse>('/search/posts', { params: apiParams })
+    const raw = await this.#api<{
+      results: any[]
+      total: number
+      page: number
+      limit: number
+      facets?: any
+    }>('/search/posts', { params: apiParams })
+    // Map PostWithHeadline to SearchResultItem
+    const results: SearchResultItem[] = (raw.results ?? []).map((p: any) => ({
+      id: p.id,
+      type: 'post' as const,
+      title: p.title,
+      body: p.body,
+      snippet: p.headline || undefined,
+      author: p.author_id ? { id: p.author_id, name: p.author_name ?? '' } : undefined,
+      community: p.community_slug ? { id: 0, name: p.community_slug, slug: p.community_slug } : undefined,
+      tags: p.tag_names ? p.tag_names.split(',').filter((n: string) => n).map((name: string) => ({ id: 0, name })) : [],
+      score: p.interaction_count,
+      comment_count: p.comment_count ?? 0,
+      created_at: p.created_at,
+      is_nsfw: p.is_nsfw,
+      is_educational: p.is_educational,
+      mood: p.mood,
+      content_type: p.content_type,
+    }))
+    return {
+      results,
+      total: raw.total ?? results.length,
+      page: raw.page ?? 1,
+      limit: raw.limit ?? 20,
+      facets: raw.facets,
+    }
   }
 
   async searchUsers(params: SearchUsersParams): Promise<SearchResponse> {
     const apiParams: Record<string, string> = { q: params.q }
     if (params.page) apiParams['page'] = params.page.toString()
     if (params.limit) apiParams['limit'] = params.limit.toString()
-    return this.#api<SearchResponse>('/search/users', { params: apiParams })
+    const raw = await this.#api<{
+      results: any[]
+      total: number
+      page: number
+      limit: number
+    }>('/search/users', { params: apiParams })
+    const results: SearchResultItem[] = (raw.results ?? []).map((u: any) => ({
+      id: u.id,
+      type: 'user' as const,
+      title: u.display_name ?? u.username ?? '',
+      body: u.bio ?? undefined,
+      avatar_url: u.avatar_url ?? null,
+      post_count: u.post_count ?? 0,
+      created_at: u.created_at,
+    }))
+    return {
+      results,
+      total: raw.total ?? results.length,
+      page: raw.page ?? 1,
+      limit: raw.limit ?? 20,
+    }
   }
 
   async searchCommunities(params: SearchCommunitiesParams): Promise<SearchResponse> {
     const apiParams: Record<string, string> = { q: params.q }
     if (params.page) apiParams['page'] = params.page.toString()
     if (params.limit) apiParams['limit'] = params.limit.toString()
-    return this.#api<SearchResponse>('/search/communities', { params: apiParams })
+    const raw = await this.#api<{
+      results: any[]
+      total: number
+      page: number
+      limit: number
+    }>('/search/communities', { params: apiParams })
+    const results: SearchResultItem[] = (raw.results ?? []).map((c: any) => ({
+      id: c.id,
+      type: 'community' as const,
+      title: c.name ?? c.slug ?? '',
+      body: c.description ?? undefined,
+      community: c.slug ? { id: c.id, name: c.name ?? c.slug, slug: c.slug } : undefined,
+      avatar_url: c.icon_url ?? null,
+      member_count: c.member_count ?? 0,
+      post_count: c.post_count ?? 0,
+      created_at: c.created_at,
+    }))
+    return {
+      results,
+      total: raw.total ?? results.length,
+      page: raw.page ?? 1,
+      limit: raw.limit ?? 20,
+    }
   }
 
   async searchSuggest(q: string): Promise<SearchSuggestResponse> {
@@ -1026,29 +1102,83 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async getModlog(form: Lemmy.GetModlog): Promise<Lemmy.GetModlogResponse> {
-    console.warn('getModlog: no /modlog/actions endpoint on Threadlight backend, returning empty stub')
-    return {
-      added: [],
-      added_to_community: [],
-      admin_purged_comments: [],
-      admin_purged_communities: [],
-      admin_purged_posts: [],
-      admin_purged_persons: [],
-      banned: [],
-      banned_from_community: [],
-      featured_posts: [],
-      locked_posts: [],
-      mod_remove_comments: [],
-      mod_remove_communities: [],
-      mod_remove_posts: [],
-      mod_remove_persons: [],
-      mod_transfer_community: [],
-      mod_transfer_site: [],
-      removed_posts: [],
-      restored_posts: [],
-      mod_change_password: [],
-      mod_remove_post_origin: [],
-    } as Lemmy.GetModlogResponse
+    // Try to fetch controversial mod decisions from the Threadlight backend
+    try {
+      const raw = await this.#api<{ decisions: any[]; limit: number; offset: number }>('/modlog/controversial', {
+        params: { limit: (form.limit ?? 20).toString(), offset: (((form.page ?? 1) - 1) * (form.limit ?? 20)).toString() },
+      })
+      // Map ControversialDecision items into the closest Lemmy modlog shape (ModRemovePostView)
+      const removedPosts: any[] = (raw.decisions ?? []).map((d: any) => ({
+        mod_remove_post: {
+          id: d.action?.id ?? 0,
+          mod_person_id: d.action?.moderator_id ?? 0,
+          post_id: d.action?.target_post_id ?? 0,
+          reason: d.action?.reason ?? '',
+          removed: d.action?.action_type === 1,
+          when_: d.action?.created_at ?? new Date().toISOString(),
+        },
+        post: {
+          id: d.action?.target_post_id ?? 0,
+          name: '',
+          creator_id: d.action?.target_user_id ?? 0,
+          published: d.action?.created_at ?? new Date().toISOString(),
+          updated: undefined, nsfw: false, removed: false, deleted: false,
+          local: true, locked: false, embed_title: undefined,
+          embed_description: undefined, embed_video_url: undefined,
+          thumbnail_url: undefined, ap_id: '', language_id: 1,
+          featured_community: false, featured_local: false,
+          url: undefined, body: undefined, community_id: 1,
+        },
+        moderator: {
+          id: d.action?.moderator_id ?? 0, name: '', display_name: undefined,
+          avatar: undefined, banned: false,
+          published: d.action?.created_at ?? new Date().toISOString(),
+          actor_id: '', local: true, deleted: false, instance_id: 1,
+        },
+        community: {
+          id: 0, name: '', title: '', description: undefined,
+          removed: false, deleted: false,
+          published: d.action?.created_at ?? new Date().toISOString(),
+          updated: undefined, actor_id: '', local: true, nsfw: false,
+          posting_restricted_to_mods: false, instance_id: 1,
+          icon: undefined, banner: undefined, hidden: false,
+        },
+      }))
+      return {
+        added: [],
+        added_to_community: removedPosts,
+        admin_purged_comments: [],
+        admin_purged_communities: [],
+        admin_purged_posts: [],
+        admin_purged_persons: [],
+        banned: [],
+        banned_from_community: [],
+        featured_posts: [],
+        locked_posts: [],
+        mod_remove_comments: [],
+        mod_remove_communities: [],
+        mod_remove_posts: [],
+        mod_remove_persons: [],
+        mod_transfer_community: [],
+        mod_transfer_site: [],
+        removed_posts: [],
+        restored_posts: [],
+        mod_change_password: [],
+        mod_remove_post_origin: [],
+      } as Lemmy.GetModlogResponse
+    } catch {
+      // Fallback: return empty modlog
+      return {
+        added: [], added_to_community: [], admin_purged_comments: [],
+        admin_purged_communities: [], admin_purged_posts: [],
+        admin_purged_persons: [], banned: [], banned_from_community: [],
+        featured_posts: [], locked_posts: [], mod_remove_comments: [],
+        mod_remove_communities: [], mod_remove_posts: [],
+        mod_remove_persons: [], mod_transfer_community: [],
+        mod_transfer_site: [], removed_posts: [], restored_posts: [],
+        mod_change_password: [], mod_remove_post_origin: [],
+      } as Lemmy.GetModlogResponse
+    }
   }
 
   async listPostReports(form: Lemmy.ListPostReports): Promise<Lemmy.ListPostReportsResponse> {
@@ -1335,6 +1465,10 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async removePost(form: Lemmy.RemovePost): Promise<Lemmy.PostResponse> {
+    await this.#api(`/posts/${form.post_id}/remove`, {
+      method: 'POST',
+      body: { reason: form.reason },
+    })
     return {} as Lemmy.PostResponse
   }
 
@@ -1590,8 +1724,8 @@ export class ThreadlightClient extends BaseClient {
 
   // ── User List API methods ─────────────────────────────────
 
-  async getLists(): Promise<UserList[]> {
-    return this.#api<UserList[]>('/lists')
+  async getLists(): Promise<UserListWithMeta[]> {
+    return this.#api<UserListWithMeta[]>('/lists')
   }
 
   async getList(id: number): Promise<UserList> {
@@ -1599,16 +1733,34 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async createList(data: CreateListRequest): Promise<UserList> {
+    const body: Record<string, unknown> = {
+      name: data.name,
+      description: data.description,
+      list_type: data.list_type === 'follow' ? 0 : 1,
+      visibility: data.visibility === 'public' ? 1 : 0,
+    }
     return this.#api<UserList>('/lists', {
       method: 'POST',
-      body: data,
+      body,
     })
   }
 
   async createAlgorithmicList(data: CreateAlgorithmicListRequest): Promise<UserList> {
+    const body: Record<string, unknown> = {
+      name: data.name,
+      description: data.description,
+      list_type: data.list_type === 'follow' ? 0 : 1,
+      visibility: data.visibility === 'public' ? 1 : 0,
+      scope: data.scope,
+      criteria: data.criteria,
+      refresh: data.refresh,
+    }
+    if ((data as Record<string, unknown>).tag_id !== undefined) {
+      body['tag_id'] = (data as Record<string, unknown>).tag_id
+    }
     return this.#api<UserList>('/lists/algorithmic', {
       method: 'POST',
-      body: data,
+      body,
     })
   }
 

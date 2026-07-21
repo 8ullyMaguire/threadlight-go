@@ -17,10 +17,14 @@ type SearchPostsQuery struct {
 	Limit         int    `json:"limit"`
 }
 
-// PostWithHeadline embeds a Post and adds a headline snippet from ts_headline.
+// PostWithHeadline embeds a Post and adds a headline snippet from ts_headline,
+// plus enriched fields for display in search results.
 type PostWithHeadline struct {
 	Post
-	Headline string `json:"headline"`
+	Headline      string `json:"headline"`
+	AuthorName    string `json:"author_name"`
+	CommunitySlug string `json:"community_slug"`
+	TagNames      string `json:"tag_names"` // comma-separated tag names
 }
 
 // SearchFacets holds aggregate counts that can be returned alongside results.
