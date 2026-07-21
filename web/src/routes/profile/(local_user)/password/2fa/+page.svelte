@@ -96,7 +96,7 @@
       <TextInput
         bind:value={verify_totp}
         placeholder="012345"
-        label=2FA Code
+        label="2FA Code"
         pattern={'\\d{6}'}
         required
       />
@@ -130,7 +130,7 @@
       <Placeholder
         iconClass="p-3 bg-red-100 text-red-600 dark:bg-red-500/10 dark:text-red-400 rounded-full"
         icon={Key}
-        title=2FA is disabled
+        title="2FA is disabled"
       >
         <Button
           onclick={() => twofa(true, false)}

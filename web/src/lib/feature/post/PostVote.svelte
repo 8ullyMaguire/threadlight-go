@@ -132,7 +132,7 @@
       'rounded-xl h-full font-medium flex relative overflow-hidden',
       voteRatio < 85 && settings.voteRatioBar && 'vote-ratio',
     ]}
-    aria-label=Post voting controls
+    aria-label="Post voting controls"
     style="--vote-ratio: {voteRatio}%;"
   >
     {@render voteButton(upvotes, 'upvote', vote)}

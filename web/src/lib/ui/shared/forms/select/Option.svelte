@@ -32,7 +32,7 @@
   const context = getContext<SelectContext>('select')
 
   $effect(() => {
-    if ($locale || !context.options.find((v) => v == option)) {
+    if (true || !context.options.find((v) => v == option)) {
       const index = context.options.findIndex((i) => i.value == option.value)
 
       if (index != -1) {
@@ -51,8 +51,7 @@
   })
 </script>
 
-{#key $locale}
+
   <option {...rest} bind:this={optionElement}>
     {@render children()}
   </option>
-{/key}

@@ -235,7 +235,7 @@
       {#snippet target(popover)}
         <Button
           {@attach popover}
-          title=More actions
+          title="More actions"
           rounding="xl"
           size="custom"
           class={buttonSquare}

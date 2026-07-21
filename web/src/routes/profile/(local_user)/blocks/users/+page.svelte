@@ -54,7 +54,7 @@
 {:else}
   <Placeholder
     title=No blocked users
-    description=Blocking a user will hide the user's posts and comments from feeds.
+    description="Blocking a user will hide their posts and comments from feeds."
     icon={Check}
     class="my-auto"
   />

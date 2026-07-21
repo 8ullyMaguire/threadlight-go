@@ -219,13 +219,13 @@
         size="sm"
       />
       <TextInput
-        label=Date from
+        label="Date from"
         type="date"
         bind:value={filters.dateFrom}
         size="sm"
       />
       <TextInput
-        label=Date to
+        label="Date to"
         type="date"
         bind:value={filters.dateTo}
         size="sm"
@@ -282,8 +282,8 @@
   <div class="my-auto">
     <Placeholder
       icon={GlobeAmericas}
-      title=No results
-      description=Search for anything across the fediverse.
+      title="No results"
+      description="Search for anything across the fediverse."
     />
   </div>
 {:else if localResults && localResults.length === 0}
@@ -291,8 +291,8 @@
   <div class="my-auto">
     <Placeholder
       icon={MagnifyingGlass}
-      title=No results
-      description=There are no results that match that filter. Try refining your search.
+      title="No results"
+      description="There are no results that match that filter. Try refining your search."
     />
   </div>
 {:else}
@@ -463,7 +463,7 @@
 {/if}
 
 <style>
-  @reference '../../../app.css';
+  @reference '../../app.css';
 
   .filters-panel {
     :global(input[type="date"]) {

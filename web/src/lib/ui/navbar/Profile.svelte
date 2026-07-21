@@ -180,7 +180,7 @@
         })
       }}
       color="tertiary"
-      title=Server info
+      title="Server info"
       size="square-md"
     >
       <Icon src={ServerStack} size="16" micro />

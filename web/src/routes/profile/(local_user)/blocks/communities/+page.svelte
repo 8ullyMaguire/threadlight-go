@@ -52,8 +52,8 @@
   </ItemList>
 {:else}
   <Placeholder
-    title=No blocked communities
-    description=Blocking a community will hide its posts from feeds.
+    title="No blocked communities"
+    description="Blocking a community will hide its posts from feeds."
     icon={Check}
     class="my-auto"
   />

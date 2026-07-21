@@ -173,8 +173,8 @@
   <div class="h-full grid place-items-center">
     <Placeholder
       icon={ShieldCheck}
-      title=No new reports
-      description=When submissions are reported, you can act on them here.
+      title="No new reports"
+      description="When submissions are reported, you can act on them here."
     />
   </div>
 {/if}

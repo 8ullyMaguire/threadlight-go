@@ -91,7 +91,7 @@
                   href="/modlog?user={vote.creator.id}"
                   data-sveltekit-preload-data="tap"
                   class="text-green-400 hover:underline flex flex-row items-center gap-1 font-medium text-xs"
-                  aria-label=User moderation log
+                  aria-label="User moderation log"
                 >
                   <Icon src={Newspaper} size="18" micro />
                 </a>

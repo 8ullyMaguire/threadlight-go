@@ -65,7 +65,7 @@
     />
     <SidebarButton
       href="/instances"
-      label=Linked servers
+      label="Linked servers"
       icon={ServerStack}
     />
 
@@ -92,7 +92,7 @@
         {#snippet target(attachment)}
           <button class="text-left cursor-pointer" {@attach attachment}>
             <LabelStat
-              label=Active Today
+              label="Active Today"
               content={site.counts.users_active_day.toString()}
               formatted
             />
@@ -100,17 +100,17 @@
         {/snippet}
         <div class="flex flex-row gap-4 flex-wrap px-3">
           <LabelStat
-            label=Past week
+            label="Past week"
             content={site.counts.users_active_week.toString()}
             formatted
           />
           <LabelStat
-            label=Past month
+            label="Past month"
             content={site.counts.users_active_month.toString()}
             formatted
           />
           <LabelStat
-            label=6 months
+            label="6 months"
             content={site.counts.users_active_half_year.toString()}
             formatted
           />

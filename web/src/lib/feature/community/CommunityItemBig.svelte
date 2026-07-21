@@ -44,7 +44,7 @@
 >
   <a
     href={communityLink(community.community)}
-    aria-label=Open link: {{default}}
+    aria-label="Open link"
     class="absolute inset-0 z-10"
   ></a>
   <div

@@ -51,7 +51,7 @@
 {:else}
   <Placeholder
     icon={ClipboardDocumentCheck}
-    title=No new applications
-    description=Applications to join your server will appear here.
+    title="No new applications"
+    description="Applications to join your server will appear here."
   />
 {/if}

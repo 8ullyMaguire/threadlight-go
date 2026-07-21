@@ -43,8 +43,8 @@
   </ItemList>
 {:else}
   <Placeholder
-    title=No blocked servers
-    description=Blocking a server will hide posts from its communities from feeds.
+    title="No blocked servers"
+    description="Blocking a server will hide posts from its communities from feeds."
     icon={Check}
     class="my-auto"
   />

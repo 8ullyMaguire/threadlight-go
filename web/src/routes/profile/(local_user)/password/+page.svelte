@@ -8,6 +8,6 @@
   <Placeholder
     icon={Key}
     title=Manage how you log in
-    description=You can enable 2FA for greater security, change your password, view logged in devices, or delete your account here.
+    description="You can enable 2FA for greater security, change your password, view logged in devices, or delete your account here."
   />
 </div>

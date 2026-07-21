@@ -94,8 +94,8 @@
 {#if !data.inbox?.value || (data.inbox.value?.length ?? 0) == 0}
   <Placeholder
     icon={Inbox}
-    title=No new notifications
-    description=Messages, replies, and mentions will appear here.
+    title="No new notifications"
+    description="Messages, replies, and mentions will appear here."
     class="self-center justify-self-center my-auto"
   />
 {:else}

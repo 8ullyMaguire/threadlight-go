@@ -154,7 +154,7 @@
           size="square-lg"
           rounding="2xl"
           icon={EllipsisHorizontal}
-          aria-label=More actions
+          aria-label="More actions"
         />
       {/snippet}
       <MenuButton onclick={() => (setNote = !setNote)} icon={Tag}>

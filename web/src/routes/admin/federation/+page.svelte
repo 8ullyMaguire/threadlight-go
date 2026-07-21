@@ -187,7 +187,7 @@
         class="flex flex-row gap-2"
       >
         <TextInput
-          placeholder=Block a server...
+          placeholder="Block a server..."
           class="flex-1"
           bind:value={blockInstance.instance}
         />
@@ -238,8 +238,8 @@
           {:else}
             <Placeholder
               icon={Check}
-              title=No blocked servers
-              description=Blocking an server will hide new submissions from that server.
+              title="No blocked servers"
+              description="Blocking an server will hide new submissions from that server."
             />
           {/if}
         </ul>
@@ -272,7 +272,7 @@
         class="flex flex-row gap-2"
       >
         <TextInput
-          placeholder=Whitelist a server
+          placeholder="Whitelist a server"
           class="flex-1"
           bind:value={allowInstance.instance}
         />
@@ -320,7 +320,7 @@
             <div class="my-auto h-max">
               <Placeholder
                 icon={Check}
-                title=No whitelisted servers
+                title="No whitelisted servers"
                 description={"Whitelisting an server will block every other server."}
               />
             </div>

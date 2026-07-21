@@ -42,8 +42,8 @@
     {#if data.communities.length == 0}
       <Placeholder
         icon={QuestionMarkCircle}
-        title=No results
-        description=There are no results that match that filter. Try refining your search.
+        title="No results"
+        description="There are no results that match that filter. Try refining your search."
       />
     {/if}
 

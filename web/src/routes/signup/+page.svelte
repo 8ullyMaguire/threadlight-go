@@ -157,7 +157,7 @@
   >
     <TextInput
       bind:value={selectedInstance}
-      label=Choose a server
+      label="Choose a server"
       required
       {placeholder}
       oninput={() => {

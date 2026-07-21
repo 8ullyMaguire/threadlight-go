@@ -52,7 +52,7 @@
   )}"
   title={community.community.title}
   detail="{new SvelteURL(community.community.actor_id).hostname}{!showCounts
-    ? ` • ${Intl.NumberFormat($locale, { notation: 'compact' }).format(community.counts.subscribers)}`
+    ? ` • ${Intl.NumberFormat('en', { notation: 'compact' }).format(community.counts.subscribers)}`
     : ''}"
   orientation={view == 'cozy' ? 'vertical' : 'horizontal'}
 >
@@ -73,7 +73,7 @@
       </span>
     {/if}
     {#if community.banned_from_community}
-      <span title=You are banned from this community.>
+      <span title="You are banned from this community.">
         <Icon src={NoSymbol} class="text-red-500 inline" micro size="14" />
       </span>
     {/if}

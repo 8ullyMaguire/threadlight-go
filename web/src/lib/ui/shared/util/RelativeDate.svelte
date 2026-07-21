@@ -81,5 +81,5 @@
 </script>
 
 <time datetime={dateTime} title={dateTime} class={clazz} {style}>
-  {formatRelativeDate(date, options, $locale, relativeTo)}
+  {formatRelativeDate(date, options, 'en', relativeTo)}
 </time>

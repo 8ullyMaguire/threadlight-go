@@ -39,7 +39,7 @@
       <Icon src={Calendar} size="20" mini />
       <h4 class="capitalize text-xl font-display">
         <date>
-          {startDate.toLocaleDateString($locale, {
+          {startDate.toLocaleDateString('en', {
             dateStyle: 'long',
           })}
         </date>
@@ -50,13 +50,13 @@
       <Icon src={Clock} size="20" mini />
       <h4 class="capitalize text-xl font-display">
         <time>
-          {startDate.toLocaleTimeString($locale, {
+          {startDate.toLocaleTimeString('en', {
             timeStyle: 'long',
           })}
         </time>
       </h4>
       <time>
-        {startDate.toLocaleTimeString($locale, {
+        {startDate.toLocaleTimeString('en', {
           timeZone: 'GMT',
           timeStyle: 'long',
         })}

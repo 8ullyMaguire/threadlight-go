@@ -22,32 +22,32 @@
   <ToggleSetting
     icon={Eye}
     bind:checked={settings.posts.showHidden}
-    title=Show hidden posts
-    description=Shows the posts you've manually hidden.
+    title="Show hidden posts"
+    description="Shows the posts you've manually hidden."
   />
   <ToggleSetting
     icon={Bars3}
     bind:checked={settings.posts.compactFeatured}
-    title=Compact featured posts
-    description=Makes featured posts more compact.
+    title="Compact featured posts"
+    description="Makes featured posts more compact."
   />
   <ToggleSetting
     icon={BookOpen}
     bind:checked={settings.markPostsAsRead}
-    title=Mark posts as read automatically
-    description=Marks posts as read when you visit them.
+    title="Mark posts as read automatically"
+    description="Marks posts as read when you visit them."
   />
   <ToggleSetting
     icon={CubeTransparent}
     bind:checked={settings.markReadPosts}
-    title=Fade read posts
-    description=Fade the title of posts you've already read
+    title="Fade read posts"
+    description="Fade the title of posts you've already read"
   />
   <ToggleSetting
     icon={Share}
     bind:checked={settings.crosspostOriginalLink}
-    title=Mark crossposts
-    description=Insert 'crossposted from' and a link when crossposting.
+    title="Mark crossposts"
+    description="Insert 'crossposted from' and a link when crossposting."
   />
   <Setting icon={EyeSlash}>
     {#snippet title()}
@@ -70,8 +70,8 @@
   <ToggleSetting
     icon={ExclamationTriangle}
     bind:checked={settings.nsfwBlur}
-    title=NSFW blur
-    description=Blurs images and remove post bodies of NSFW posts.
+    title="NSFW blur"
+    description="Blurs images and remove post bodies of NSFW posts."
   />
   <Setting icon={ServerStack}>
     {#snippet title()}
@@ -95,7 +95,7 @@
   <ToggleSetting
     icon={User}
     bind:checked={settings.displayNames}
-    title=Use display name
-    description=Show users' display names instead of their actual usernames.
+    title="Use display name"
+    description="Show users' display names instead of their actual usernames."
   />
 </CommonList>

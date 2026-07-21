@@ -73,13 +73,13 @@
     {/if}
     <TextInput
       bind:value={password}
-      label=New password
+      label="New password"
       type="password"
       required
     />
     <TextInput
       bind:value={password_verify}
-      label=Verify new password
+      label="Verify new password"
       type="password"
       required
     />

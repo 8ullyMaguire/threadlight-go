@@ -209,7 +209,7 @@
           />
           <TextInput
             bind:value={passwordVerify}
-            label=Confirm password
+            label="Confirm password"
             required
             type="password"
             icon={Key}
@@ -280,8 +280,8 @@
         <div class="my-auto">
           <Placeholder
             icon={XCircle}
-            title=Registrations closed
-            description=This server has registrations closed. Find another server.
+            title="Registrations closed"
+            description="This server has registrations closed. Find another server."
           >
             <Button icon={Plus} href="/signup">
               Find another server

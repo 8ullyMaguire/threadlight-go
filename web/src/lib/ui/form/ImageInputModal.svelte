@@ -13,7 +13,7 @@
   let customUrl = $state(false)
 </script>
 
-<Modal bind:open title=Upload image>
+<Modal bind:open title="Upload image">
   <div class="flex justify-between gap-1 flex-wrap">
     <Switch
       options={[false, true]}

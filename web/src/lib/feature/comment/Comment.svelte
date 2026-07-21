@@ -136,7 +136,7 @@
         {#if node.comment_view.counts.child_count > 0}
           {@const children = node.comment_view.counts.child_count}
           <div
-            aria-label=`${children} children`
+            aria-label={`${children} children`}
             class="font-medium"
           >
             {children}

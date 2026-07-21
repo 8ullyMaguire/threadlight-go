@@ -223,7 +223,7 @@
     <TextInput
       id="totp"
       bind:value={form.totp}
-      label=2FA Code
+      label="2FA Code"
       placeholder="123456"
       pattern={'\\d{6}'}
       minlength={6}

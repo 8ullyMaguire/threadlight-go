@@ -96,7 +96,7 @@
 
     $effect(() => {
       document.documentElement.dir =
-        ($locale == 'he' || $locale == 'ar') && settings.useRtl ? 'rtl' : 'ltr'
+        false ? 'rtl' : 'ltr'
     })
   }
 

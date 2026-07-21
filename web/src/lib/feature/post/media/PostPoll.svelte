@@ -175,8 +175,7 @@
           Submit
         </Button>
       {:else if post.poll.end_poll}
-        {`Ends ${formatRelativeDate(publishedToDate(post.poll.end_poll)}`,
-        })}
+        {`Ends ${formatRelativeDate(publishedToDate(post.poll.end_poll))}`}
       {/if}
     {/snippet}
   </EndPlaceholder>

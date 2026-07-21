@@ -45,7 +45,7 @@
       {#snippet target(attachment)}
         <Button
           {@attach attachment}
-          aria-label=More actions
+          aria-label="More actions"
           size="square-sm"
           color="none"
           class="z-0 text-slate-600 dark:text-zinc-500 hover:bg-slate-100 hover:dark:bg-zinc-800"

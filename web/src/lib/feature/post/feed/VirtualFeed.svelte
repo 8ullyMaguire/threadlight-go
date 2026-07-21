@@ -161,7 +161,7 @@
         <Placeholder
           icon={ArchiveBox}
           title=No posts
-          description=There are no posts that match this filter.
+          description="There are no posts that match this filter."
         >
           <Button
             href="/communities"
@@ -262,8 +262,7 @@
     {:else}
       <div style="border-top-width: 0">
         <EndPlaceholder>
-          `You have reached the end of {{community_name; undefined:the feed.; default:${params.community_name ??
-              'Lemmy. There are no more posts. You saw them all.'}.}}`
+          You've reached the end.{params.community_name ? ' No more posts in ' + params.community_name + '.' : ''}
           {#snippet action()}
             <Button color="tertiary" icon={ChevronDoubleUp}>
               Scroll to top

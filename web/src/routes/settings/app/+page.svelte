@@ -119,10 +119,10 @@
       {/each}
     </Select>
   </Setting>
-  {#if $locale == 'he' || $locale == 'ar'}
+  {#if false}
     <ToggleSetting
       bind:checked={settings.useRtl}
-      title=Use RTL layout
+      title="Use RTL layout"
     ></ToggleSetting>
   {/if}
   <Setting icon={ViewColumns}>
@@ -191,8 +191,8 @@
   <ToggleSetting
     icon={BarsArrowDown}
     bind:checked={settings.infiniteScroll}
-    title=Infinite scroll
-    description=Loads new posts as you scroll and appends them to the feed.
+    title="Infinite scroll"
+    description="Loads new posts as you scroll and appends them to the feed."
   />
   <Setting icon={EyeSlash} adaptive={false} mainClass="rounded-b-none!">
     {#snippet title()}
@@ -239,40 +239,40 @@
   <ToggleSetting
     icon={ArrowsRightLeft}
     bind:checked={settings.posts.reverseActions}
-    title=Reverse action row
-    description=Reverses the order of actions on posts and comments.
+    title="Reverse action row"
+    description="Reverses the order of actions on posts and comments."
   />
   <ToggleSetting
     icon={TableCells}
     supportedPlatforms={{ desktop: true, tablet: false, mobile: false }}
     bind:checked={settings.newWidth}
-    title=Limit layout width
-    description=Improve readability by limiting the main content width.
+    title="Limit layout width"
+    description="Improve readability by limiting the main content width."
   />
   <ToggleSetting
     icon={Calendar}
     bind:checked={settings.absoluteDates}
-    title=Absolute timestamps
-    description=Replaces relative timestamps (3 hours ago) with absolute ones (15/6/25).
+    title="Absolute timestamps"
+    description="Replaces relative timestamps (3 hours ago) with absolute ones (15/6/25)."
   />
   <ToggleSetting
     icon={ArrowsUpDown}
     bind:checked={settings.voteRatioBar}
-    title=Vote ratio bar
-    description=When the controversiality of a post reaches greater than 15%, a bar will be displayed in the vote buttons to help visualize sentiment.
+    title="Vote ratio bar"
+    description="When the controversiality of a post reaches greater than 15%, a bar will be displayed in the vote buttons to help visualize sentiment."
   />
   <ToggleSetting
     icon={CubeTransparent}
     supportedPlatforms={{ desktop: false, tablet: false, mobile: true }}
     bind:checked={settings.dock.autoHide}
-    title=Auto hide dock
-    description=Hides the dock on mobile when you scroll down, re-appears when you scroll up.
+    title="Auto hide dock"
+    description="Hides the dock on mobile when you scroll down, re-appears when you scroll up."
   />
   <ToggleSetting
     icon={ArrowTopRightOnSquare}
     bind:checked={settings.openLinksInNewTab}
-    title=Open posts in new tab
-    description=Opens posts in a separate tab instead of the current.
+    title="Open posts in new tab"
+    description="Opens posts in a separate tab instead of the current."
   />
   <Setting icon={DocumentText}>
     {#snippet title()}
@@ -291,25 +291,25 @@
   <ToggleSetting
     icon={ArrowsPointingOut}
     bind:checked={settings.expandImages}
-    title=Expandable thumbnails
-    description=Clicking on a post's image brings you to an expanded view rather than the post page.
+    title="Expandable thumbnails"
+    description="Clicking on a post's image brings you to an expanded view rather than the post page."
   />
   <ToggleSetting
     icon={Bars2}
     bind:checked={settings.posts.deduplicateEmbed}
-    title=Hide duplicate embed content
-    description=Hides the post title and body if they are identical to the embed.
+    title="Hide duplicate embed content"
+    description="Hides the post title and body if they are identical to the embed."
   />
   <ToggleSetting
     icon={ArrowTopRightOnSquare}
     bind:checked={settings.posts.titleOpensUrl}
-    title=Title opens URL
-    description=Makes clicking the title open the post's attached URL, rather than the comments.
+    title="Title opens URL"
+    description="Makes clicking the title open the post's attached URL, rather than the comments."
   />
   <ToggleSetting
     icon={Tag}
-    title=Parse tags in title
-    description=Take text in [brackets] and turn it into tags that you can click to search for.
+    title="Parse tags in title"
+    description="Take text in [brackets] and turn it into tags that you can click to search for."
     bind:checked={settings.parseTags}
   />
 </CommonList>

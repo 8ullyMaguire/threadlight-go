@@ -112,7 +112,7 @@
       Enable NSFW
     </Switch>
     <Select
-      label=Registration mode
+      label="Registration mode"
       bind:value={formData.registration_mode}
       class="w-max"
     >
@@ -129,7 +129,7 @@
     {#if formData.registration_mode == 'RequireApplication'}
       <MarkdownEditor
         previewButton
-        label=Application question
+        label="Application question"
         bind:value={formData.application_question}
       />
     {/if}
@@ -146,7 +146,7 @@
       Email admins on receiving new reports
     </Switch>
     <Select
-      label=Listing Type
+      label="Listing Type"
       bind:value={formData.default_post_listing_type}
       class="w-max"
     >
@@ -163,7 +163,7 @@
     </Switch>
     <TextInput
       bind:value={formData.slur_filter_regex}
-      label=Slur filter regex
+      label="Slur filter regex"
       placeholder="(word1|word2)"
     />
     <Switch bind:checked={formData.federation_enabled}>

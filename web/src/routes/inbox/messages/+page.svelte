@@ -80,7 +80,7 @@
   let { data } = $props()
 </script>
 
-<Modal bind:open={searchModal.open} title=Start chat>
+<Modal bind:open={searchModal.open} title="Start chat">
   <UserAutocomplete
     listing_type="All"
     hideOwnUser={true}
@@ -132,7 +132,7 @@
 
   {#if previews.length == 0}
     <Placeholder
-      title=No messages
+      title="No messages"
       icon={Inbox}
       class="my-auto"
     >

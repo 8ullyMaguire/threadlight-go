@@ -12,8 +12,8 @@
 <CommonList>
   <ToggleSetting
     icon={CursorArrowRays}
-    title=Click to view
-    description=Only load embeds once you click on them.
+    title="Click to view"
+    description="Only load embeds once you click on them."
     bind:checked={settings.embeds.clickToView}
   />
   <Setting icon={VideoCamera}>
@@ -42,7 +42,7 @@
         </span>
       {/snippet}
       <TextInput
-        label=Invidious instance
+        label="Invidious instance"
         pattern={DOMAIN_REGEX_FORMS}
         bind:value={settings.embeds.invidious}
       />
@@ -59,7 +59,7 @@
         </span>
       {/snippet}
       <TextInput
-        label=Piped instance
+        label="Piped instance"
         pattern={DOMAIN_REGEX_FORMS}
         bind:value={settings.embeds.piped}
       />

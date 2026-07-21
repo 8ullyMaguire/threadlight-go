@@ -248,8 +248,8 @@
     {#if comments.length == 0}
       <Placeholder
         icon={ChatBubbleLeftRight}
-        title=No comments
-        description=Start the conversation!
+        title="No comments"
+        description="Start the conversation!"
       ></Placeholder>
     {/if}
   {/await}

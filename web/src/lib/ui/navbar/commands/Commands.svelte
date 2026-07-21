@@ -234,7 +234,7 @@
   bind:value={search}
   class="sticky rounded-none! border-t-0 border-x-0 focus-within:border-inherit! focus-within:ring-0!"
   size="lg"
-  placeholder=Command palette
+  placeholder="Command palette"
   bind:element={input}
 />
 <div class="h-128 overflow-auto border-slate-200 dark:border-zinc-800 p-5">

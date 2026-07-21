@@ -27,7 +27,7 @@
   }
 </script>
 
-<Modal bind:open title=Deny application>
+<Modal bind:open title="Deny application">
   <form
     onsubmit={(e) => {
       e.preventDefault()

@@ -49,21 +49,21 @@
 >
   <TextInput
     bind:value={oldPassword}
-    label=Current password
+    label="Current password"
     type="password"
     minlength={10}
     required
   />
   <TextInput
     bind:value={newPassword}
-    label=New password
+    label="New password"
     type="password"
     minlength={10}
     required
   />
   <TextInput
     bind:value={newPasswordVerify}
-    label=Verify new password
+    label="Verify new password"
     type="password"
     minlength={10}
     required

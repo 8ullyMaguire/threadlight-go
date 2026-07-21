@@ -103,8 +103,8 @@
   <div class="my-auto">
     <Placeholder
       icon={Plus}
-      title=No taglines
-      description=A random tagline will appear on the site card when users visit your server.
+      title="No taglines"
+      description="A random tagline will appear on the site card when users visit your server."
     >
       <div
         class="mt-4 max-w-xl w-full flex flex-col gap-2 text-slate-900 dark:text-zinc-50"
@@ -121,7 +121,7 @@
         >
           <MarkdownEditor
             bind:value={newTagline}
-            placeholder=Add a tagline
+            placeholder="Add a tagline"
             images={false}
           />
 

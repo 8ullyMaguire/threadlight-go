@@ -127,7 +127,7 @@
 {#if profile.meta.profiles.length == 1 && !profile.current.jwt && profile.current.instance == DEFAULT_INSTANCE_URL}
   <Placeholder
     icon={Identification}
-    title=Not logged in
+    title="Not logged in"
     description={LINKED_INSTANCE_URL
       ?"You aren't logged in. You can sign up or log in here."
       :"You aren't logged in. You can log in, sign up, or add a new guest account here."}
@@ -188,7 +188,7 @@
                     size="square-md"
                     color="tertiary"
                     class="justify-self-end ml-auto z-50"
-                    aria-label=More actions
+                    aria-label="More actions"
                     icon={EllipsisHorizontal}
                   ></Button>
                 {/snippet}
@@ -201,14 +201,14 @@
                   <Button
                     size="square-md"
                     color="secondary"
-                    title=Move up
+                    title="Move up"
                     onclick={() => profile.move(p.id, true)}
                     icon={ChevronUp}
                   ></Button>
                   <Button
                     size="square-md"
                     color="secondary"
-                    title=Move down
+                    title="Move down"
                     onclick={() => profile.move(p.id, false)}
                     icon={ChevronDown}
                   ></Button>

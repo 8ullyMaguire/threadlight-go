@@ -9,7 +9,7 @@
 
   let {
     number,
-    locale: localeToUse = $locale,
+    locale: localeToUse = 'en',
     options = {
       notation: 'compact',
     },

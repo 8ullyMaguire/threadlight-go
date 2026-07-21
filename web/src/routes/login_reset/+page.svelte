@@ -48,7 +48,7 @@
     {#if !LINKED_INSTANCE_URL}
       <TextInput
         bind:value={instance}
-        label=Server domain
+        label="Server domain"
         placeholder={DEFAULT_INSTANCE_URL}
         required
       />

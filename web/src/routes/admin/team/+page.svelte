@@ -54,8 +54,8 @@
     {#if data.site.admins.length <= 0}
       <Placeholder
         icon={QuestionMarkCircle}
-        title=No admins
-        description=Somehow there's no admins of this site. How??
+        title="No admins"
+        description="Somehow there's no admins of this site. How??"
       />
     {:else}
       <CommonList items={data.site?.admins ?? []}>

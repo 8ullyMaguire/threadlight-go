@@ -159,7 +159,7 @@
   />
   <TextInput
     required
-    label=Display name
+    label="Display name"
     bind:value={formData.displayName}
   />
   <div class="flex flex-row gap-4 flex-wrap *:flex-1">

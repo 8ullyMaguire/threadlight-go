@@ -34,7 +34,7 @@
    border-b border-slate-100 dark:border-zinc-900 font-display margin z-0 mb-3 sm:mb-6`,
   ]}
   {style}
-  aria-label=Page header
+  aria-label="Page header"
 >
   {#if children}
     <h1
