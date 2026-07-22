@@ -92,13 +92,13 @@ func (s *AuthService) Register(ctx context.Context, req model.RegisterRequest) (
 }
 
 func (s *AuthService) Login(ctx context.Context, req model.LoginRequest) (*model.AuthResponse, error) {
-	user, err := s.findByEmail(ctx, req.Email)
+	user, err := s.findByUsernameOrEmail(ctx, req.UsernameOrEmail)
 	if err != nil {
-		return nil, errors.New("invalid email or password")
+		return nil, errors.New("invalid username/email or password")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(req.Password)); err != nil {
-		return nil, errors.New("invalid email or password")
+		return nil, errors.New("invalid username/email or password")
 	}
 
 	token, err := s.generateToken(user.ID)
@@ -162,6 +162,15 @@ func (s *AuthService) findByUsername(ctx context.Context, username string) (*mod
 		return nil, err
 	}
 	return user, nil
+}
+
+// findByUsernameOrEmail looks up a user by username first, then by email.
+func (s *AuthService) findByUsernameOrEmail(ctx context.Context, usernameOrEmail string) (*model.User, error) {
+	user, err := s.findByUsername(ctx, usernameOrEmail)
+	if err == nil {
+		return user, nil
+	}
+	return s.findByEmail(ctx, usernameOrEmail)
 }
 
 func (s *AuthService) ForgotPassword(ctx context.Context, email string) (string, error) {

@@ -92,10 +92,14 @@ export async function uploadImage(
   else throw new Error(`Failed to upload image. ${res.msg}`)
 }
 
-export const instanceToURL = (input: string) =>
-  input.startsWith('http://') || input.startsWith('https://')
-    ? input
-    : `https://${input}`
+export const instanceToURL = (input: string) => {
+  if (input.startsWith('http://') || input.startsWith('https://')) return input
+  // Use http:// for localhost and LAN addresses (no TLS cert available)
+  const host = input.split(':')[0]
+  if (host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || /^192\.168\./.test(host) || /^10\./.test(host))
+    return `http://${input}`
+  return `https://${input}`
+}
 
 export function canParseUrl(url: string): boolean {
   try {
