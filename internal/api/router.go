@@ -86,6 +86,16 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 
 	r.GET("/health", healthHandler.Health)
 
+	// NodeInfo endpoint for client type detection (used by Photon frontend)
+	r.GET("/nodeinfo/2.1", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"software": gin.H{
+				"name":    "threadlight",
+				"version": "0.1",
+			},
+		})
+	})
+
 	apiV1 := r.Group("/api/v1")
 	{
 		auth := apiV1.Group("/auth")

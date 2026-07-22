@@ -57,6 +57,12 @@ export abstract class BaseClient {
             version: software.version,
           }
         }
+        case 'threadlight': {
+          return {
+            type: { baseUrl: '/api/v1', name: 'threadlight' },
+            version: software.version,
+          }
+        }
         default:
           return null
       }
