@@ -49,7 +49,7 @@
   // ── Voting state ─────────────────────────────────────────
   let votingState = $state<Record<number, 'idle' | 'voting' | 'done' | 'error'>>({})
   let voteMessages = $state<Record<number, string>>({})
-  let trustPenalties = $state<Record<number, number>>({})
+  let trustPenalties = $state<Record<number, string>>({})
   let userVotes = $state<Record<number, number>>({})
 
   async function castVote(actionId: number, vote: number) {
@@ -67,6 +67,9 @@
         trustPenalties[actionId] = res.trust_penalty
       }
       voteMessages[actionId] = res.message || 'Vote recorded.'
+      if (res.trust_penalty) {
+        toast({ content: `Trust penalty: ${res.trust_penalty}`, type: 'warning' })
+      }
       toast({ content: res.message || 'Vote recorded.', type: 'success' })
     } catch (err) {
       votingState[actionId] = 'error'
@@ -324,11 +327,11 @@
                 {/if}
               </div>
             {/if}
-            {#if trustPenalties[modlog.id ?? 0]}
+            {#if decision && trustPenalties[decision.action_id]}
               <div
                 class="px-3 py-1.5 text-xs rounded-xl bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300"
               >
-                Trust penalty applied: {trustPenalties[modlog.id ?? 0]}
+                Trust penalty: {trustPenalties[decision.action_id]}
               </div>
             {/if}
           </div>
@@ -369,7 +372,7 @@
                 decision={decision}
                 userVote={decision ? userVotes[decision.action_id] : undefined}
                 voting={decision ? votingState[decision.action_id] === 'voting' : false}
-                trustPenalty={modlog.id ? trustPenalties[modlog.id] : undefined}
+                trustPenalty={decision ? trustPenalties[decision.action_id] : undefined}
                 onvote={(vote: number) => decision && castVote(decision.action_id, vote)}
               />
             {/each}

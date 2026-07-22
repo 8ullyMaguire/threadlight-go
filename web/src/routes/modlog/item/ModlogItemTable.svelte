@@ -14,7 +14,7 @@
     decision?: ControversialDecision | null
     userVote?: number
     voting?: boolean
-    trustPenalty?: number
+    trustPenalty?: string
     onvote?: (vote: number) => void
   }
 
@@ -133,8 +133,8 @@
       <span class="text-slate-400 dark:text-zinc-500 text-xs">—</span>
     {/if}
     {#if trustPenalty}
-      <div class="text-[10px] text-orange-500 mt-0.5">
-        Penalty: {trustPenalty}
+      <div class="text-[10px] text-orange-500 mt-1 font-medium leading-tight">
+        Trust penalty: {trustPenalty}
       </div>
     {/if}
   </td>
