@@ -397,12 +397,12 @@ func TestRegisterRequestJSON(t *testing.T) {
 }
 
 func TestLoginRequestJSON(t *testing.T) {
-	lr := LoginRequest{UsernameOrEmail: "user@test.com", Password: "pass"}
+	lr := LoginRequest{Email: "user@test.com", Password: "pass"}
 	b, err := json.Marshal(lr)
 	if err != nil { t.Fatal(err) }
 	var lr2 LoginRequest
 	if err := json.Unmarshal(b, &lr2); err != nil { t.Fatal(err) }
-	if lr2.UsernameOrEmail != "user@test.com" || lr2.Password != "pass" { t.Fatal("roundtrip failed") }
+	if lr2.Email != "user@test.com" || lr2.Password != "pass" { t.Fatal("roundtrip failed") }
 }
 
 func TestCustomFeedJSON(t *testing.T) {
