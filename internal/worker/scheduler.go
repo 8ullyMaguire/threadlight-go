@@ -59,6 +59,9 @@ func (s *Scheduler) Start(ctx context.Context) {
   {"list-cleanup", 24 * time.Hour, func(c context.Context) {
   	RunListCleanup(c, s.pg)
   }},
+  {"weekly-bounty", 1 * time.Hour, func(c context.Context) {
+  	RunWeeklyBounties(c, s.pg)
+  }},
 	}
 
 	for _, w := range workers {

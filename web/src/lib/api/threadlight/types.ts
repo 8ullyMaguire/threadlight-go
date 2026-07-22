@@ -279,6 +279,10 @@ export interface SiteConfig {
   default_language: string
   federation_enabled: boolean
   theme: string
+  weekly_bounty_poster?: number
+  weekly_bounty_tagger?: number
+  weekly_bounty_commenter?: number
+  weekly_bounty_curator?: number
 }
 
 export interface AboutResponse {
@@ -693,4 +697,24 @@ export interface CommunityBalance {
   balance: number
   total_earned: number
   total_spent: number
+}
+
+export interface Media {
+  id: number
+  post_id?: number
+  uploader_id: number
+  file_path: string
+  original_name?: string
+  mime_type?: string
+  file_size: number
+  width: number
+  height: number
+  created_at: string
+}
+
+export interface BountyConfig {
+  weekly_bounty_poster: number
+  weekly_bounty_tagger: number
+  weekly_bounty_commenter: number
+  weekly_bounty_curator: number
 }

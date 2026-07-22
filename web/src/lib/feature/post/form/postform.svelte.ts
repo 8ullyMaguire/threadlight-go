@@ -21,6 +21,7 @@ export type PostFormInit = {
   poll?: PostPoll
   event?: PostEvent
   flair_list?: CommunityFlair[]
+  media_id?: number
 }
 
 export class PostFormState {
@@ -37,6 +38,7 @@ export class PostFormState {
   poll?: PostPoll
   event?: PostEvent
   flairList: CommunityFlair[]
+  mediaId?: number
 
   constructor(post?: PostFormInit) {
     this.type = $state(post?.type ?? 'normal')
@@ -48,6 +50,7 @@ export class PostFormState {
     this.altText = $state(post?.alt_text)
     this.language = $state(post?.language_id?.toString())
     this.thumbnail = $state()
+    this.mediaId = $state(post?.media_id)
     this.poll = $state(
       post?.poll ?? {
         mode: 'single',
@@ -114,7 +117,8 @@ export class PostFormState {
           language_id: Number(this.language) || undefined,
           poll: this.type == 'poll' ? this.poll : undefined,
           event: this.type == 'event' ? this.event : undefined,
-        })
+          media_id: this.mediaId,
+        } as any)
       ).post_view
     }
 

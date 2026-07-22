@@ -29,6 +29,12 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	communitySvc := services.NewCommunityService(pg, affAcc)
 	creditSvc := services.NewCreditService(pg)
 
+	// Create MediaService (MinIO image storage)
+	var mediaSvc *services.MediaService
+	if ms, svcErr := services.NewMediaService(pg); svcErr == nil {
+		mediaSvc = ms
+	}
+
 	// Wire credit economy hooks
 	postSvc.SetCreditService(creditSvc)
 	tagSvc.SetCreditService(creditSvc)
@@ -51,7 +57,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 
 	authHandler := handlers.NewAuthHandler(authSvc)
 	healthHandler := handlers.NewHealthHandler(pg, rdb)
-	postHandler := handlers.NewPostHandler(postSvc, userSvc)
+	postHandler := handlers.NewPostHandler(postSvc, userSvc, mediaSvc, creditSvc, configSvc)
 	tagHandler := handlers.NewTagHandler(tagSvc)
 	feedHandler := handlers.NewFeedHandler(feedSvc)
 	trendingHandler := handlers.NewTrendingHandler(trendingSvc)
@@ -104,6 +110,13 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			posts.DELETE("/:id", postHandler.Delete)
 			posts.POST("/:id/archive", postHandler.Archive)
 			posts.POST("/:id/remove", postHandler.ModRemove)
+		}
+
+		// Media/Image upload routes
+		media := apiV1.Group("/media")
+		media.Use(authMw.RequireAuth())
+		{
+			media.POST("/upload", postHandler.UploadImage)
 		}
 
 		tags := apiV1.Group("/tags")

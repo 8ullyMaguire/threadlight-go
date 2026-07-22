@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -10,12 +11,15 @@ import (
 )
 
 type PostHandler struct {
-	postSvc *services.PostService
-	userSvc *services.UserService
+	postSvc   *services.PostService
+	userSvc   *services.UserService
+	mediaSvc  *services.MediaService
+	creditSvc *services.CreditService
+	configSvc *services.ConfigService
 }
 
-func NewPostHandler(postSvc *services.PostService, userSvc *services.UserService) *PostHandler {
-	return &PostHandler{postSvc: postSvc, userSvc: userSvc}
+func NewPostHandler(postSvc *services.PostService, userSvc *services.UserService, mediaSvc *services.MediaService, creditSvc *services.CreditService, configSvc *services.ConfigService) *PostHandler {
+	return &PostHandler{postSvc: postSvc, userSvc: userSvc, mediaSvc: mediaSvc, creditSvc: creditSvc, configSvc: configSvc}
 }
 
 func (h *PostHandler) Create(c *gin.Context) {
@@ -178,4 +182,44 @@ func (h *PostHandler) ModRemove(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "post removed by moderator"})
+}
+
+// UploadImage POST /api/v1/media/upload
+func (h *PostHandler) UploadImage(c *gin.Context) {
+	userID := c.GetInt64("user_id")
+
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "file is required: " + err.Error()})
+		return
+	}
+	defer file.Close()
+
+	// Read credit action costs to check if image upload costs credits
+	if h.configSvc != nil && h.creditSvc != nil {
+		cfg, cfgErr := h.configSvc.Get(c.Request.Context())
+		if cfgErr == nil && cfg.ImageStorageBackend != "none" {
+			// Deduct credits for image upload
+			actionCosts := &model.CreditActionCost{}
+			if cfg.CreditActionCosts != nil {
+				json.Unmarshal([]byte(*cfg.CreditActionCosts), actionCosts)
+			}
+			cost := int64(actionCosts.ImageUpload)
+			if cost <= 0 {
+				cost = 10 // default
+			}
+			if err := h.creditSvc.DeductCredits(c.Request.Context(), userID, cost, "image_upload", nil); err != nil {
+				c.JSON(http.StatusPaymentRequired, gin.H{"error": "insufficient credits: " + err.Error()})
+				return
+			}
+		}
+	}
+
+	media, err := h.mediaSvc.UploadImage(c.Request.Context(), userID, file, header)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "upload failed: " + err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, media)
 }

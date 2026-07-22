@@ -848,3 +848,27 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS last_credit_action_date DATE;
 ALTER TABLE credit_transactions ADD COLUMN IF NOT EXISTS action_type VARCHAR(50);
 ALTER TABLE credit_transactions ADD COLUMN IF NOT EXISTS metadata JSONB;
 
+-- >> Source: 004_images.sql
+CREATE TABLE IF NOT EXISTS media (
+    id              BIGSERIAL PRIMARY KEY,
+    post_id         BIGINT REFERENCES posts(id) ON DELETE SET NULL,
+    uploader_id     BIGINT NOT NULL REFERENCES users(id),
+    file_path       VARCHAR(500) NOT NULL,
+    original_name   VARCHAR(255),
+    mime_type       VARCHAR(100),
+    file_size       BIGINT DEFAULT 0,
+    width           INTEGER DEFAULT 0,
+    height          INTEGER DEFAULT 0,
+    created_at      TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_media_post ON media(post_id);
+CREATE INDEX IF NOT EXISTS idx_media_uploader ON media(uploader_id);
+
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS image_storage_backend     VARCHAR(20) DEFAULT 'minio';
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS image_max_size_mb          INTEGER DEFAULT 10;
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS weekly_bounty_poster      INTEGER DEFAULT 50;
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS weekly_bounty_tagger      INTEGER DEFAULT 30;
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS weekly_bounty_commenter   INTEGER DEFAULT 40;
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS weekly_bounty_curator     INTEGER DEFAULT 25;
+ALTER TABLE site_config ADD COLUMN IF NOT EXISTS credit_transfer_tax_pct   REAL DEFAULT 10.0;
+

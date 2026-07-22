@@ -22,21 +22,98 @@ func NewCreditService(pg *pgxpool.Pool) *CreditService {
 }
 
 func (s *CreditService) TransferCredits(ctx context.Context, fromUser, toUser *int64, amount int64, txType int16, refID *int64) (*model.CreditTransaction, error) {
-	hashInput := fmt.Sprintf("%d-%d-%d-%d-%d", time.Now().UnixNano(), fromUser, toUser, amount, txType)
+	if amount <= 0 {
+		return nil, fmt.Errorf("transfer amount must be positive")
+	}
+	if fromUser == nil || toUser == nil {
+		return nil, fmt.Errorf("from_user and to_user are required")
+	}
+
+	// Read the transfer tax percentage from site_config
+	var taxPct float64
+	err := s.pg.QueryRow(ctx,
+		`SELECT COALESCE(credit_transfer_tax_pct, 10.0) FROM site_config WHERE id = 1`,
+	).Scan(&taxPct)
+	if err != nil {
+		taxPct = 10.0 // default
+	}
+
+	taxAmount := int64(float64(amount) * taxPct / 100.0)
+	netAmount := amount - taxAmount
+	platformUser := int64(0)
+
+	hashInput := fmt.Sprintf("%d-%d-%d-%d-%d", time.Now().UnixNano(), *fromUser, *toUser, amount, txType)
 	hash := sha256.Sum256([]byte(hashInput))
 	hashStr := hex.EncodeToString(hash[:])
 
-	tx := &model.CreditTransaction{}
-	err := s.pg.QueryRow(ctx,
-		`INSERT INTO credit_transactions (from_user, to_user, amount, transaction_type, reference_id, hash)
-		 VALUES ($1, $2, $3, $4, $5, $6)
-		 RETURNING id, from_user, to_user, amount, transaction_type, reference_id, hash, created_at`,
-		fromUser, toUser, amount, txType, refID, hashStr,
-	).Scan(&tx.ID, &tx.FromUser, &tx.ToUser, &tx.Amount, &tx.TransactionType, &tx.ReferenceID, &tx.Hash, &tx.CreatedAt)
+	tx, err := s.pg.Begin(ctx)
 	if err != nil {
 		return nil, err
 	}
-	return tx, nil
+	defer tx.Rollback(ctx)
+
+	// Deduct full amount from sender (floor at 0)
+	_, err = tx.Exec(ctx,
+		`UPDATE users SET credits = GREATEST(0, credits - $1) WHERE id = $2`,
+		amount, *fromUser)
+	if err != nil {
+		return nil, err
+	}
+
+	// Award net amount to recipient
+	if netAmount > 0 {
+		_, err = tx.Exec(ctx,
+			`UPDATE users SET credits = credits + $1 WHERE id = $2`,
+			netAmount, *toUser)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Award tax to platform (user 0)
+	if taxAmount > 0 {
+		_, err = tx.Exec(ctx,
+			`UPDATE users SET credits = credits + $1 WHERE id = $2`,
+			taxAmount, platformUser)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Record the main transfer transaction
+	transaction := &model.CreditTransaction{}
+	err = tx.QueryRow(ctx,
+		`INSERT INTO credit_transactions (from_user, to_user, amount, transaction_type, reference_id, hash, action_type)
+		 VALUES ($1, $2, $3, $4, $5, $6, $7)
+		 RETURNING id, from_user, to_user, amount, transaction_type, reference_id, hash, action_type, created_at`,
+		fromUser, toUser, netAmount, txType, refID, hashStr, "transfer",
+	).Scan(&transaction.ID, &transaction.FromUser, &transaction.ToUser,
+		&transaction.Amount, &transaction.TransactionType, &transaction.ReferenceID,
+		&transaction.Hash, &transaction.ActionType, &transaction.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+
+	// Record the tax transaction (to platform) if any
+	if taxAmount > 0 {
+		taxHashInput := fmt.Sprintf("tax-%d-%d-%d-%d", time.Now().UnixNano(), *fromUser, amount, txType)
+		taxHash := sha256.Sum256([]byte(taxHashInput))
+		taxHashStr := hex.EncodeToString(taxHash[:])
+
+		_, err = tx.Exec(ctx,
+			`INSERT INTO credit_transactions (from_user, to_user, amount, transaction_type, reference_id, hash, action_type)
+			 VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+			fromUser, &platformUser, taxAmount, int16(3), refID, taxHashStr, "transfer_tax")
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	if err := tx.Commit(ctx); err != nil {
+		return nil, err
+	}
+
+	return transaction, nil
 }
 
 func (s *CreditService) GetTransactions(ctx context.Context, userID int64) ([]model.CreditTransaction, error) {

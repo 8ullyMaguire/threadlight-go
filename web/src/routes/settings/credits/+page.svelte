@@ -5,6 +5,7 @@
   import { profile } from '$lib/app/auth'
   import { onMount } from 'svelte'
   import DailyQuests from '$lib/feature/credit/DailyQuests.svelte'
+  import WeeklyBounties from '$lib/feature/credit/WeeklyBounties.svelte'
   import { Spinner, Button } from 'mono-svelte'
   import { ArrowPath, Fire, Icon, CurrencyDollar } from 'svelte-hero-icons/dist'
   import { Header } from '$lib/ui/layout'
@@ -83,6 +84,17 @@
 
     <!-- Daily quests -->
     <DailyQuests />
+
+    <!-- Weekly bounties -->
+    <WeeklyBounties />
+
+    <!-- Credit transfer tax notice -->
+    <div class="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm">
+      <p>
+        <strong>Transfer tax:</strong> Transfers are subject to a 10% platform tax.
+        Sending 100 credits delivers 90 to the recipient.
+      </p>
+    </div>
 
     <!-- Action costs -->
     {#if costs}

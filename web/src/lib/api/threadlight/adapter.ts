@@ -39,6 +39,9 @@ import {
   type ReviewVote,
   type ModerationActionResponse,
   type ResolveReportResponse,
+  type Media,
+  type SiteConfig,
+  type BountyConfig,
 } from './types'
 
 function mapUser(u: User): Lemmy.PersonView {
@@ -443,13 +446,18 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async createPost(form: Lemmy.CreatePost): Promise<Lemmy.PostResponse> {
+    const body: Record<string, unknown> = {
+      title: form.name,
+      body: form.body ?? '',
+      is_nsfw: form.nsfw ?? false,
+    }
+    const mediaId = (form as any).media_id
+    if (mediaId !== undefined) {
+      body['media_id'] = mediaId
+    }
     const data = await this.#api<PostResponse>('/posts', {
       method: 'POST',
-      body: {
-        title: form.name,
-        body: form.body ?? '',
-        is_nsfw: form.nsfw ?? false,
-      },
+      body,
     })
     return {
       post_view: mapPost(data.post),
@@ -1695,8 +1703,24 @@ export class ThreadlightClient extends BaseClient {
     return { blocked: true, instance_view: undefined as unknown as Lemmy.InstanceView } as Lemmy.BlockInstanceResponse
   }
 
-  async uploadImage(form: FormData): Promise<Lemmy.UploadImageResponse> {
-    return { files: [], msg: '' } as Lemmy.UploadImageResponse
+  /**
+   * Upload an image file to the media server via multipart form.
+   * Returns the created Media record.
+   */
+  async uploadImage(file: File): Promise<Media> {
+    const formData = new FormData()
+    formData.append('file', file)
+    const url = `${this.#baseUrl.replace(/\/$/, '')}/api/v1/media/upload`
+    const res = await fetch(url, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData,
+    })
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => '')
+      throw new Error(errBody || `HTTP ${res.status}`)
+    }
+    return (await res.json()) as Media
   }
 
   async deleteImage(form: { filename: string }): Promise<Lemmy.SuccessResponse> {
@@ -1992,4 +2016,5 @@ export class ThreadlightClient extends BaseClient {
     if (params.limit) apiParams['limit'] = params.limit.toString()
     return this.#api<import('./types').CreditTransactionsResponse>('/credits/transactions', { params: apiParams })
   }
+
 }

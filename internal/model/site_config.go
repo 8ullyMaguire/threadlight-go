@@ -33,6 +33,13 @@ type SiteConfig struct {
 	MinTrustLevelForCurator       int16 `json:"min_trust_level_for_curator"`
 	AdminUsers             []string  `json:"admin_users,omitempty"`
 	CreditActionCosts      *string   `json:"credit_action_costs,omitempty"`
+	ImageStorageBackend    string    `json:"image_storage_backend"`
+	ImageMaxSizeMb         int       `json:"image_max_size_mb"`
+	WeeklyBountyPoster     int       `json:"weekly_bounty_poster"`
+	WeeklyBountyTagger     int       `json:"weekly_bounty_tagger"`
+	WeeklyBountyCommenter  int       `json:"weekly_bounty_commenter"`
+	WeeklyBountyCurator    int       `json:"weekly_bounty_curator"`
+	CreditTransferTaxPct   float64   `json:"credit_transfer_tax_pct"`
 	UpdatedAt              time.Time `json:"updated_at"`
 }
 
@@ -73,6 +80,13 @@ type UpdateConfigRequest struct {
 	MinTrustLevelForCommunityCreate *int16 `json:"min_trust_level_for_community_create,omitempty"`
 	MinTrustLevelForCurator       *int16 `json:"min_trust_level_for_curator,omitempty"`
 	CreditActionCosts             *string `json:"credit_action_costs,omitempty"`
+	ImageStorageBackend           *string `json:"image_storage_backend,omitempty"`
+	ImageMaxSizeMb                *int    `json:"image_max_size_mb,omitempty"`
+	WeeklyBountyPoster            *int    `json:"weekly_bounty_poster,omitempty"`
+	WeeklyBountyTagger            *int    `json:"weekly_bounty_tagger,omitempty"`
+	WeeklyBountyCommenter         *int    `json:"weekly_bounty_commenter,omitempty"`
+	WeeklyBountyCurator           *int    `json:"weekly_bounty_curator,omitempty"`
+	CreditTransferTaxPct          *float64 `json:"credit_transfer_tax_pct,omitempty"`
 }
 
 type AboutResponse struct {

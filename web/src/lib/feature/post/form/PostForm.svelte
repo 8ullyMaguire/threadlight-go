@@ -48,6 +48,9 @@
     XMark,
   } from 'svelte-hero-icons/dist'
   import { autofillPost, PostFormState } from './postform.svelte'
+  import ImageUploader from '$lib/feature/media/ImageUploader.svelte'
+  import MediaDisplay from '$lib/feature/media/MediaDisplay.svelte'
+  import type { Media } from '$lib/api/threadlight/types'
 
   interface Props {
     editPost?: number
@@ -74,6 +77,19 @@
   let loading = $state<boolean>(false)
   let uploadImage = $state(false)
   let customThumbnail = $state(false)
+  let showImageUploader = $state(false)
+  let uploadedMedia = $state<Media | null>(null)
+
+  function handleImageUpload(media: Media) {
+    uploadedMedia = media
+    form.mediaId = media.id
+    showImageUploader = false
+  }
+
+  function removeUploadedImage() {
+    uploadedMedia = null
+    form.mediaId = undefined
+  }
 
   async function autofill(
     data: URL | { title?: string; body?: string },
@@ -287,6 +303,47 @@
     previewButton
   />
 
+  <!-- Image upload section -->
+  {#if showImageUploader}
+    <div class="rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-semibold text-sm">Upload Image</h3>
+        <Button
+          size="xs"
+          rounding="xl"
+          onclick={() => (showImageUploader = false)}
+          icon={XMark}
+        >
+          Cancel
+        </Button>
+      </div>
+      <ImageUploader onUpload={handleImageUpload} maxSizeMB={10} />
+    </div>
+  {:else if uploadedMedia}
+    <div class="rounded-xl border border-slate-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-4 space-y-2">
+      <div class="flex items-center justify-between">
+        <h3 class="font-semibold text-sm">Attached Image</h3>
+        <Button
+          size="xs"
+          rounding="xl"
+          color="danger"
+          onclick={removeUploadedImage}
+          icon={Trash}
+        >
+          Remove
+        </Button>
+      </div>
+      <MediaDisplay
+        src={uploadedMedia.file_path}
+        alt={uploadedMedia.original_name ?? ''}
+        maxWidth={400}
+      />
+      <div class="text-xs text-zinc-500">
+        {uploadedMedia.original_name ?? 'Image'} &middot; {uploadedMedia.width}&times;{uploadedMedia.height}
+      </div>
+    </div>
+  {/if}
+
   {#if form.type == 'normal'}
     <TextInput
       label=URL
@@ -414,6 +471,15 @@
           icon={Photo}
         >
           Upload image
+        </Button>
+        <Button
+          onclick={() => {
+            showImageUploader = !showImageUploader
+          }}
+          color={uploadedMedia ? 'primary' : 'secondary'}
+          icon={Photo}
+        >
+          {uploadedMedia ? 'Image attached' : 'Add image'}
         </Button>
         {#if form.url && URL.canParse(form.url)}
           <Button
