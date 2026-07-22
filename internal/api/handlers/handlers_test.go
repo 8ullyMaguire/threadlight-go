@@ -29,7 +29,7 @@ var (
 func TestMain(m *testing.M) {
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		dsn = "postgres://polaris:polaris@localhost:5433/polaris?sslmode=disable"
+		dsn = "postgres://polaris@/polaris?host=/run/postgresql"
 	}
 	redisAddr := os.Getenv("REDIS_ADDR")
 	if redisAddr == "" {

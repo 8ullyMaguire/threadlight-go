@@ -19,7 +19,7 @@ var testPG *pgxpool.Pool
 func TestMain(m *testing.M) {
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		dsn = "postgres://polaris:polaris@localhost:5433/polaris?sslmode=disable"
+		dsn = "postgres://polaris@/polaris?host=/run/postgresql"
 	}
 
 	var err error
