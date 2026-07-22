@@ -46,7 +46,7 @@ type RegisterRequest struct {
 }
 
 type LoginRequest struct {
-	UsernameOrEmail string `json:"username_or_email" binding:"required"`
+	UsernameOrEmail string `json:"email" binding:"required"`
 	Password        string `json:"password" binding:"required"`
 }
 
