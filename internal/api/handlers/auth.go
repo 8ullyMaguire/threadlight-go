@@ -54,7 +54,13 @@ func (h *AuthHandler) Logout(c *gin.Context) {
 
 func (h *AuthHandler) Session(c *gin.Context) {
 	userID, _ := c.Get("user_id")
-	c.JSON(http.StatusOK, gin.H{"user_id": userID})
+	user, err := h.authSvc.GetUserByID(c.Request.Context(), userID.(int64))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+	user.PasswordHash = ""
+	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
 type forgotRequest struct {

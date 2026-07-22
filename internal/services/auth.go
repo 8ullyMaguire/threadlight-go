@@ -173,6 +173,21 @@ func (s *AuthService) findByUsernameOrEmail(ctx context.Context, usernameOrEmail
 	return s.findByEmail(ctx, usernameOrEmail)
 }
 
+func (s *AuthService) GetUserByID(ctx context.Context, userID int64) (*model.User, error) {
+	user := &model.User{}
+	err := s.pg.QueryRow(ctx,
+		`SELECT id, username, display_name, bio, email, password_hash, trust_level, trust_score,
+		        reputation, credits, is_active, onboarding_stage, proximity_opt_out, created_at
+		 FROM users WHERE id = $1`, userID,
+	).Scan(&user.ID, &user.Username, &user.DisplayName, &user.Bio, &user.Email,
+		&user.PasswordHash, &user.TrustLevel, &user.TrustScore, &user.Reputation,
+		&user.Credits, &user.IsActive, &user.OnboardingStage, &user.ProximityOptOut, &user.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return user, nil
+}
+
 func (s *AuthService) ForgotPassword(ctx context.Context, email string) (string, error) {
 	var userID int64
 	err := s.pg.QueryRow(ctx, `SELECT id FROM users WHERE email = $1`, email).Scan(&userID)
