@@ -197,7 +197,7 @@ func TestAuthService_RegisterAndLogin(t *testing.T) {
 
 	// Login with correct password
 	resp, err = svc.Login(ctx, model.LoginRequest{
-		Email:    email,
+		UsernameOrEmail: email,
 		Password: "SecurePass1!",
 	})
 	if err != nil {
@@ -209,7 +209,7 @@ func TestAuthService_RegisterAndLogin(t *testing.T) {
 
 	// Login with wrong password
 	_, err = svc.Login(ctx, model.LoginRequest{
-		Email:    email,
+		UsernameOrEmail: email,
 		Password: "wrong",
 	})
 	if err == nil {
@@ -218,7 +218,7 @@ func TestAuthService_RegisterAndLogin(t *testing.T) {
 
 	// Login non-existent
 	_, err = svc.Login(ctx, model.LoginRequest{
-		Email:    "noone@test.com",
+		UsernameOrEmail: "noone@test.com",
 		Password: "x",
 	})
 	if err == nil {

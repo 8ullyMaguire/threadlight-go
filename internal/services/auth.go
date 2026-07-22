@@ -92,7 +92,7 @@ func (s *AuthService) Register(ctx context.Context, req model.RegisterRequest) (
 }
 
 func (s *AuthService) Login(ctx context.Context, req model.LoginRequest) (*model.AuthResponse, error) {
-	user, err := s.findByUsernameOrEmail(ctx, req.Email)
+	user, err := s.findByUsernameOrEmail(ctx, req.UsernameOrEmail)
 	if err != nil {
 		return nil, errors.New("invalid username/email or password")
 	}
