@@ -2,16 +2,16 @@ package worker
 
 import (
 	"context"
-	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	applog "github.com/opencode-ai/polaris/internal/log"
 )
 
 // RunListCleanup deletes user lists that have no active subscribers.
 // A list with zero active subscriptions serves no purpose and wastes
 // resources on refresh cycles and storage.
 func RunListCleanup(ctx context.Context, pg *pgxpool.Pool) {
-	log.Println("list-cleanup: checking for lists with no active subscribers")
+	applog.Logger.Info().Msg("list-cleanup: checking for lists with no active subscribers")
 
 	result, err := pg.Exec(ctx, `
 		DELETE FROM user_lists ul
@@ -21,14 +21,14 @@ func RunListCleanup(ctx context.Context, pg *pgxpool.Pool) {
 		)
 	`)
 	if err != nil {
-		log.Printf("list-cleanup: query failed: %v", err)
+		applog.Logger.Warn().Err(err).Msg("list-cleanup: query failed")
 		return
 	}
 
 	removed := result.RowsAffected()
 	if removed > 0 {
-		log.Printf("list-cleanup: removed %d lists with no active subscribers", removed)
+		applog.Logger.Info().Int64("removed", removed).Msg("list-cleanup: removed lists with no active subscribers")
 	} else {
-		log.Println("list-cleanup: no lists to remove")
+		applog.Logger.Info().Msg("list-cleanup: no lists to remove")
 	}
 }

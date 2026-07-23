@@ -60,14 +60,15 @@ type PostResponse struct {
 }
 
 type Media struct {
-	ID           int64     `json:"id"`
-	PostID       *int64    `json:"post_id,omitempty"`
-	UploaderID   int64     `json:"uploader_id"`
-	FilePath     string    `json:"file_path"`
-	OriginalName string    `json:"original_name,omitempty"`
-	MimeType     string    `json:"mime_type,omitempty"`
-	FileSize     int64     `json:"file_size"`
-	Width        int       `json:"width"`
-	Height       int       `json:"height"`
-	CreatedAt    time.Time `json:"created_at"`
+	ID            int64     `json:"id"`
+	PostID        *int64    `json:"post_id,omitempty"`
+	UploaderID    int64     `json:"uploader_id"`
+	FilePath      string    `json:"file_path"`
+	OriginalName  string    `json:"original_name,omitempty"`
+	MimeType      string    `json:"mime_type,omitempty"`
+	FileSize      int64     `json:"file_size"`
+	Width         int       `json:"width"`
+	Height        int       `json:"height"`
+	ThumbnailPath string    `json:"thumbnail_path,omitempty"`
+	CreatedAt     time.Time `json:"created_at"`
 }

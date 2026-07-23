@@ -2,12 +2,13 @@ package worker
 
 import (
 	"context"
-	"log"
 	"time"
+
+	applog "github.com/opencode-ai/polaris/internal/log"
 )
 
 func (w *Worker) calculateTrending(ctx context.Context) {
-	log.Println("worker: calculating trending topics")
+	applog.Logger.Info().Msg("worker: calculating trending topics")
 	start := time.Now()
 
 	_, err := w.pg.Exec(ctx, `
@@ -28,7 +29,7 @@ func (w *Worker) calculateTrending(ctx context.Context) {
 			created_at = NOW()
 	`)
 	if err != nil {
-		log.Printf("worker: trending calculation error: %v", err)
+		applog.Logger.Warn().Err(err).Msg("worker: trending calculation error")
 		return
 	}
 
@@ -36,9 +37,9 @@ func (w *Worker) calculateTrending(ctx context.Context) {
 		DELETE FROM trending_topics WHERE created_at < NOW() - INTERVAL '24 hours'
 	`)
 	if err != nil {
-		log.Printf("worker: trending cleanup error: %v", err)
+		applog.Logger.Warn().Err(err).Msg("worker: trending cleanup error")
 		return
 	}
 
-	log.Printf("worker: trending calculated in %v", time.Since(start))
+	applog.Logger.Info().Str("duration", time.Since(start).String()).Msg("worker: trending calculated")
 }

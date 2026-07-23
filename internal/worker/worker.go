@@ -2,12 +2,12 @@ package worker
 
 import (
 	"context"
-	"log"
 	"sync"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/redis/go-redis/v9"
+	applog "github.com/opencode-ai/polaris/internal/log"
 )
 
 type Worker struct {
@@ -29,7 +29,7 @@ func New(pg *pgxpool.Pool, rdb *redis.Client) *Worker {
 }
 
 func (w *Worker) Start() {
-	log.Println("worker: starting background workers")
+	applog.Logger.Info().Msg("worker: starting background workers")
 
 	w.wg.Add(4)
 	go w.runTrendingWorker()
@@ -39,14 +39,14 @@ func (w *Worker) Start() {
 }
 
 func (w *Worker) Stop() {
-	log.Println("worker: stopping background workers")
+	applog.Logger.Info().Msg("worker: stopping background workers")
 	w.cancel()
 	w.wg.Wait()
 }
 
 func (w *Worker) runPeriodic(name string, interval time.Duration, fn func(context.Context)) {
 	defer w.wg.Done()
-	log.Printf("worker: starting %s (every %v)", name, interval)
+	applog.Logger.Info().Str("name", name).Str("interval", interval.String()).Msg("worker: starting periodic")
 
 	ticker := time.NewTicker(interval)
 	defer ticker.Stop()
@@ -56,7 +56,7 @@ func (w *Worker) runPeriodic(name string, interval time.Duration, fn func(contex
 	for {
 		select {
 		case <-w.ctx.Done():
-			log.Printf("worker: %s stopped", name)
+			applog.Logger.Info().Str("name", name).Msg("worker: periodic stopped")
 			return
 		case <-ticker.C:
 			fn(w.ctx)

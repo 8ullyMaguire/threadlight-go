@@ -3,10 +3,10 @@ package worker
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	applog "github.com/opencode-ai/polaris/internal/log"
 )
 
 // AffinityBreakdown holds the component scores for an affinity computation.
@@ -18,10 +18,10 @@ type AffinityBreakdown struct {
 }
 
 func RunAffinityComputation(ctx context.Context, pg *pgxpool.Pool) error {
-	log.Println("affinity: starting batch affinity computation")
+	applog.Logger.Info().Msg("affinity: starting batch affinity computation")
 
 	cutoff := time.Now().AddDate(0, 0, -30)
-	log.Printf("affinity: computing affinities for users active since %s", cutoff.Format(time.RFC3339))
+	applog.Logger.Info().Str("cutoff", cutoff.Format(time.RFC3339)).Msg("affinity: computing affinities for users active since")
 
 	// Step 1: Get active user IDs
 	rows, err := pg.Query(ctx, `
@@ -31,7 +31,7 @@ func RunAffinityComputation(ctx context.Context, pg *pgxpool.Pool) error {
 		  AND last_active_at >= $1
 	`, cutoff)
 	if err != nil {
-		log.Printf("affinity: failed to query active users: %v", err)
+		applog.Logger.Warn().Err(err).Msg("affinity: failed to query active users")
 		return err
 	}
 	defer rows.Close()
@@ -44,18 +44,18 @@ func RunAffinityComputation(ctx context.Context, pg *pgxpool.Pool) error {
 	for rows.Next() {
 		var id int64
 		if err := rows.Scan(&id); err != nil {
-			log.Printf("affinity: scan error: %v", err)
+			applog.Logger.Warn().Err(err).Msg("affinity: scan error")
 			continue
 		}
 		activeIDs = append(activeIDs, id)
 	}
 
 	if len(activeIDs) < 2 {
-		log.Println("affinity: fewer than 2 active users, skipping")
+		applog.Logger.Info().Msg("affinity: fewer than 2 active users, skipping")
 		return nil
 	}
 
-	log.Printf("affinity: processing %d active users", len(activeIDs))
+	applog.Logger.Info().Int("active_users", len(activeIDs)).Msg("affinity: processing active users")
 
 	// Step 2: Build batch of user pairs for affinity computation.
 	// We use a WITH (CTE) approach to compute all four components in a single
@@ -69,7 +69,7 @@ func RunAffinityComputation(ctx context.Context, pg *pgxpool.Pool) error {
 
 			breakdown, err := computePairAffinity(ctx, pg, a, b)
 			if err != nil {
-				log.Printf("affinity: error computing pair (%d,%d): %v", a, b, err)
+				applog.Logger.Warn().Err(err).Int64("user_a", a).Int64("user_b", b).Msg("affinity: error computing pair")
 				errored++
 				continue
 			}
@@ -82,7 +82,7 @@ func RunAffinityComputation(ctx context.Context, pg *pgxpool.Pool) error {
 
 			bdJSON, err := json.Marshal(breakdown)
 			if err != nil {
-				log.Printf("affinity: json marshal error: %v", err)
+				applog.Logger.Warn().Err(err).Msg("affinity: json marshal error")
 				errored++
 				continue
 			}
@@ -97,7 +97,7 @@ func RunAffinityComputation(ctx context.Context, pg *pgxpool.Pool) error {
 					computed_at   = EXCLUDED.computed_at
 			`, a, b, overallScore, string(bdJSON))
 			if err != nil {
-				log.Printf("affinity: upsert error for pair (%d,%d): %v", a, b, err)
+				applog.Logger.Warn().Err(err).Int64("user_a", a).Int64("user_b", b).Msg("affinity: upsert error for pair")
 				errored++
 				continue
 			}
@@ -113,7 +113,7 @@ func RunAffinityComputation(ctx context.Context, pg *pgxpool.Pool) error {
 					computed_at   = EXCLUDED.computed_at
 			`, b, a, overallScore, string(bdJSON))
 			if err != nil {
-				log.Printf("affinity: upsert error for reverse pair (%d,%d): %v", b, a, err)
+				applog.Logger.Warn().Err(err).Int64("user_a", b).Int64("user_b", a).Msg("affinity: upsert error for reverse pair")
 				errored++
 				continue
 			}
@@ -122,7 +122,7 @@ func RunAffinityComputation(ctx context.Context, pg *pgxpool.Pool) error {
 		}
 	}
 
-	log.Printf("affinity: completed — inserted/updated %d pairs, %d errors", inserted, errored)
+	applog.Logger.Info().Int("inserted", inserted).Int("errored", errored).Msg("affinity: completed")
 	return nil
 }
 

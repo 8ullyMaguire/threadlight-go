@@ -2,12 +2,12 @@ package websocket
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
+	applog "github.com/opencode-ai/polaris/internal/log"
 )
 
 type MessageType string
@@ -91,7 +91,7 @@ func (h *Hub) Run() {
 func (h *Hub) ServeWS(w http.ResponseWriter, r *http.Request, userID int64) {
 	conn, err := h.upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		log.Printf("websocket upgrade: %v", err)
+		applog.Logger.Warn().Err(err).Msg("websocket upgrade")
 		return
 	}
 

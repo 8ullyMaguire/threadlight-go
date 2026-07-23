@@ -2,16 +2,16 @@ package worker
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	applog "github.com/opencode-ai/polaris/internal/log"
 )
 
 var trustLevelThresholds = []float64{0, 3, 6, 10, 15, 25}
 
 func RunTrustDecay(ctx context.Context, pg *pgxpool.Pool) {
-	log.Println("trust_decay: running trust decay and auto-promotion...")
+	applog.Logger.Info().Msg("trust_decay: running trust decay and auto-promotion...")
 
 	rows, err := pg.Query(ctx, `
 		SELECT id, trust_level, trust_score, last_active_at
@@ -19,7 +19,7 @@ func RunTrustDecay(ctx context.Context, pg *pgxpool.Pool) {
 		WHERE is_active = true AND deleted_at IS NULL
 	`)
 	if err != nil {
-		log.Printf("trust_decay: query failed: %v", err)
+		applog.Logger.Warn().Err(err).Msg("trust_decay: query failed")
 		return
 	}
 	defer rows.Close()
@@ -35,7 +35,7 @@ func RunTrustDecay(ctx context.Context, pg *pgxpool.Pool) {
 	for rows.Next() {
 		var u userTrust
 		if err := rows.Scan(&u.id, &u.level, &u.score, &u.lastActive); err != nil {
-			log.Printf("trust_decay: scan failed: %v", err)
+			applog.Logger.Warn().Err(err).Msg("trust_decay: scan failed")
 			continue
 		}
 		users = append(users, u)
@@ -70,12 +70,12 @@ func RunTrustDecay(ctx context.Context, pg *pgxpool.Pool) {
 				decayed, newLevel, u.id,
 			)
 			if err != nil {
-				log.Printf("trust_decay: update user %d failed: %v", u.id, err)
+				applog.Logger.Warn().Err(err).Int64("user_id", u.id).Msg("trust_decay: update failed")
 			} else if newLevel != u.level {
-				log.Printf("trust_decay: user %d promoted to level %d (score: %.1f)", u.id, newLevel, decayed)
+				applog.Logger.Info().Int64("user_id", u.id).Int16("new_level", newLevel).Float64("score", decayed).Msg("trust_decay: user promoted")
 			}
 		}
 	}
 
-	log.Printf("trust_decay: processed %d users", len(users))
+	applog.Logger.Info().Int("count", len(users)).Msg("trust_decay: processed users")
 }

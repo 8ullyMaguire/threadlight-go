@@ -2,10 +2,10 @@ package worker
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	applog "github.com/opencode-ai/polaris/internal/log"
 )
 
 // RunWeeklyBounties awards credit bounties to top users by category.
@@ -18,7 +18,7 @@ import (
 // Bounty amounts are read from site_config (weekly_bounty_poster, etc.)
 // Credits come from the platform (user_id 0).
 func RunWeeklyBounties(ctx context.Context, pg *pgxpool.Pool) {
-	log.Println("weekly_bounty: starting weekly bounty distribution")
+	applog.Logger.Info().Msg("weekly_bounty: starting weekly bounty distribution")
 
 	// Only run on Monday 00:00-01:00
 	now := time.Now()
@@ -36,20 +36,20 @@ func RunWeeklyBounties(ctx context.Context, pg *pgxpool.Pool) {
 		FROM site_config WHERE id = 1
 	`).Scan(&posterBounty, &taggerBounty, &commenterBounty, &curatorBounty)
 	if err != nil {
-		log.Printf("weekly_bounty: failed to read bounty amounts: %v", err)
+		applog.Logger.Warn().Err(err).Msg("weekly_bounty: failed to read bounty amounts")
 		return
 	}
 
 	awardBounty := func(category string, amount int, query string, args ...interface{}) {
 		if amount <= 0 {
-			log.Printf("weekly_bounty: %s bounty is 0, skipping", category)
+			applog.Logger.Info().Str("category", category).Msg("weekly_bounty: bounty is 0, skipping")
 			return
 		}
 
 		var winnerID int64
 		err := pg.QueryRow(ctx, query, args...).Scan(&winnerID)
 		if err != nil {
-			log.Printf("weekly_bounty: no winner for %s: %v", category, err)
+			applog.Logger.Warn().Err(err).Str("category", category).Msg("weekly_bounty: no winner")
 			return
 		}
 
@@ -58,7 +58,7 @@ func RunWeeklyBounties(ctx context.Context, pg *pgxpool.Pool) {
 			`UPDATE users SET credits = credits + $1 WHERE id = $2`,
 			int64(amount), winnerID)
 		if err != nil {
-			log.Printf("weekly_bounty: failed to award %s bounty to user %d: %v", category, winnerID, err)
+			applog.Logger.Warn().Err(err).Str("category", category).Int64("winner_id", winnerID).Msg("weekly_bounty: failed to award bounty")
 			return
 		}
 
@@ -69,10 +69,10 @@ func RunWeeklyBounties(ctx context.Context, pg *pgxpool.Pool) {
 			 VALUES ($1, $2, $3, $4, $5)`,
 			&platformID, winnerID, int64(amount), int16(1), "weekly_bounty_"+category)
 		if err != nil {
-			log.Printf("weekly_bounty: failed to record transaction for %s: %v", category, err)
+			applog.Logger.Warn().Err(err).Str("category", category).Msg("weekly_bounty: failed to record transaction")
 		}
 
-		log.Printf("weekly_bounty: awarded %d credits to user %d for %s", amount, winnerID, category)
+		applog.Logger.Info().Int("amount", amount).Int64("winner_id", winnerID).Str("category", category).Msg("weekly_bounty: awarded credits")
 	}
 
 	// Top poster (most posts in last 7 days)
@@ -100,5 +100,5 @@ func RunWeeklyBounties(ctx context.Context, pg *pgxpool.Pool) {
 		 WHERE ma.created_at > NOW() - INTERVAL '7 days'
 		 GROUP BY c.user_id ORDER BY COUNT(*) DESC LIMIT 1`)
 
-	log.Println("weekly_bounty: completed weekly bounty distribution")
+	applog.Logger.Info().Msg("weekly_bounty: completed weekly bounty distribution")
 }

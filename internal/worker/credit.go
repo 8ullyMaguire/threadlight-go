@@ -2,12 +2,13 @@ package worker
 
 import (
 	"context"
-	"log"
 	"time"
+
+	applog "github.com/opencode-ai/polaris/internal/log"
 )
 
 func (w *Worker) distributeDailyRewards(ctx context.Context) {
-	log.Println("worker: distributing daily rewards")
+	applog.Logger.Info().Msg("worker: distributing daily rewards")
 	start := time.Now()
 
 	today := time.Now().UTC().Format("2006-01-02")
@@ -33,15 +34,15 @@ func (w *Worker) distributeDailyRewards(ctx context.Context) {
 		FROM eligible
 	`, today)
 	if err != nil {
-		log.Printf("worker: daily reward distribution error: %v", err)
+		applog.Logger.Warn().Err(err).Msg("worker: daily reward distribution error")
 		return
 	}
 
-	log.Printf("worker: daily rewards distributed in %v", time.Since(start))
+	applog.Logger.Info().Str("duration", time.Since(start).String()).Msg("worker: daily rewards distributed")
 }
 
 func (w *Worker) expireBounties(ctx context.Context) {
-	log.Println("worker: expiring stale bounties")
+	applog.Logger.Info().Msg("worker: expiring stale bounties")
 	start := time.Now()
 
 	_, err := w.pg.Exec(ctx, `
@@ -49,15 +50,15 @@ func (w *Worker) expireBounties(ctx context.Context) {
 		WHERE status = 1 AND expires_at IS NOT NULL AND expires_at < NOW()
 	`)
 	if err != nil {
-		log.Printf("worker: bounty expiry error: %v", err)
+		applog.Logger.Warn().Err(err).Msg("worker: bounty expiry error")
 		return
 	}
 
-	log.Printf("worker: bounties expired in %v", time.Since(start))
+	applog.Logger.Info().Str("duration", time.Since(start).String()).Msg("worker: bounties expired")
 }
 
 func (w *Worker) archiveOldContent(ctx context.Context) {
-	log.Println("worker: archiving old content")
+	applog.Logger.Info().Msg("worker: archiving old content")
 	start := time.Now()
 
 	_, err := w.pg.Exec(ctx, `
@@ -67,9 +68,9 @@ func (w *Worker) archiveOldContent(ctx context.Context) {
 		AND created_at < NOW() - INTERVAL '90 days'
 	`)
 	if err != nil {
-		log.Printf("worker: archival error: %v", err)
+		applog.Logger.Warn().Err(err).Msg("worker: archival error")
 		return
 	}
 
-	log.Printf("worker: old content archived in %v", time.Since(start))
+	applog.Logger.Info().Str("duration", time.Since(start).String()).Msg("worker: old content archived")
 }

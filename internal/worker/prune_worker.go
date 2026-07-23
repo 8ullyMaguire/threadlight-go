@@ -2,14 +2,14 @@ package worker
 
 import (
 	"context"
-	"log"
 	"time"
 
+	applog "github.com/opencode-ai/polaris/internal/log"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func RunPrune(ctx context.Context, pg *pgxpool.Pool) {
-	log.Println("prune: starting daily content pruning")
+	applog.Logger.Info().Msg("prune: starting daily content pruning")
 
 	// Get prune config from site_config
 	var ageDays, minInteractions int
@@ -17,7 +17,7 @@ func RunPrune(ctx context.Context, pg *pgxpool.Pool) {
 		`SELECT COALESCE(prune_age_days, 180), COALESCE(prune_min_interactions, 3)
 		 FROM site_config WHERE id = 1`).Scan(&ageDays, &minInteractions)
 	if err != nil {
-		log.Printf("prune: failed to read config: %v, using defaults", err)
+		applog.Logger.Warn().Err(err).Msg("prune: failed to read config, using defaults")
 		ageDays = 180
 		minInteractions = 3
 	}
@@ -38,18 +38,18 @@ func RunPrune(ctx context.Context, pg *pgxpool.Pool) {
 		cutoff, minInteractions,
 	)
 	if err != nil {
-		log.Printf("prune: error archiving posts: %v", err)
+		applog.Logger.Warn().Err(err).Msg("prune: error archiving posts")
 		return
 	}
 
 	rowsAffected := result.RowsAffected()
-	log.Printf("prune: archived %d posts (age > %dd, interactions < %d)", rowsAffected, ageDays, minInteractions)
+	applog.Logger.Info().Int64("rows", rowsAffected).Int("ageDays", ageDays).Int("minInteractions", minInteractions).Msg("prune: archived posts")
 
 	// Also prune the feed_items table for archived posts to save space
 	pruneResult, err := pg.Exec(ctx,
 		`DELETE FROM feed_items
 		 WHERE post_id IN (SELECT id FROM posts WHERE archived_at IS NOT NULL AND archived_at < NOW() - INTERVAL '7 days')`)
 	if err == nil {
-		log.Printf("prune: cleaned %d feed_items", pruneResult.RowsAffected())
+		applog.Logger.Info().Int64("rows", pruneResult.RowsAffected()).Msg("prune: cleaned feed_items")
 	}
 }

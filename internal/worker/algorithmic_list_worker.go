@@ -1,12 +1,11 @@
 package worker
-
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	applog "github.com/opencode-ai/polaris/internal/log"
 )
 
 // algorithmicListCriteria mirrors model.AlgorithmicListCriteria for decoding criteria_json.
@@ -31,7 +30,7 @@ type algorithmicList struct {
 }
 
 func RunAlgorithmicListRefresh(ctx context.Context, pg *pgxpool.Pool) error {
-	log.Println("algorithmic_list: starting refresh of due algorithmic lists")
+	applog.Logger.Info().Msg("algorithmic_list: starting refresh of due algorithmic lists")
 
 	// Step 1: Find all algorithmic lists that are due for refresh
 	rows, err := pg.Query(ctx, `
@@ -44,7 +43,7 @@ func RunAlgorithmicListRefresh(ctx context.Context, pg *pgxpool.Pool) error {
 		  )
 	`)
 	if err != nil {
-		log.Printf("algorithmic_list: query failed: %v", err)
+		applog.Logger.Warn().Err(err).Msg("algorithmic_list: query failed")
 		return err
 	}
 	defer rows.Close()
@@ -53,35 +52,35 @@ func RunAlgorithmicListRefresh(ctx context.Context, pg *pgxpool.Pool) error {
 	for rows.Next() {
 		var l algorithmicList
 		if err := rows.Scan(&l.ID, &l.Scope, &l.TagID, &l.ListType, &l.OwnerID, &l.CriteriaJSON); err != nil {
-			log.Printf("algorithmic_list: scan failed: %v", err)
+			applog.Logger.Warn().Err(err).Msg("algorithmic_list: scan failed")
 			continue
 		}
 		lists = append(lists, l)
 	}
 
 	if len(lists) == 0 {
-		log.Println("algorithmic_list: no lists due for refresh")
+		applog.Logger.Info().Msg("algorithmic_list: no lists due for refresh")
 		return nil
 	}
 
-	log.Printf("algorithmic_list: refreshing %d algorithmic lists", len(lists))
+	applog.Logger.Info().Int("count", len(lists)).Msg("algorithmic_list: refreshing algorithmic lists")
 
 	for _, lst := range lists {
 		if err := refreshSingleList(ctx, pg, lst); err != nil {
-			log.Printf("algorithmic_list: refresh of list %d failed: %v", lst.ID, err)
+			applog.Logger.Warn().Err(err).Int64("list_id", lst.ID).Msg("algorithmic_list: refresh failed")
 			continue
 		}
 	}
 
-	log.Println("algorithmic_list: refresh cycle complete")
+	applog.Logger.Info().Msg("algorithmic_list: refresh cycle complete")
 	return nil
 }
 
 func refreshSingleList(ctx context.Context, pg *pgxpool.Pool, lst algorithmicList) error {
-	log.Printf("algorithmic_list: refreshing list %d (scope=%d, type=%d)", lst.ID, lst.Scope, lst.ListType)
+	applog.Logger.Info().Int64("list_id", lst.ID).Int16("scope", lst.Scope).Int16("list_type", lst.ListType).Msg("algorithmic_list: refreshing list")
 
 	if lst.CriteriaJSON == nil || *lst.CriteriaJSON == "" {
-		log.Printf("algorithmic_list: list %d has no criteria, skipping", lst.ID)
+		applog.Logger.Warn().Int64("list_id", lst.ID).Msg("algorithmic_list: list has no criteria, skipping")
 		return nil
 	}
 
@@ -185,7 +184,7 @@ func refreshSingleList(ctx context.Context, pg *pgxpool.Pool, lst algorithmicLis
 	args = append(args, lst.ID, lst.OwnerID)
 	query += ` AND u.id <> $` + itoa(argIdx) // exclude owner
 
-	log.Printf("algorithmic_list: list %d query built, evaluating...", lst.ID)
+	applog.Logger.Info().Int64("list_id", lst.ID).Msg("algorithmic_list: query built, evaluating...")
 
 	// Step 3: Execute the query to find matching user IDs
 	matchRows, err := pg.Query(ctx, query, args...)
@@ -198,13 +197,13 @@ func refreshSingleList(ctx context.Context, pg *pgxpool.Pool, lst algorithmicLis
 	for matchRows.Next() {
 		var uid int64
 		if err := matchRows.Scan(&uid); err != nil {
-			log.Printf("algorithmic_list: scan error for list %d: %v", lst.ID, err)
+			applog.Logger.Warn().Err(err).Int64("list_id", lst.ID).Msg("algorithmic_list: scan error")
 			continue
 		}
 		matchingIDs = append(matchingIDs, uid)
 	}
 
-	log.Printf("algorithmic_list: list %d matched %d users", lst.ID, len(matchingIDs))
+	applog.Logger.Info().Int64("list_id", lst.ID).Int("matched", len(matchingIDs)).Msg("algorithmic_list: list matched users")
 
 	// Step 4: Replace list_members for this list atomically
 	tx, err := pg.Begin(ctx)
@@ -241,7 +240,7 @@ func refreshSingleList(ctx context.Context, pg *pgxpool.Pool, lst algorithmicLis
 		return err
 	}
 
-	log.Printf("algorithmic_list: list %d refreshed — %d members", lst.ID, len(matchingIDs))
+	applog.Logger.Info().Int64("list_id", lst.ID).Int("members", len(matchingIDs)).Msg("algorithmic_list: list refreshed")
 	return nil
 }
 

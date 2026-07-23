@@ -2,9 +2,9 @@ package worker
 
 import (
 	"context"
-	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
+	applog "github.com/opencode-ai/polaris/internal/log"
 )
 
 // RunTrustProgression checks all users for trust level auto-progression eligibility
@@ -23,7 +23,7 @@ import (
 // created_at as a lower-bound approximation. Add trust_level_changed_at to users
 // for precise enforcement.
 func RunTrustProgression(ctx context.Context, pg *pgxpool.Pool) error {
-	log.Println("trust_progression: checking for eligible users...")
+	applog.Logger.Info().Msg("trust_progression: checking for eligible users...")
 
 	var totalPromoted int
 
@@ -43,13 +43,13 @@ func RunTrustProgression(ctx context.Context, pg *pgxpool.Pool) error {
 		  )
 	`)
 	if err != nil {
-		log.Printf("trust_progression: level 0→1 promotion failed: %v", err)
+		applog.Logger.Warn().Err(err).Msg("trust_progression: level 0→1 promotion failed")
 		return err
 	}
 	n := int(result.RowsAffected())
 	totalPromoted += n
 	if n > 0 {
-		log.Printf("trust_progression: promoted %d users from level 0 → 1", n)
+		applog.Logger.Info().Int("count", n).Msg("trust_progression: promoted users from level 0 → 1")
 	}
 
 	// Level 1 → 2: at level 1 for > 30 days, at least 20 posts, trust_score > 3.0,
@@ -79,13 +79,13 @@ func RunTrustProgression(ctx context.Context, pg *pgxpool.Pool) error {
 		  )
 	`)
 	if err != nil {
-		log.Printf("trust_progression: level 1→2 promotion failed: %v", err)
+		applog.Logger.Warn().Err(err).Msg("trust_progression: level 1→2 promotion failed")
 		return err
 	}
 	n = int(result.RowsAffected())
 	totalPromoted += n
 	if n > 0 {
-		log.Printf("trust_progression: promoted %d users from level 1 → 2", n)
+		applog.Logger.Info().Int("count", n).Msg("trust_progression: promoted users from level 1 → 2")
 	}
 
 	// Level 2 → 3: at level 2 for > 90 days, at least 100 posts, trust_score > 6.0,
@@ -114,15 +114,15 @@ func RunTrustProgression(ctx context.Context, pg *pgxpool.Pool) error {
 		  )
 	`)
 	if err != nil {
-		log.Printf("trust_progression: level 2→3 promotion failed: %v", err)
+		applog.Logger.Warn().Err(err).Msg("trust_progression: level 2→3 promotion failed")
 		return err
 	}
 	n = int(result.RowsAffected())
 	totalPromoted += n
 	if n > 0 {
-		log.Printf("trust_progression: promoted %d users from level 2 → 3", n)
+		applog.Logger.Info().Int("count", n).Msg("trust_progression: promoted users from level 2 → 3")
 	}
 
-	log.Printf("trust_progression: completed — promoted %d total users", totalPromoted)
+	applog.Logger.Info().Int("total", totalPromoted).Msg("trust_progression: completed")
 	return nil
 }
