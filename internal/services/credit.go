@@ -52,9 +52,33 @@ func (s *CreditService) TransferCredits(ctx context.Context, fromUser, toUser *i
 	}
 	defer tx.Rollback(ctx)
 
-	// Deduct full amount from sender (floor at 0)
+	// Lock sender row and verify sufficient balance
+	var senderBalance int64
+	err = tx.QueryRow(ctx,
+		`SELECT credits FROM users WHERE id = $1 FOR UPDATE`,
+		*fromUser,
+	).Scan(&senderBalance)
+	if err != nil {
+		return nil, fmt.Errorf("sender not found: %w", err)
+	}
+	if senderBalance < amount {
+		return nil, fmt.Errorf("insufficient credits: have %d, need %d", senderBalance, amount)
+	}
+
+	// Lock recipient row
+	var recipientCredits int64
+	err = tx.QueryRow(ctx,
+		`SELECT credits FROM users WHERE id = $1 FOR UPDATE`,
+		*toUser,
+	).Scan(&recipientCredits)
+	if err != nil {
+		return nil, fmt.Errorf("recipient not found: %w", err)
+	}
+	_ = recipientCredits
+
+	// Deduct full amount from sender
 	_, err = tx.Exec(ctx,
-		`UPDATE users SET credits = GREATEST(0, credits - $1) WHERE id = $2`,
+		`UPDATE users SET credits = credits - $1 WHERE id = $2`,
 		amount, *fromUser)
 	if err != nil {
 		return nil, err

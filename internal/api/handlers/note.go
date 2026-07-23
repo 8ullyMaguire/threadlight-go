@@ -82,7 +82,7 @@ func (h *NoteHandler) UpdateNote(c *gin.Context) {
 // @Tags         notes
 // @Produce      json
 // @Param        postID path int true "Post ID"
-// @Success      200 {object} model.Paginated{items=[]model.CommunityNote}
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      400 {object} map[string]interface{}
 // @Failure      500 {object} map[string]interface{}
 // @Router       /notes/post/{postID} [get]

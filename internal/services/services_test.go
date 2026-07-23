@@ -1048,6 +1048,12 @@ func TestCreditService_TransferAndTransactions(t *testing.T) {
 	u2 := newUser(t, testPG, fmt.Sprintf("crd2_%d", time.Now().UnixNano()),
 		fmt.Sprintf("crd2_%d@test.com", time.Now().UnixNano()))
 
+	// Give sender enough credits
+	_, err := testPG.Exec(ctx, `UPDATE users SET credits = 200 WHERE id = $1`, u1.ID)
+	if err != nil {
+		t.Fatalf("set sender credits: %v", err)
+	}
+
 	tx, err := svc.TransferCredits(ctx, &u1.ID, &u2.ID, 100, 1, nil)
 	if err != nil {
 		t.Fatalf("TransferCredits: %v", err)
@@ -1148,6 +1154,71 @@ func TestCreditService_Bounty(t *testing.T) {
 	if err == nil {
 		t.Error("expected error for non-existent bounty")
 	}
+}
+
+func TestCreditService_ConcurrentTransfers(t *testing.T) {
+	cleanTables(testPG)
+	ctx := context.Background()
+	svc := services.NewCreditService(testPG)
+
+	// Create sender with 100 credits
+	sender := newUser(t, testPG, fmt.Sprintf("conc_snd_%d", time.Now().UnixNano()),
+		fmt.Sprintf("conc_snd_%d@test.com", time.Now().UnixNano()))
+
+	// Set initial credits
+	_, err := testPG.Exec(ctx, `UPDATE users SET credits = 100 WHERE id = $1`, sender.ID)
+	if err != nil {
+		t.Fatalf("set sender credits: %v", err)
+	}
+
+	// Create two recipients
+	recv1 := newUser(t, testPG, fmt.Sprintf("conc_rcv1_%d", time.Now().UnixNano()),
+		fmt.Sprintf("conc_rcv1_%d@test.com", time.Now().UnixNano()))
+	recv2 := newUser(t, testPG, fmt.Sprintf("conc_rcv2_%d", time.Now().UnixNano()),
+		fmt.Sprintf("conc_rcv2_%d@test.com", time.Now().UnixNano()))
+
+	errCh := make(chan error, 2)
+	// Launch two concurrent transfers (60 each) — only 100 available, so one must fail
+	go func() {
+		_, err := svc.TransferCredits(ctx, &sender.ID, &recv1.ID, 60, 1, nil)
+		errCh <- err
+	}()
+	go func() {
+		_, err := svc.TransferCredits(ctx, &sender.ID, &recv2.ID, 60, 1, nil)
+		errCh <- err
+	}()
+
+	successCount := 0
+	failCount := 0
+	for i := 0; i < 2; i++ {
+		err := <-errCh
+		if err != nil {
+			t.Logf("Transfer error (expected if insufficient): %v", err)
+			failCount++
+		} else {
+			successCount++
+		}
+	}
+
+	// At most one transfer should succeed (total 120 requested, only 100 available)
+	if successCount > 1 {
+		t.Errorf("expected at most 1 successful transfer, got %d", successCount)
+	}
+
+	// Verify sender balance never went negative
+	var senderBalance int64
+	err = testPG.QueryRow(ctx, `SELECT credits FROM users WHERE id = $1`, sender.ID).Scan(&senderBalance)
+	if err != nil {
+		t.Fatalf("read sender balance: %v", err)
+	}
+	if senderBalance < 0 {
+		t.Errorf("sender balance went negative: %d", senderBalance)
+	}
+	if senderBalance > 100 {
+		t.Errorf("sender balance exceeded initial: %d", senderBalance)
+	}
+
+	t.Logf("Sender balance after concurrent transfers: %d (success=%d, fail=%d)", senderBalance, successCount, failCount)
 }
 
 // ---------------------------------------------------------------------------

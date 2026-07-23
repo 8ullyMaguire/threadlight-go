@@ -126,7 +126,7 @@ func (h *FeedHandler) Delete(c *gin.Context) {
 // @Description  List all custom feeds belonging to the authenticated user
 // @Tags         feeds
 // @Produce      json
-// @Success      200 {object} model.PaginatedResponse{feeds=[]model.CustomFeed}
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      500 {object} map[string]interface{}
 // @Router       /feeds [get]
 func (h *FeedHandler) ListByUser(c *gin.Context) {
@@ -198,7 +198,7 @@ func (h *FeedHandler) RemoveSource(c *gin.Context) {
 // @Tags         feeds
 // @Produce      json
 // @Param        id path int true "Feed ID"
-// @Success      200 {object} model.PaginatedResponse{sources=[]model.FeedSource}
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      400 {object} map[string]interface{}
 // @Failure      500 {object} map[string]interface{}
 // @Router       /feeds/{id}/sources [get]

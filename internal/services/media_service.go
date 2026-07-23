@@ -46,6 +46,14 @@ func lookupEnv(key, fallback string) string {
 	return fallback
 }
 
+// MinioClient returns the underlying MinIO client for health checks.
+func (s *MediaService) MinioClient() *minio.Client {
+	if s == nil {
+		return nil
+	}
+	return s.minio
+}
+
 // UploadImage uploads a file to MinIO and records it in the media table.
 func (s *MediaService) UploadImage(ctx context.Context, uploaderID int64, file multipart.File, header *multipart.FileHeader) (*model.Media, error) {
 	// Generate a unique file path

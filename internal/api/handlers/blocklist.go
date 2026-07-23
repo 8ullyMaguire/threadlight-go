@@ -75,7 +75,7 @@ func (h *BlocklistHandler) Delete(c *gin.Context) {
 // @Description  Get all entries in the blocklist
 // @Tags         blocklist
 // @Produce      json
-// @Success      200 {object} model.PaginatedResponse{entries=[]model.BlocklistEntry}
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      500 {object} map[string]interface{}
 // @Router       /blocklist/entries [get]
 func (h *BlocklistHandler) List(c *gin.Context) {

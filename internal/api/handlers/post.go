@@ -57,7 +57,7 @@ func (h *PostHandler) Create(c *gin.Context) {
 // @Produce      json
 // @Param        limit query int false "Number of posts per page (default 50)"
 // @Param        offset query int false "Number of posts to skip (default 0)"
-// @Success      200 {object} model.Paginated "paginated list of Post"
+// @Success      200 {object} model.PaginatedResponse "paginated list of Post"
 // @Failure      500 {object} map[string]interface{}
 // @Router       /posts [get]
 func (h *PostHandler) List(c *gin.Context) {
@@ -106,7 +106,7 @@ func (h *PostHandler) GetCount(c *gin.Context) {
 // @Param        author_id path int true "Author user ID"
 // @Param        limit query int false "Number of posts per page (default 20)"
 // @Param        offset query int false "Number of posts to skip (default 0)"
-// @Success      200 {object} model.Paginated "paginated list of Post"
+// @Success      200 {object} model.PaginatedResponse "paginated list of Post"
 // @Failure      400 {object} map[string]interface{} "invalid author_id"
 // @Failure      500 {object} map[string]interface{}
 // @Router       /posts/author/{author_id} [get]

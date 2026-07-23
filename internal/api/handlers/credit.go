@@ -51,7 +51,7 @@ func (h *CreditHandler) TransferCredits(c *gin.Context) {
 // @Description  Get the credit transaction history for the authenticated user
 // @Tags         credits
 // @Produce      json
-// @Success      200 {object} model.Paginated{items=[]model.CreditTransaction}
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      500 {object} map[string]interface{}
 // @Router       /credits/transactions [get]
 func (h *CreditHandler) GetTransactions(c *gin.Context) {

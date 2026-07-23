@@ -126,7 +126,7 @@ func (h *CollectionHandler) Delete(c *gin.Context) {
 // @Description  List all collections for the authenticated user
 // @Tags         collections
 // @Produce      json
-// @Success      200 {object} model.Paginated{items=[]model.Collection}
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      500 {object} map[string]interface{}
 // @Router       /collections [get]
 func (h *CollectionHandler) ListByUser(c *gin.Context) {
@@ -212,7 +212,7 @@ func (h *CollectionHandler) RemovePost(c *gin.Context) {
 // @Tags         collections
 // @Produce      json
 // @Param        id path int true "Collection ID"
-// @Success      200 {object} model.Paginated{items=[]model.CollectionPost}
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      400 {object} map[string]interface{}
 // @Failure      500 {object} map[string]interface{}
 // @Router       /collections/{id}/posts [get]

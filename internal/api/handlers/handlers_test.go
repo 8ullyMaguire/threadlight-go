@@ -148,6 +148,18 @@ func TestHealth(t *testing.T) {
 	}
 }
 
+func TestReady(t *testing.T) {
+	w := request("GET", "/ready", nil, "")
+	if w.Code != http.StatusOK && w.Code != http.StatusServiceUnavailable {
+		t.Errorf("expected 200 or 503, got %d: %s", w.Code, w.Body.String())
+	}
+	var resp map[string]interface{}
+	json.Unmarshal(w.Body.Bytes(), &resp)
+	if resp["status"] == "" {
+		t.Error("expected status in ready response")
+	}
+}
+
 // ─── Auth ──────────────────────────────────────────────────────
 
 func TestAuthRegister(t *testing.T) {

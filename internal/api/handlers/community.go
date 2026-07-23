@@ -72,7 +72,7 @@ func (h *CommunityHandler) Create(c *gin.Context) {
 // @Description  List all communities
 // @Tags         communities
 // @Produce      json
-// @Success      200 {object} model.Paginated{items=[]model.Community}
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      500 {object} map[string]interface{}
 // @Router       /communities [get]
 func (h *CommunityHandler) List(c *gin.Context) {
@@ -230,7 +230,7 @@ func (h *CommunityHandler) Leave(c *gin.Context) {
 // @Tags         communities
 // @Produce      json
 // @Param        slug path string true "Community slug"
-// @Success      200 {object} model.Paginated{items=[]model.CommunityMember}
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      404 {object} map[string]interface{}
 // @Failure      500 {object} map[string]interface{}
 // @Router       /communities/{slug}/members [get]

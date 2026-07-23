@@ -24,7 +24,7 @@ func NewUserHandler(userSvc *services.UserService) *UserHandler {
 // @Success      200 {object} model.User
 // @Failure      401 {object} map[string]interface{}
 // @Failure      404 {object} map[string]interface{}
-// @Router       /users/@me [get]
+// @Router       /users/{me} [get]
 func (h *UserHandler) GetProfile(c *gin.Context) {
 	uid, _ := c.Get("user_id")
 
@@ -70,7 +70,7 @@ func (h *UserHandler) GetProfileByUsername(c *gin.Context) {
 // @Failure      400 {object} map[string]interface{}
 // @Failure      401 {object} map[string]interface{}
 // @Failure      404 {object} map[string]interface{}
-// @Router       /users/@me [put]
+// @Router       /users/{me} [put]
 func (h *UserHandler) UpdateProfile(c *gin.Context) {
 	var req model.User
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -99,7 +99,7 @@ func (h *UserHandler) UpdateProfile(c *gin.Context) {
 // @Failure      400 {object} map[string]interface{}
 // @Failure      401 {object} map[string]interface{}
 // @Failure      404 {object} map[string]interface{}
-// @Router       /users/@me/avatar [post]
+// @Router       /users/{me}/avatar [post]
 func (h *UserHandler) UploadAvatar(c *gin.Context) {
 	var req struct {
 		AvatarURL string `json:"avatar_url"`
@@ -130,7 +130,7 @@ func (h *UserHandler) UploadAvatar(c *gin.Context) {
 // @Failure      400 {object} map[string]interface{}
 // @Failure      401 {object} map[string]interface{}
 // @Failure      404 {object} map[string]interface{}
-// @Router       /users/@me/banner [post]
+// @Router       /users/{me}/banner [post]
 func (h *UserHandler) UploadBanner(c *gin.Context) {
 	var req struct {
 		BannerURL string `json:"banner_url"`
@@ -202,9 +202,9 @@ func (h *UserHandler) UnblockUser(c *gin.Context) {
 // @Summary      List blocked users
 // @Description  List all users blocked by the authenticated user
 // @Tags         users
-// @Success      200 {object} model.Paginated
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      401 {object} map[string]interface{}
-// @Router       /users/@me/blocks [get]
+// @Router       /users/{me}/blocks [get]
 func (h *UserHandler) ListBlockedUsers(c *gin.Context) {
 	uid, _ := c.Get("user_id")
 
@@ -222,9 +222,9 @@ func (h *UserHandler) ListBlockedUsers(c *gin.Context) {
 // @Summary      Get user notifications
 // @Description  Get all notifications for the authenticated user
 // @Tags         users
-// @Success      200 {object} model.Paginated
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      401 {object} map[string]interface{}
-// @Router       /users/@me/notifications [get]
+// @Router       /users/{me}/notifications [get]
 func (h *UserHandler) GetNotifications(c *gin.Context) {
 	uid, _ := c.Get("user_id")
 

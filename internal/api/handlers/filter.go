@@ -99,7 +99,7 @@ func (h *FilterHandler) Delete(c *gin.Context) {
 // @Description  List all content filters for the authenticated user
 // @Tags         filters
 // @Produce      json
-// @Success      200 {object} model.Paginated{items=[]model.ContentFilter}
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      500 {object} map[string]interface{}
 // @Router       /filters [get]
 func (h *FilterHandler) List(c *gin.Context) {

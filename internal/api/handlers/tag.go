@@ -126,7 +126,7 @@ func (h *TagHandler) Delete(c *gin.Context) {
 // @Description  List all available tags
 // @Tags         tags
 // @Produce      json
-// @Success      200 {object} model.PaginatedResponse{tags=[]model.Tag}
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      500 {object} map[string]interface{}
 // @Router       /tags [get]
 func (h *TagHandler) List(c *gin.Context) {
@@ -206,7 +206,7 @@ func (h *TagHandler) UntagPost(c *gin.Context) {
 // @Tags         tags
 // @Produce      json
 // @Param        post_id path int true "Post ID"
-// @Success      200 {object} model.PaginatedResponse{tags=[]model.PostTag}
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      400 {object} map[string]interface{}
 // @Failure      500 {object} map[string]interface{}
 // @Router       /tags/posts/{post_id}/tags [get]

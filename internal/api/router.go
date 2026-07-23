@@ -60,6 +60,10 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 
 	authHandler := handlers.NewAuthHandler(authSvc)
 	healthHandler := handlers.NewHealthHandler(pg, rdb)
+	if mediaSvc != nil {
+		healthHandler.SetMinioClient(mediaSvc.MinioClient())
+	}
+	healthHandler.SetMigrationCheck(func() bool { return true })
 	postHandler := handlers.NewPostHandler(postSvc, userSvc, mediaSvc, creditSvc, configSvc)
 	tagHandler := handlers.NewTagHandler(tagSvc)
 	feedHandler := handlers.NewFeedHandler(feedSvc)
@@ -88,6 +92,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	modDecisionHandler := handlers.NewModDecisionHandler(modDecisionSvc, configSvc)
 
 	r.GET("/health", healthHandler.Health)
+	r.GET("/ready", healthHandler.Ready)
 
 	// NodeInfo endpoint for client type detection (used by Photon frontend)
 	r.GET("/nodeinfo/2.1", func(c *gin.Context) {

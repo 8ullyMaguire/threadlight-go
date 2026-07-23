@@ -55,7 +55,7 @@ func (h *UserListHandler) Create(c *gin.Context) {
 // @Summary      List user lists
 // @Description  List all user lists belonging to the authenticated user
 // @Tags         user-lists
-// @Success      200 {object} model.Paginated
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      401 {object} map[string]interface{}
 // @Router       /lists [get]
 func (h *UserListHandler) List(c *gin.Context) {
@@ -268,7 +268,7 @@ func (h *UserListHandler) RemoveMember(c *gin.Context) {
 // @Description  List all members of a user list
 // @Tags         user-lists
 // @Param        id path int true "List ID"
-// @Success      200 {object} model.Paginated
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      400 {object} map[string]interface{}
 // @Failure      401 {object} map[string]interface{}
 // @Failure      404 {object} map[string]interface{}
@@ -372,7 +372,7 @@ func (h *UserListHandler) Unsubscribe(c *gin.Context) {
 // @Description  List all subscribers of a user list
 // @Tags         user-lists
 // @Param        id path int true "List ID"
-// @Success      200 {object} model.Paginated
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      400 {object} map[string]interface{}
 // @Failure      401 {object} map[string]interface{}
 // @Failure      404 {object} map[string]interface{}
@@ -402,7 +402,7 @@ func (h *UserListHandler) ListSubscribers(c *gin.Context) {
 // @Summary      Get my subscriptions
 // @Description  Get all user lists the authenticated user is subscribed to
 // @Tags         user-lists
-// @Success      200 {object} model.Paginated
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      401 {object} map[string]interface{}
 // @Router       /lists/subscriptions [get]
 func (h *UserListHandler) MySubscriptions(c *gin.Context) {
@@ -542,7 +542,7 @@ func (h *UserListHandler) RemoveCollaborator(c *gin.Context) {
 // @Description  List all collaborators of a user list
 // @Tags         user-lists
 // @Param        id path int true "List ID"
-// @Success      200 {object} model.Paginated
+// @Success      200 {object} model.PaginatedResponse
 // @Failure      400 {object} map[string]interface{}
 // @Failure      401 {object} map[string]interface{}
 // @Failure      404 {object} map[string]interface{}
@@ -575,7 +575,7 @@ func (h *UserListHandler) ListCollaborators(c *gin.Context) {
 // @Description  Create a user list based on algorithmic/query criteria
 // @Tags         user-lists
 // @Param        body body model.CreateAlgorithmicListRequest true "Algorithmic list creation request"
-// @Success      201 {object} model.AlgorithmicList
+// @Success      201 {object} map[string]interface{}
 // @Failure      400 {object} map[string]interface{}
 // @Failure      401 {object} map[string]interface{}
 // @Router       /lists/algorithmic [post]
