@@ -115,6 +115,16 @@ func (h *FilterHandler) List(c *gin.Context) {
 	c.JSON(http.StatusOK, model.NewPaginated(filters, 1, len(filters), len(filters)))
 }
 
+// @Summary      Check a content filter
+// @Description  Check if a specific value is blocked by user's filters
+// @Tags         filters
+// @Produce      json
+// @Param        type query int true "Filter type"
+// @Param        value query string true "Value to check"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /filters/check [get]
 func (h *FilterHandler) Check(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	filterType, err := strconv.ParseInt(c.DefaultQuery("type", "0"), 10, 16)
