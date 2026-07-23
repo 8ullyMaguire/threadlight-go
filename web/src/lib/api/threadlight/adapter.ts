@@ -367,7 +367,7 @@ export class ThreadlightClient extends BaseClient {
   }
 
   async login(form: Lemmy.Login): Promise<Lemmy.LoginResponse> {
-    const res = await this.#api<{ user: User; message: string } | { error: string }>(
+    const res = await this.#api<{ token: string; user: User } | { error: string }>(
       '/auth/login',
       {
         method: 'POST',
@@ -376,7 +376,7 @@ export class ThreadlightClient extends BaseClient {
     )
     if ('error' in res) throw new Error(res.error)
     return {
-      jwt: 'session',
+      jwt: res.token,
       registration_created: false,
       verify_email_sent: false,
     } as Lemmy.LoginResponse
@@ -389,7 +389,7 @@ export class ThreadlightClient extends BaseClient {
       password: form.password,
     }
     if (form.show_nsfw !== undefined) body['is_nsfw'] = form.show_nsfw
-    const res = await this.#api<{ user: User; message: string } | { error: string }>(
+    const res = await this.#api<{ token: string; user: User } | { error: string }>(
       '/auth/register',
       {
         method: 'POST',
@@ -398,7 +398,7 @@ export class ThreadlightClient extends BaseClient {
     )
     if ('error' in res) throw new Error(res.error)
     return {
-      jwt: 'session',
+      jwt: res.token,
       registration_created: false,
       verify_email_sent: false,
     } as Lemmy.LoginResponse
