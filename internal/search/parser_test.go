@@ -183,14 +183,14 @@ func TestParse(t *testing.T) {
 			wantFilters: []FieldFilter{{Field: "author", Value: "alice bob", Operator: "="}},
 		},
 		{
-			name: "combined complex query",
-			input: `(climate OR environment) AND NOT "fossil fuels" author:alice`,
+			name:        "combined complex query",
+			input:       `(climate OR environment) AND NOT "fossil fuels" author:alice`,
 			wantTsQuery: "('climate' | 'environment') & !('fossil' <-> 'fuels')",
 			wantFilters: []FieldFilter{{Field: "author", Value: "alice", Operator: "="}},
 		},
 		{
-			name: "combined with tag and author filters",
-			input: `climate AND tag:golang author:!bob`,
+			name:        "combined with tag and author filters",
+			input:       `climate AND tag:golang author:!bob`,
 			wantTsQuery: "'climate'",
 			wantFilters: []FieldFilter{
 				{Field: "tag", Value: "golang", Operator: "="},
@@ -198,8 +198,8 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			name: "multiple field filters with implicit AND",
-			input: `author:alice tag:golang is:nsfw`,
+			name:        "multiple field filters with implicit AND",
+			input:       `author:alice tag:golang is:nsfw`,
 			wantTsQuery: "",
 			wantFilters: []FieldFilter{
 				{Field: "author", Value: "alice", Operator: "="},
@@ -208,16 +208,16 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			name: "query with both text and filters",
-			input: `climate environment tag:science`,
+			name:        "query with both text and filters",
+			input:       `climate environment tag:science`,
 			wantTsQuery: "'climate' & 'environment'",
 			wantFilters: []FieldFilter{
 				{Field: "tag", Value: "science", Operator: "="},
 			},
 		},
 		{
-			name: "complex with field filters in parens",
-			input: `(title:hello OR body:world) AND NOT "climate change" author:alice tag:!foo`,
+			name:        "complex with field filters in parens",
+			input:       `(title:hello OR body:world) AND NOT "climate change" author:alice tag:!foo`,
 			wantTsQuery: "!('climate' <-> 'change')",
 			wantFilters: []FieldFilter{
 				{Field: "title", Value: "hello", Operator: "="},

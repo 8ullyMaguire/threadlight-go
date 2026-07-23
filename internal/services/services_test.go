@@ -211,7 +211,7 @@ func TestAuthService_RegisterAndLogin(t *testing.T) {
 	// Login with correct password
 	resp, err = svc.Login(ctx, model.LoginRequest{
 		UsernameOrEmail: email,
-		Password: "SecurePass1!",
+		Password:        "SecurePass1!",
 	})
 	if err != nil {
 		t.Errorf("Login: %v", err)
@@ -223,7 +223,7 @@ func TestAuthService_RegisterAndLogin(t *testing.T) {
 	// Login with wrong password
 	_, err = svc.Login(ctx, model.LoginRequest{
 		UsernameOrEmail: email,
-		Password: "wrong",
+		Password:        "wrong",
 	})
 	if err == nil {
 		t.Error("expected error on wrong password")
@@ -232,7 +232,7 @@ func TestAuthService_RegisterAndLogin(t *testing.T) {
 	// Login non-existent
 	_, err = svc.Login(ctx, model.LoginRequest{
 		UsernameOrEmail: "noone@test.com",
-		Password: "x",
+		Password:        "x",
 	})
 	if err == nil {
 		t.Error("expected error on non-existent user")
@@ -1759,10 +1759,10 @@ func TestSearchService_AdvancedSearch(t *testing.T) {
 
 	// Test with content_type_label
 	q7 := model.SearchPostsQuery{
-		Query:           "AdvancedSearchTestTitle",
+		Query:            "AdvancedSearchTestTitle",
 		ContentTypeLabel: "post",
-		Page:            1,
-		Limit:           20,
+		Page:             1,
+		Limit:            20,
 	}
 	_, _, _, err = svc.SearchPosts(ctx, q7)
 	if err != nil {

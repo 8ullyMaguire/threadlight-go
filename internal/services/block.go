@@ -9,8 +9,8 @@ import (
 )
 
 type BlockService struct {
-	pg      *pgxpool.Pool
-	affAcc  AffinityAccumulatorInterface
+	pg     *pgxpool.Pool
+	affAcc AffinityAccumulatorInterface
 }
 
 func NewBlockService(pg *pgxpool.Pool, affAcc AffinityAccumulatorInterface) *BlockService {

@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/redis/go-redis/v9"
 	applog "github.com/opencode-ai/polaris/internal/log"
+	"github.com/redis/go-redis/v9"
 )
 
 type Scheduler struct {
@@ -45,23 +45,23 @@ func (s *Scheduler) Start(ctx context.Context) {
 		{"scheduled-post", 1 * time.Minute, func(c context.Context) { RunScheduledPostPublisher(c, s.pg) }},
 		{"community-notes", 15 * time.Minute, func(c context.Context) { RunCommunityNotesProcessor(c, s.pg) }},
 		{"active-stats", 5 * time.Minute, func(c context.Context) { RunActiveStatsUpdater(c, s.pg, s.rdb) }},
-  {"prune", 1 * time.Hour, func(c context.Context) { RunPrune(c, s.pg) }},
-  {"affinity-computation", 1 * time.Hour, func(c context.Context) {
-  	if err := RunAffinityComputation(c, s.pg); err != nil {
-  		applog.Logger.Warn().Err(err).Msg("scheduler: affinity-computation error")
-  	}
-  }},
-  {"algorithmic-list-refresh", 1 * time.Hour, func(c context.Context) {
-  	if err := RunAlgorithmicListRefresh(c, s.pg); err != nil {
-  		applog.Logger.Warn().Err(err).Msg("scheduler: algorithmic-list-refresh error")
-  	}
-  }},
-  {"list-cleanup", 24 * time.Hour, func(c context.Context) {
-  	RunListCleanup(c, s.pg)
-  }},
-  {"weekly-bounty", 1 * time.Hour, func(c context.Context) {
-  	RunWeeklyBounties(c, s.pg)
-  }},
+		{"prune", 1 * time.Hour, func(c context.Context) { RunPrune(c, s.pg) }},
+		{"affinity-computation", 1 * time.Hour, func(c context.Context) {
+			if err := RunAffinityComputation(c, s.pg); err != nil {
+				applog.Logger.Warn().Err(err).Msg("scheduler: affinity-computation error")
+			}
+		}},
+		{"algorithmic-list-refresh", 1 * time.Hour, func(c context.Context) {
+			if err := RunAlgorithmicListRefresh(c, s.pg); err != nil {
+				applog.Logger.Warn().Err(err).Msg("scheduler: algorithmic-list-refresh error")
+			}
+		}},
+		{"list-cleanup", 24 * time.Hour, func(c context.Context) {
+			RunListCleanup(c, s.pg)
+		}},
+		{"weekly-bounty", 1 * time.Hour, func(c context.Context) {
+			RunWeeklyBounties(c, s.pg)
+		}},
 	}
 
 	for _, w := range workers {

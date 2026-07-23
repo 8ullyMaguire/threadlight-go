@@ -35,11 +35,11 @@ func NewAffinityAccumulator(pg *pgxpool.Pool, rdb *redis.Client) *AffinityAccumu
 }
 
 func affFollowKey(u int64) string    { return fmt.Sprintf("aff:follow:%d", u) }
-func affCommunityKey(u int64) string  { return fmt.Sprintf("aff:community:%d", u) }
-func affReactionKey(u int64) string   { return fmt.Sprintf("aff:reaction:%d", u) }
-func affTrustKey(u int64) string      { return fmt.Sprintf("aff:trust:%d", u) }
-func affCacheKey(u int64) string      { return fmt.Sprintf("aff:cached:%d", u) }
-func affLockKey(u int64) string       { return fmt.Sprintf("aff:lock:%d", u) }
+func affCommunityKey(u int64) string { return fmt.Sprintf("aff:community:%d", u) }
+func affReactionKey(u int64) string  { return fmt.Sprintf("aff:reaction:%d", u) }
+func affTrustKey(u int64) string     { return fmt.Sprintf("aff:trust:%d", u) }
+func affCacheKey(u int64) string     { return fmt.Sprintf("aff:cached:%d", u) }
+func affLockKey(u int64) string      { return fmt.Sprintf("aff:lock:%d", u) }
 
 // ── Record methods ──
 
@@ -165,10 +165,10 @@ func (a *AffinityAccumulator) ComputeAndCacheAffinities(ctx context.Context, use
 		td := a.computeTrustDist(ctx, userID, targetID)
 		score := to*1.0 + cc*1.5 + ra*2.0 + td*3.0
 		bk, _ := json.Marshal(model.AffinityBreakdown{
-			TagOverlap:  to,
-			CoCommunity: cc,
+			TagOverlap:        to,
+			CoCommunity:       cc,
 			ReactionAgreement: ra,
-			TrustDistance: td,
+			TrustDistance:     td,
 		})
 		bkStr := string(bk)
 

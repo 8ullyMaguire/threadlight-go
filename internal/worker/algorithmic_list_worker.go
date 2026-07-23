@@ -1,4 +1,5 @@
 package worker
+
 import (
 	"context"
 	"encoding/json"
@@ -21,11 +22,11 @@ type algorithmicListCriteria struct {
 
 // algorithmicList represents a row from user_lists needed for refresh.
 type algorithmicList struct {
-	ID          int64
-	Scope       int16
-	TagID       *int64
-	ListType    int16 // 0=follow, 1=block
-	OwnerID     int64
+	ID           int64
+	Scope        int16
+	TagID        *int64
+	ListType     int16 // 0=follow, 1=block
+	OwnerID      int64
 	CriteriaJSON *string
 }
 

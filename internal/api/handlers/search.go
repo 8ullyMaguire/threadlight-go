@@ -141,15 +141,15 @@ func (h *SearchHandler) SearchPosts(c *gin.Context) {
 	}
 
 	q := model.SearchPostsQuery{
-		Query:         query,
-		Author:        c.Query("author"),
-		Tag:           c.Query("tag"),
-		Community:     c.Query("community"),
-		DateFrom:      c.Query("date_from"),
-		DateTo:        c.Query("date_to"),
-		Sort:          c.DefaultQuery("sort", "relevance"),
-		Page:          parseIntParam(c.DefaultQuery("page", "1"), 1),
-		Limit:         parseIntParam(c.DefaultQuery("limit", "20"), 20),
+		Query:     query,
+		Author:    c.Query("author"),
+		Tag:       c.Query("tag"),
+		Community: c.Query("community"),
+		DateFrom:  c.Query("date_from"),
+		DateTo:    c.Query("date_to"),
+		Sort:      c.DefaultQuery("sort", "relevance"),
+		Page:      parseIntParam(c.DefaultQuery("page", "1"), 1),
+		Limit:     parseIntParam(c.DefaultQuery("limit", "20"), 20),
 	}
 
 	if mood := c.Query("mood"); mood != "" {

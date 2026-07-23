@@ -16,10 +16,10 @@ type CommunityNote struct {
 }
 
 type CommunityNoteVote struct {
-	ID              int64     `json:"id"`
-	NoteID          int64     `json:"note_id"`
-	UserID          int64     `json:"user_id"`
-	Vote            bool      `json:"vote"`
+	ID               int64     `json:"id"`
+	NoteID           int64     `json:"note_id"`
+	UserID           int64     `json:"user_id"`
+	Vote             bool      `json:"vote"`
 	TrustScoreAtVote float64   `json:"trust_score_at_vote"`
-	CreatedAt       time.Time `json:"created_at"`
+	CreatedAt        time.Time `json:"created_at"`
 }

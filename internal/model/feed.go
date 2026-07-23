@@ -15,11 +15,11 @@ type CustomFeed struct {
 }
 
 type FeedSource struct {
-	ID          int64   `json:"id"`
-	FeedID      int64   `json:"feed_id"`
-	SourceType  int16   `json:"source_type"`
-	SourceID    *int64  `json:"source_id,omitempty"`
-	SourceValue string  `json:"source_value"`
-	IncludeMode bool    `json:"include_mode"`
+	ID           int64  `json:"id"`
+	FeedID       int64  `json:"feed_id"`
+	SourceType   int16  `json:"source_type"`
+	SourceID     *int64 `json:"source_id,omitempty"`
+	SourceValue  string `json:"source_value"`
+	IncludeMode  bool   `json:"include_mode"`
 	SortPriority int16  `json:"sort_priority"`
 }

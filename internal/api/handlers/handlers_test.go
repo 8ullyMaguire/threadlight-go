@@ -224,7 +224,9 @@ func TestAuthForgotReset(t *testing.T) {
 	if w.Code != http.StatusOK {
 		t.Fatalf("expected 200, got %d: %s", w.Code, w.Body.String())
 	}
-	var resp struct{ Token string `json:"token"` }
+	var resp struct {
+		Token string `json:"token"`
+	}
 	json.Unmarshal(w.Body.Bytes(), &resp)
 	if resp.Token == "" {
 		t.Fatal("expected reset token")
@@ -275,7 +277,9 @@ func TestGetPostByID(t *testing.T) {
 		"title": "Get Post", "body": "test",
 	}), token)
 	var cr struct {
-		Post struct{ ID int64 `json:"id"` }
+		Post struct {
+			ID int64 `json:"id"`
+		}
 	}
 	json.Unmarshal(createW.Body.Bytes(), &cr)
 
@@ -291,7 +295,9 @@ func TestUpdatePost(t *testing.T) {
 		"title": "Original", "body": "body",
 	}), token)
 	var cr struct {
-		Post struct{ ID int64 `json:"id"` }
+		Post struct {
+			ID int64 `json:"id"`
+		}
 	}
 	json.Unmarshal(createW.Body.Bytes(), &cr)
 
@@ -309,7 +315,9 @@ func TestDeletePost(t *testing.T) {
 		"title": "To Delete", "body": "bye",
 	}), token)
 	var cr struct {
-		Post struct{ ID int64 `json:"id"` }
+		Post struct {
+			ID int64 `json:"id"`
+		}
 	}
 	json.Unmarshal(createW.Body.Bytes(), &cr)
 
@@ -325,7 +333,9 @@ func TestArchivePost(t *testing.T) {
 		"title": "To Archive", "body": "bye",
 	}), token)
 	var cr struct {
-		Post struct{ ID int64 `json:"id"` }
+		Post struct {
+			ID int64 `json:"id"`
+		}
 	}
 	json.Unmarshal(createW.Body.Bytes(), &cr)
 
@@ -368,7 +378,9 @@ func TestGetTagByID(t *testing.T) {
 	createW := request("POST", "/api/v1/tags", jsonBody(map[string]interface{}{
 		"name": "gtag" + unique(), "category": "test",
 	}), token)
-	var tag struct{ ID int64 `json:"id"` }
+	var tag struct {
+		ID int64 `json:"id"`
+	}
 	json.Unmarshal(createW.Body.Bytes(), &tag)
 
 	w := request("GET", fmt.Sprintf("/api/v1/tags/%d", tag.ID), nil, token)
@@ -382,7 +394,9 @@ func TestDeleteTag(t *testing.T) {
 	createW := request("POST", "/api/v1/tags", jsonBody(map[string]interface{}{
 		"name": "dtag" + unique(), "category": "test",
 	}), token)
-	var tag struct{ ID int64 `json:"id"` }
+	var tag struct {
+		ID int64 `json:"id"`
+	}
 	json.Unmarshal(createW.Body.Bytes(), &tag)
 
 	w := request("DELETE", fmt.Sprintf("/api/v1/tags/%d", tag.ID), nil, token)
@@ -397,14 +411,18 @@ func TestTagPostAssociation(t *testing.T) {
 		"title": "Tagged Post", "body": "content",
 	}), token)
 	var post struct {
-		Post struct{ ID int64 `json:"id"` }
+		Post struct {
+			ID int64 `json:"id"`
+		}
 	}
 	json.Unmarshal(createPostW.Body.Bytes(), &post)
 
 	createTagW := request("POST", "/api/v1/tags", jsonBody(map[string]interface{}{
 		"name": "assoc" + unique(), "category": "test",
 	}), token)
-	var tag struct{ ID int64 `json:"id"` }
+	var tag struct {
+		ID int64 `json:"id"`
+	}
 	json.Unmarshal(createTagW.Body.Bytes(), &tag)
 
 	w := request("POST", fmt.Sprintf("/api/v1/tags/posts/%d/tags/%d", post.Post.ID, tag.ID), nil, token)
@@ -428,7 +446,9 @@ func TestVoteTag(t *testing.T) {
 	createW := request("POST", "/api/v1/tags", jsonBody(map[string]interface{}{
 		"name": "vt" + unique(), "category": "test",
 	}), token)
-	var tag struct{ ID int64 `json:"id"` }
+	var tag struct {
+		ID int64 `json:"id"`
+	}
 	json.Unmarshal(createW.Body.Bytes(), &tag)
 
 	w := request("POST", fmt.Sprintf("/api/v1/tags/%d/vote", tag.ID), jsonBody(map[string]interface{}{
@@ -557,7 +577,9 @@ func TestCreateNote(t *testing.T) {
 		"title": "Notable", "body": "note me",
 	}), token)
 	var post struct {
-		Post struct{ ID int64 `json:"id"` }
+		Post struct {
+			ID int64 `json:"id"`
+		}
 	}
 	json.Unmarshal(createPostW.Body.Bytes(), &post)
 
@@ -578,7 +600,9 @@ func TestCreateInteraction(t *testing.T) {
 		"title": "Interact Me", "body": "interact",
 	}), token)
 	var post struct {
-		Post struct{ ID int64 `json:"id"` }
+		Post struct {
+			ID int64 `json:"id"`
+		}
 	}
 	json.Unmarshal(createPostW.Body.Bytes(), &post)
 
@@ -725,7 +749,9 @@ func TestCreateReport(t *testing.T) {
 		"title": "Report Me", "body": "report",
 	}), token)
 	var post struct {
-		Post struct{ ID int64 `json:"id"` }
+		Post struct {
+			ID int64 `json:"id"`
+		}
 	}
 	json.Unmarshal(createPostW.Body.Bytes(), &post)
 

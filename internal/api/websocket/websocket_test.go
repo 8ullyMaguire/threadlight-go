@@ -19,20 +19,38 @@ func TestNewHub(t *testing.T) {
 }
 
 func TestMessageTypes(t *testing.T) {
-	if MsgTypeNotification != "notification" { t.Fatal("unexpected notification type") }
-	if MsgTypeFeedUpdate != "feed_update" { t.Fatal("unexpected feed_update type") }
-	if MsgTypeInteraction != "interaction" { t.Fatal("unexpected interaction type") }
-	if MsgTypeTyping != "typing" { t.Fatal("unexpected typing type") }
-	if MsgTypePresence != "presence" { t.Fatal("unexpected presence type") }
-	if MsgTypeError != "error" { t.Fatal("unexpected error type") }
+	if MsgTypeNotification != "notification" {
+		t.Fatal("unexpected notification type")
+	}
+	if MsgTypeFeedUpdate != "feed_update" {
+		t.Fatal("unexpected feed_update type")
+	}
+	if MsgTypeInteraction != "interaction" {
+		t.Fatal("unexpected interaction type")
+	}
+	if MsgTypeTyping != "typing" {
+		t.Fatal("unexpected typing type")
+	}
+	if MsgTypePresence != "presence" {
+		t.Fatal("unexpected presence type")
+	}
+	if MsgTypeError != "error" {
+		t.Fatal("unexpected error type")
+	}
 }
 
 func TestMustMarshal(t *testing.T) {
 	data := mustMarshal(map[string]int{"key": 42})
-	if data == nil { t.Fatal("expected non-nil") }
+	if data == nil {
+		t.Fatal("expected non-nil")
+	}
 	var result map[string]int
-	if err := json.Unmarshal(data, &result); err != nil { t.Fatal(err) }
-	if result["key"] != 42 { t.Fatalf("expected 42, got %d", result["key"]) }
+	if err := json.Unmarshal(data, &result); err != nil {
+		t.Fatal(err)
+	}
+	if result["key"] != 42 {
+		t.Fatalf("expected 42, got %d", result["key"])
+	}
 }
 
 func TestMessageJSON(t *testing.T) {
@@ -43,9 +61,13 @@ func TestMessageJSON(t *testing.T) {
 		}),
 	}
 	b, err := json.Marshal(msg)
-	if err != nil { t.Fatal(err) }
+	if err != nil {
+		t.Fatal(err)
+	}
 	var decoded Message
-	if err := json.Unmarshal(b, &decoded); err != nil { t.Fatal(err) }
+	if err := json.Unmarshal(b, &decoded); err != nil {
+		t.Fatal(err)
+	}
 	if decoded.Type != MsgTypeNotification {
 		t.Fatalf("expected notification type, got %s", decoded.Type)
 	}
@@ -160,8 +182,8 @@ func TestHubClientNilReadWritePump(t *testing.T) {
 	// Create client without a real conn - ReadPump/WritePump should panic
 	// which is expected behavior
 	c := &Client{
-		hub: h,
-		send: make(chan []byte, 256),
+		hub:    h,
+		send:   make(chan []byte, 256),
 		userID: 1,
 	}
 

@@ -2,11 +2,11 @@ package websocket
 
 import (
 	"encoding/json"
-	"log"
 	"sync"
 	"time"
 
 	"github.com/gorilla/websocket"
+	applog "github.com/opencode-ai/polaris/internal/log"
 )
 
 const (
@@ -48,16 +48,16 @@ func (c *Client) ReadPump() {
 
 	for {
 		_, message, err := c.conn.ReadMessage()
-		if err != nil {
-			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure) {
-				log.Printf("websocket read error: %v", err)
-			}
-			break
-		}
+				if err != nil {
+					if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseNormalClosure) {
+						applog.Logger.Warn().Err(err).Msg("websocket read error")
+					}
+					break
+				}
 
-		var msg Message
-		if err := json.Unmarshal(message, &msg); err != nil {
-			log.Printf("invalid message: %v", err)
+				var msg Message
+				if err := json.Unmarshal(message, &msg); err != nil {
+					applog.Logger.Warn().Err(err).Msg("invalid message")
 			continue
 		}
 		msg.UserID = c.userID

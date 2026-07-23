@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/redis/go-redis/v9"
 	applog "github.com/opencode-ai/polaris/internal/log"
+	"github.com/redis/go-redis/v9"
 )
 
 type Worker struct {

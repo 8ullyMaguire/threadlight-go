@@ -75,8 +75,8 @@ func (h *ModDecisionHandler) CastVote(c *gin.Context) {
 	if penErr == nil && penaltyReason != "" {
 		// Include the penalty info in the response so the UI can show it
 		c.JSON(http.StatusOK, gin.H{
-			"review":         review,
-			"trust_penalty":  penaltyReason,
+			"review":        review,
+			"trust_penalty": penaltyReason,
 		})
 		return
 	}

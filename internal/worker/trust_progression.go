@@ -11,13 +11,14 @@ import (
 // and promotes them according to the defined criteria.
 //
 // Trust level progression rules:
-//   Level 0 → 1: Account age > 7 days, at least 5 posts, no moderation actions
-//   Level 1 → 2: At level 1 for > 30 days (proxied by created_at), at least 20 posts,
-//                 trust_score > 3.0, positive reaction ratio > 60%,
-//                 no moderation actions in last 30 days
-//   Level 2 → 3: At level 2 for > 90 days (proxied by created_at), at least 100 posts,
-//                 trust_score > 6.0, positive reaction ratio > 75%,
-//                 no moderation actions ever
+//
+//	Level 0 → 1: Account age > 7 days, at least 5 posts, no moderation actions
+//	Level 1 → 2: At level 1 for > 30 days (proxied by created_at), at least 20 posts,
+//	              trust_score > 3.0, positive reaction ratio > 60%,
+//	              no moderation actions in last 30 days
+//	Level 2 → 3: At level 2 for > 90 days (proxied by created_at), at least 100 posts,
+//	              trust_score > 6.0, positive reaction ratio > 75%,
+//	              no moderation actions ever
 //
 // Note: Without a trust_level_changed_at column, "time at level" conditions use
 // created_at as a lower-bound approximation. Add trust_level_changed_at to users

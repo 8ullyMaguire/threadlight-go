@@ -13,12 +13,12 @@ import (
 type MessageType string
 
 const (
-	MsgTypeNotification  MessageType = "notification"
-	MsgTypeFeedUpdate    MessageType = "feed_update"
-	MsgTypeInteraction   MessageType = "interaction"
-	MsgTypeTyping        MessageType = "typing"
-	MsgTypePresence      MessageType = "presence"
-	MsgTypeError         MessageType = "error"
+	MsgTypeNotification MessageType = "notification"
+	MsgTypeFeedUpdate   MessageType = "feed_update"
+	MsgTypeInteraction  MessageType = "interaction"
+	MsgTypeTyping       MessageType = "typing"
+	MsgTypePresence     MessageType = "presence"
+	MsgTypeError        MessageType = "error"
 )
 
 type Message struct {

@@ -128,7 +128,10 @@ func TestLoggingMultipleMethods(t *testing.T) {
 	r.PUT("/data/1", func(c *gin.Context) { c.String(http.StatusOK, "ok") })
 	r.DELETE("/data/1", func(c *gin.Context) { c.String(http.StatusNoContent, "") })
 
-	for _, tt := range []struct{ method, path string; expected int }{
+	for _, tt := range []struct {
+		method, path string
+		expected     int
+	}{
 		{"POST", "/data", 201},
 		{"PUT", "/data/1", 200},
 		{"DELETE", "/data/1", 204},

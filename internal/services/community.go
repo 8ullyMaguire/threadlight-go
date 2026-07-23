@@ -11,8 +11,8 @@ import (
 )
 
 type CommunityService struct {
-	pg      *pgxpool.Pool
-	affAcc  AffinityAccumulatorInterface
+	pg     *pgxpool.Pool
+	affAcc AffinityAccumulatorInterface
 }
 
 func NewCommunityService(pg *pgxpool.Pool, affAcc AffinityAccumulatorInterface) *CommunityService {
@@ -318,16 +318,16 @@ func (s *CommunityService) ForkCommunity(ctx context.Context, sourceID, initiate
 	}
 	// Create fork with same settings
 	forkReq := model.Community{
-		Name:         source.Name + " (fork)",
-		Description:  source.Description,
-		Slug:         source.Slug + "-fork-" + fmt.Sprintf("%d", time.Now().Unix()),
-		Tags:         source.Tags,
-		CuratorLock:  source.CuratorLock,
-		SlowBootDays: source.SlowBootDays,
-		InviteOnly:   source.InviteOnly,
+		Name:          source.Name + " (fork)",
+		Description:   source.Description,
+		Slug:          source.Slug + "-fork-" + fmt.Sprintf("%d", time.Now().Unix()),
+		Tags:          source.Tags,
+		CuratorLock:   source.CuratorLock,
+		SlowBootDays:  source.SlowBootDays,
+		InviteOnly:    source.InviteOnly,
 		MinTrustScore: source.MinTrustScore,
-		ForkedFrom:   &sourceID,
-		CreatedBy:    initiatedBy,
+		ForkedFrom:    &sourceID,
+		CreatedBy:     initiatedBy,
 	}
 	fork, err := s.CreateCommunity(ctx, forkReq)
 	if err != nil {

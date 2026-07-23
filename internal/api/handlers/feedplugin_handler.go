@@ -1,4 +1,5 @@
 package handlers
+
 import (
 	"crypto/sha256"
 	"errors"
@@ -303,8 +304,8 @@ func (h *FeedPluginHandler) Execute(c *gin.Context) {
 	}
 
 	var req struct {
-		PostIDs []int64            `json:"post_ids" binding:"required"`
-		Context map[string]any     `json:"context,omitempty"`
+		PostIDs []int64        `json:"post_ids" binding:"required"`
+		Context map[string]any `json:"context,omitempty"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

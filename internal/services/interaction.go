@@ -8,8 +8,8 @@ import (
 )
 
 type InteractionService struct {
-	pg      *pgxpool.Pool
-	affAcc  AffinityAccumulatorInterface
+	pg     *pgxpool.Pool
+	affAcc AffinityAccumulatorInterface
 }
 
 func NewInteractionService(pg *pgxpool.Pool, affAcc AffinityAccumulatorInterface) *InteractionService {

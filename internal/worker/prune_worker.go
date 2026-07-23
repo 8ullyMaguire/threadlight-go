@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	applog "github.com/opencode-ai/polaris/internal/log"
 	"github.com/jackc/pgx/v5/pgxpool"
+	applog "github.com/opencode-ai/polaris/internal/log"
 )
 
 func RunPrune(ctx context.Context, pg *pgxpool.Pool) {
