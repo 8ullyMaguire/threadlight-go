@@ -27,6 +27,14 @@ type resolveReportRequest struct {
 	Status int16 `json:"status" binding:"required"`
 }
 
+// @Summary      Create a report
+// @Description  Report a post for moderation review
+// @Tags         reports
+// @Param        body body createReportRequest true "Report details"
+// @Success      201 {object} model.PostReport
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Router       /reports [post]
 func (h *ReportHandler) Create(c *gin.Context) {
 	var req createReportRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -51,15 +59,33 @@ func (h *ReportHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, created)
 }
 
+// @Summary      List reports
+// @Description  List all reports for moderation
+// @Tags         reports
+// @Success      200 {object} []model.PostReport
+// @Failure      401 {object} map[string]interface{}
+// @Router       /reports [get]
 func (h *ReportHandler) List(c *gin.Context) {
 	reports, err := h.reportSvc.ListReports(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, reports)
+	if reports == nil {
+		reports = []model.PostReport{}
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(reports, 1, len(reports), len(reports)))
 }
 
+// @Summary      Get a report
+// @Description  Get a single report by ID
+// @Tags         reports
+// @Param        id path int true "Report ID"
+// @Success      200 {object} model.PostReport
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /reports/{id} [get]
 func (h *ReportHandler) Get(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -75,6 +101,15 @@ func (h *ReportHandler) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, report)
 }
 
+// @Summary      Resolve a report
+// @Description  Resolve a report with a given status
+// @Tags         reports
+// @Param        id path int true "Report ID"
+// @Param        body body resolveReportRequest true "Resolution status"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Router       /reports/{id}/resolve [put]
 func (h *ReportHandler) Resolve(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {

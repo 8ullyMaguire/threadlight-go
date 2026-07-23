@@ -18,8 +18,13 @@ func NewAffinityHandler(affinitySvc *services.UserAffinityService) *AffinityHand
 	return &AffinityHandler{affinitySvc: affinitySvc}
 }
 
-// GetAffinities returns the authenticated user's computed affinities.
-// GET /api/v1/affinity
+// @Summary      Get user affinities
+// @Description  Get the authenticated user's computed affinities with other users
+// @Tags         affinity
+// @Param        limit query int false "Max results (default 50)"
+// @Success      200 {object} []model.UserAffinity
+// @Failure      401 {object} map[string]interface{}
+// @Router       /affinity [get]
 func (h *AffinityHandler) GetAffinities(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "50"))
@@ -32,11 +37,17 @@ func (h *AffinityHandler) GetAffinities(c *gin.Context) {
 	if affinities == nil {
 		affinities = []model.UserAffinity{}
 	}
-	c.JSON(http.StatusOK, affinities)
+	c.JSON(http.StatusOK, model.NewPaginated(affinities, 1, limit, len(affinities)))
 }
 
-// GetSimilarUsers returns user IDs similar to the authenticated user.
-// GET /api/v1/affinity/similar
+// @Summary      Get similar users
+// @Description  Get user IDs similar to the authenticated user based on affinity
+// @Tags         affinity
+// @Param        limit query int false "Max results (default 20)"
+// @Success      200 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /affinity/similar [get]
 func (h *AffinityHandler) GetSimilarUsers(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))

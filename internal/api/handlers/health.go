@@ -1,3 +1,9 @@
+// Package handlers contains all HTTP handler implementations for the API.
+// @title           Polaris API
+// @version         0.1
+// @description     Threadlight social platform API
+// @host            localhost:8080
+// @BasePath        /api/v1
 package handlers
 
 import (
@@ -19,6 +25,13 @@ func NewHealthHandler(pg *pgxpool.Pool, rdb *redis.Client) *HealthHandler {
 	return &HealthHandler{pg: pg, rdb: rdb}
 }
 
+// Health checks the API, database, and Redis connectivity
+// @Summary      Health check
+// @Description  Check API, database, and Redis connectivity status
+// @Tags         system
+// @Success      200 {object} map[string]interface{} "status, postgres, redis fields"
+// @Failure      503 {object} map[string]interface{} "when postgres or redis is down"
+// @Router       /health [get]
 func (h *HealthHandler) Health(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
 	defer cancel()

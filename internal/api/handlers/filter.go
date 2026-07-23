@@ -17,6 +17,16 @@ func NewFilterHandler(filterSvc *services.FilterService) *FilterHandler {
 	return &FilterHandler{filterSvc: filterSvc}
 }
 
+// @Summary      Create a content filter
+// @Description  Create a new content filter for the authenticated user
+// @Tags         filters
+// @Accept       json
+// @Produce      json
+// @Param        body body model.ContentFilter true "Content filter object"
+// @Success      201 {object} model.ContentFilter
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /filters [post]
 func (h *FilterHandler) Create(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	var req model.ContentFilter
@@ -32,6 +42,18 @@ func (h *FilterHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, filter)
 }
 
+// @Summary      Update a content filter
+// @Description  Update an existing content filter
+// @Tags         filters
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "Filter ID"
+// @Param        body body model.ContentFilter true "Updated content filter object"
+// @Success      200 {object} model.ContentFilter
+// @Failure      400 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /filters/{id} [put]
 func (h *FilterHandler) Update(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -51,6 +73,15 @@ func (h *FilterHandler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, filter)
 }
 
+// @Summary      Delete a content filter
+// @Description  Delete a content filter by ID
+// @Tags         filters
+// @Produce      json
+// @Param        id path int true "Filter ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /filters/{id} [delete]
 func (h *FilterHandler) Delete(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -64,6 +95,13 @@ func (h *FilterHandler) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "filter deleted"})
 }
 
+// @Summary      List user filters
+// @Description  List all content filters for the authenticated user
+// @Tags         filters
+// @Produce      json
+// @Success      200 {object} model.Paginated{items=[]model.ContentFilter}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /filters [get]
 func (h *FilterHandler) List(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	filters, err := h.filterSvc.ListUserFilters(c.Request.Context(), userID)
@@ -71,7 +109,10 @@ func (h *FilterHandler) List(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, filters)
+	if filters == nil {
+		filters = []model.ContentFilter{}
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(filters, 1, len(filters), len(filters)))
 }
 
 func (h *FilterHandler) Check(c *gin.Context) {

@@ -20,8 +20,19 @@ func NewFeedPluginHandler(feedPluginSvc *services.FeedPluginService) *FeedPlugin
 	return &FeedPluginHandler{feedPluginSvc: feedPluginSvc}
 }
 
-// Create handles WASM plugin upload via multipart form.
-// POST /api/v1/feed-plugins
+// @Summary      Create a feed plugin
+// @Description  Upload a WASM feed plugin via multipart form
+// @Tags         feed-plugins
+// @Param        name formData string true "Plugin name"
+// @Param        description formData string true "Plugin description"
+// @Param        version formData string false "Plugin version (default 1.0.0)"
+// @Param        plugin_type formData int false "Plugin type (default 0)"
+// @Param        price_credits formData int false "Price in credits (default 0)"
+// @Param        wasm formData file true "WASM plugin binary"
+// @Success      201 {object} model.FeedPlugin
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Router       /feed-plugins [post]
 func (h *FeedPluginHandler) Create(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 
@@ -87,8 +98,14 @@ func (h *FeedPluginHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, plugin)
 }
 
-// Get returns a single plugin by ID.
-// GET /api/v1/feed-plugins/:id
+// @Summary      Get a feed plugin
+// @Description  Get a single feed plugin by ID
+// @Tags         feed-plugins
+// @Param        id path int true "Plugin ID"
+// @Success      200 {object} model.FeedPlugin
+// @Failure      400 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /feed-plugins/{id} [get]
 func (h *FeedPluginHandler) Get(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -108,8 +125,14 @@ func (h *FeedPluginHandler) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, plugin)
 }
 
-// List returns all reviewed plugins.
-// GET /api/v1/feed-plugins
+// @Summary      List feed plugins
+// @Description  List all reviewed/approved feed plugins
+// @Tags         feed-plugins
+// @Param        reviewed query bool false "Filter by reviewed status (default true)"
+// @Param        sort query string false "Sort order (newest, oldest) default newest"
+// @Param        limit query int false "Max results (default 50)"
+// @Success      200 {object} []model.FeedPlugin
+// @Router       /feed-plugins [get]
 func (h *FeedPluginHandler) List(c *gin.Context) {
 	reviewedStr := c.DefaultQuery("reviewed", "true")
 	reviewed := reviewedStr == "true"
@@ -124,15 +147,29 @@ func (h *FeedPluginHandler) List(c *gin.Context) {
 	if plugins == nil {
 		plugins = []model.FeedPlugin{}
 	}
+	n := len(plugins)
 	// Truncate to limit on handler side
 	if len(plugins) > limit {
 		plugins = plugins[:limit]
 	}
-	c.JSON(http.StatusOK, plugins)
+	page := 1
+	total := n
+	if n >= limit {
+		total = limit + 1
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(plugins, page, limit, total))
 }
 
-// Install installs a plugin for the authenticated user.
-// POST /api/v1/feed-plugins/:id/install
+// @Summary      Install a feed plugin
+// @Description  Install a feed plugin for the authenticated user
+// @Tags         feed-plugins
+// @Param        id path int true "Plugin ID"
+// @Success      201 {object} model.FeedPluginInstall
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Failure      409 {object} map[string]interface{}
+// @Router       /feed-plugins/{id}/install [post]
 func (h *FeedPluginHandler) Install(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -157,8 +194,16 @@ func (h *FeedPluginHandler) Install(c *gin.Context) {
 	c.JSON(http.StatusCreated, install)
 }
 
-// Uninstall removes a plugin installation.
-// POST /api/v1/feed-plugins/:id/uninstall
+// @Summary      Uninstall a feed plugin
+// @Description  Uninstall a feed plugin for the authenticated user
+// @Tags         feed-plugins
+// @Param        id path int true "Plugin ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      403 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /feed-plugins/{id}/uninstall [post]
 func (h *FeedPluginHandler) Uninstall(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -182,8 +227,12 @@ func (h *FeedPluginHandler) Uninstall(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "plugin uninstalled"})
 }
 
-// ListInstalls returns the authenticated user's installed plugins.
-// GET /api/v1/feed-plugins/installs
+// @Summary      List installed feed plugins
+// @Description  List all feed plugins installed by the authenticated user
+// @Tags         feed-plugins
+// @Success      200 {object} []model.FeedPluginInstall
+// @Failure      401 {object} map[string]interface{}
+// @Router       /feed-plugins/installs [get]
 func (h *FeedPluginHandler) ListInstalls(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	installs, err := h.feedPluginSvc.ListInstalls(c.Request.Context(), userID)
@@ -194,11 +243,19 @@ func (h *FeedPluginHandler) ListInstalls(c *gin.Context) {
 	if installs == nil {
 		installs = []model.FeedPluginInstall{}
 	}
-	c.JSON(http.StatusOK, installs)
+	c.JSON(http.StatusOK, model.NewPaginated(installs, 1, len(installs), len(installs)))
 }
 
-// Review submits or updates a review for a plugin.
-// POST /api/v1/feed-plugins/:id/review
+// @Summary      Review a feed plugin
+// @Description  Submit or update a review for a feed plugin
+// @Tags         feed-plugins
+// @Param        id path int true "Plugin ID"
+// @Param        body body object true "Review with rating (1-5) and optional text"
+// @Success      201 {object} model.FeedPluginReview
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /feed-plugins/{id}/review [post]
 func (h *FeedPluginHandler) Review(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -228,8 +285,16 @@ func (h *FeedPluginHandler) Review(c *gin.Context) {
 	c.JSON(http.StatusCreated, review)
 }
 
-// Execute runs a plugin against sample post IDs.
-// POST /api/v1/feed-plugins/:id/execute
+// @Summary      Execute a feed plugin
+// @Description  Execute a feed plugin against a set of post IDs
+// @Tags         feed-plugins
+// @Param        id path int true "Plugin ID"
+// @Param        body body object true "Execution request with post_ids and optional context"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /feed-plugins/{id}/execute [post]
 func (h *FeedPluginHandler) Execute(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {

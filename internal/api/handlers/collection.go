@@ -17,6 +17,16 @@ func NewCollectionHandler(collectionSvc *services.CollectionService) *Collection
 	return &CollectionHandler{collectionSvc: collectionSvc}
 }
 
+// @Summary      Create a collection
+// @Description  Create a new collection for the authenticated user
+// @Tags         collections
+// @Accept       json
+// @Produce      json
+// @Param        body body model.Collection true "Collection object"
+// @Success      201 {object} model.Collection
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /collections [post]
 func (h *CollectionHandler) Create(c *gin.Context) {
 	var req model.Collection
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -33,6 +43,15 @@ func (h *CollectionHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, collection)
 }
 
+// @Summary      Get collection by ID
+// @Description  Get a single collection by its ID
+// @Tags         collections
+// @Produce      json
+// @Param        id path int true "Collection ID"
+// @Success      200 {object} model.Collection
+// @Failure      400 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /collections/{id} [get]
 func (h *CollectionHandler) GetByID(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -48,6 +67,17 @@ func (h *CollectionHandler) GetByID(c *gin.Context) {
 	c.JSON(http.StatusOK, collection)
 }
 
+// @Summary      Update a collection
+// @Description  Update an existing collection
+// @Tags         collections
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "Collection ID"
+// @Param        body body model.Collection true "Updated collection object"
+// @Success      200 {object} model.Collection
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /collections/{id} [put]
 func (h *CollectionHandler) Update(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -69,6 +99,15 @@ func (h *CollectionHandler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, collection)
 }
 
+// @Summary      Delete a collection
+// @Description  Delete a collection by ID
+// @Tags         collections
+// @Produce      json
+// @Param        id path int true "Collection ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /collections/{id} [delete]
 func (h *CollectionHandler) Delete(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -83,6 +122,13 @@ func (h *CollectionHandler) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "collection deleted"})
 }
 
+// @Summary      List user collections
+// @Description  List all collections for the authenticated user
+// @Tags         collections
+// @Produce      json
+// @Success      200 {object} model.Paginated{items=[]model.Collection}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /collections [get]
 func (h *CollectionHandler) ListByUser(c *gin.Context) {
 	uid, _ := c.Get("user_id")
 
@@ -91,9 +137,23 @@ func (h *CollectionHandler) ListByUser(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, collections)
+	if collections == nil {
+		collections = []model.Collection{}
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(collections, 1, len(collections), len(collections)))
 }
 
+// @Summary      Add post to collection
+// @Description  Add a post to a collection
+// @Tags         collections
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "Collection ID"
+// @Param        body body object{post_id=int} true "Post ID to add"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /collections/{id}/posts [post]
 func (h *CollectionHandler) AddPost(c *gin.Context) {
 	collectionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -117,6 +177,16 @@ func (h *CollectionHandler) AddPost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "post added to collection"})
 }
 
+// @Summary      Remove post from collection
+// @Description  Remove a post from a collection
+// @Tags         collections
+// @Produce      json
+// @Param        id path int true "Collection ID"
+// @Param        post_id path int true "Post ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /collections/{id}/posts/{post_id} [delete]
 func (h *CollectionHandler) RemovePost(c *gin.Context) {
 	collectionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -137,6 +207,15 @@ func (h *CollectionHandler) RemovePost(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "post removed from collection"})
 }
 
+// @Summary      List posts in collection
+// @Description  List all posts in a collection
+// @Tags         collections
+// @Produce      json
+// @Param        id path int true "Collection ID"
+// @Success      200 {object} model.Paginated{items=[]model.CollectionPost}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /collections/{id}/posts [get]
 func (h *CollectionHandler) ListPosts(c *gin.Context) {
 	collectionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -149,5 +228,8 @@ func (h *CollectionHandler) ListPosts(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, posts)
+	if posts == nil {
+		posts = []model.CollectionPost{}
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(posts, 1, len(posts), len(posts)))
 }

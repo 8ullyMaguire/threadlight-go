@@ -1,3 +1,9 @@
+// Package handlers contains all HTTP handler implementations for the API.
+// @title           Polaris API
+// @version         0.1
+// @description     Threadlight social platform API
+// @host            localhost:8080
+// @BasePath        /api/v1
 package handlers
 
 import (
@@ -15,6 +21,13 @@ func NewAboutHandler(configSvc *services.ConfigService) *AboutHandler {
 	return &AboutHandler{configSvc: configSvc}
 }
 
+// GetAbout returns instance metadata (name, description, version, policies, etc.)
+// @Summary      Get instance about info
+// @Description  Returns public instance metadata such as instance name, description, version, admin contact, and links to policies
+// @Tags         about
+// @Success      200 {object} model.AboutResponse
+// @Failure      500 {object} map[string]interface{}
+// @Router       /about [get]
 func (h *AboutHandler) GetAbout(c *gin.Context) {
 	about, err := h.configSvc.GetAbout(c.Request.Context())
 	if err != nil {

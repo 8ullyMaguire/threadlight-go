@@ -17,6 +17,15 @@ func NewSearchHandler(searchSvc *services.SearchService) *SearchHandler {
 	return &SearchHandler{searchSvc: searchSvc}
 }
 
+// @Summary      Search
+// @Description  Perform a global search across posts, users, and communities
+// @Tags         search
+// @Param        q query string true "Search query"
+// @Param        limit query int false "Max results (default 20)"
+// @Param        offset query int false "Result offset (default 0)"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /search [get]
 func (h *SearchHandler) Search(c *gin.Context) {
 	query := c.Query("q")
 	if query == "" {
@@ -31,9 +40,24 @@ func (h *SearchHandler) Search(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, results)
+	if results == nil {
+		results = []*model.Post{}
+	}
+	page := (offset / limit) + 1
+	total := offset + len(results)
+	if len(results) >= limit {
+		total = offset + limit + 1
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(results, page, limit, total))
 }
 
+// @Summary      Advanced search
+// @Description  Perform an advanced search with a JSON body for more options
+// @Tags         search
+// @Param        body body object true "Advanced search query"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /search/advanced [post]
 func (h *SearchHandler) AdvancedSearch(c *gin.Context) {
 	var req struct {
 		Query string `json:"q" binding:"required"`
@@ -50,10 +74,36 @@ func (h *SearchHandler) AdvancedSearch(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, results)
+	if results == nil {
+		results = []*model.Post{}
+	}
+	page := (req.Offset / req.Limit) + 1
+	total := req.Offset + len(results)
+	if len(results) >= req.Limit {
+		total = req.Offset + req.Limit + 1
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(results, page, req.Limit, total))
 }
 
-// SearchPosts handles GET /api/v1/search/posts — full-text post search with filters
+// @Summary      Search posts
+// @Description  Full-text post search with filters (author, tag, community, date range, mood, etc.)
+// @Tags         search
+// @Param        q query string true "Search query"
+// @Param        author query string false "Filter by author username"
+// @Param        tag query string false "Filter by tag"
+// @Param        community query string false "Filter by community"
+// @Param        date_from query string false "Filter posts from date (RFC3339)"
+// @Param        date_to query string false "Filter posts to date (RFC3339)"
+// @Param        sort query string false "Sort order (relevance, newest, oldest) default relevance"
+// @Param        page query int false "Page number (default 1)"
+// @Param        limit query int false "Results per page (default 20)"
+// @Param        mood query int false "Filter by mood"
+// @Param        content_type query int false "Filter by content type"
+// @Param        is_educational query bool false "Filter educational posts"
+// @Param        is_nsfw query bool false "Filter NSFW posts"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /search/posts [get]
 func (h *SearchHandler) SearchPosts(c *gin.Context) {
 	query := c.Query("q")
 	if query == "" {
@@ -92,22 +142,27 @@ func (h *SearchHandler) SearchPosts(c *gin.Context) {
 		q.IsNSFW = &v
 	}
 
-	results, total, facets, err := h.searchSvc.SearchPosts(c.Request.Context(), q)
+	results, total, _, err := h.searchSvc.SearchPosts(c.Request.Context(), q)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"results": results,
-		"total":   total,
-		"page":    q.Page,
-		"limit":   q.Limit,
-		"facets":  facets,
-	})
+	if results == nil {
+		results = []model.PostWithHeadline{}
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(results, q.Page, q.Limit, total))
 }
 
-// SearchUsers handles GET /api/v1/search/users
+// @Summary      Search users
+// @Description  Search for users by username or display name
+// @Tags         search
+// @Param        q query string true "Search query"
+// @Param        page query int false "Page number (default 1)"
+// @Param        limit query int false "Results per page (default 20)"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /search/users [get]
 func (h *SearchHandler) SearchUsers(c *gin.Context) {
 	query := c.Query("q")
 	if query == "" {
@@ -124,15 +179,21 @@ func (h *SearchHandler) SearchUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"results": results,
-		"total":   total,
-		"page":    page,
-		"limit":   limit,
-	})
+	if results == nil {
+		results = []model.User{}
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(results, page, limit, total))
 }
 
-// SearchCommunities handles GET /api/v1/search/communities
+// @Summary      Search communities
+// @Description  Search for communities by name or description
+// @Tags         search
+// @Param        q query string true "Search query"
+// @Param        page query int false "Page number (default 1)"
+// @Param        limit query int false "Results per page (default 20)"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Router       /search/communities [get]
 func (h *SearchHandler) SearchCommunities(c *gin.Context) {
 	query := c.Query("q")
 	if query == "" {
@@ -149,15 +210,18 @@ func (h *SearchHandler) SearchCommunities(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"results": results,
-		"total":   total,
-		"page":    page,
-		"limit":   limit,
-	})
+	if results == nil {
+		results = []model.Community{}
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(results, page, limit, total))
 }
 
-// SearchSuggest handles GET /api/v1/search/suggest — prefix-based suggestions for autocomplete
+// @Summary      Search suggestions
+// @Description  Get prefix-based autocomplete suggestions for users, communities, and tags
+// @Tags         search
+// @Param        q query string true "Search prefix"
+// @Success      200 {object} map[string]interface{}
+// @Router       /search/suggest [get]
 func (h *SearchHandler) SearchSuggest(c *gin.Context) {
 	q := c.Query("q")
 	if q == "" {

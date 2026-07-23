@@ -37,17 +37,6 @@ func TestMain(m *testing.M) {
 }
 
 func migrate(pg *pgxpool.Pool) {
-	// Migration is handled by handlers_test. Only insert config defaults here.
-	_, err := pg.Exec(context.Background(),
-		`INSERT INTO site_config (id, registration_mode, invite_limit_threshold_0, invite_limit_threshold_1, invite_limit_threshold_2, invite_limit_threshold_3, invite_limit_threshold_4, invite_limit_threshold_5)
-		 VALUES (1, 'open', 5, 5, 5, 5, 10, 20)
-		 ON CONFLICT (id) DO UPDATE SET registration_mode = 'open',
-		 invite_limit_threshold_0 = 5, invite_limit_threshold_1 = 5, invite_limit_threshold_2 = 5,
-		 invite_limit_threshold_3 = 5, invite_limit_threshold_4 = 10, invite_limit_threshold_5 = 20`)
-	if err != nil {
-		panic(fmt.Sprintf("config: %v", err))
-	}
-
 	// Clean up any leftover test data: delete from referencing tables first
 	pg.Exec(context.Background(), `DELETE FROM feed_plugin_reviews WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM feed_plugin_installs WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
@@ -62,15 +51,35 @@ func migrate(pg *pgxpool.Pool) {
 	pg.Exec(context.Background(), `DELETE FROM user_follows WHERE follower_id IN (SELECT id FROM users WHERE email LIKE '%@test.com') OR followee_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM user_achievements WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM community_members WHERE user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM communities WHERE created_by IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM community_trust_connections WHERE truster_id IN (SELECT id FROM users WHERE email LIKE '%@test.com') OR trustee_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM trust_connections WHERE truster_id IN (SELECT id FROM users WHERE email LIKE '%@test.com') OR trustee_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
-	pg.Exec(context.Background(), `DELETE FROM moderation_actions WHERE target_user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	pg.Exec(context.Background(), `DELETE FROM moderation_actions WHERE target_user_id IN (SELECT id FROM users WHERE email LIKE '%@test.com') OR moderator_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM user_invites WHERE inviter_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
 	pg.Exec(context.Background(), `DELETE FROM post_tags WHERE post_id IN (SELECT id FROM posts WHERE author_id IN (SELECT id FROM users WHERE email LIKE '%@test.com'))`)
 	pg.Exec(context.Background(), `DELETE FROM posts WHERE author_id IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
-	_, err = pg.Exec(context.Background(),
+	pg.Exec(context.Background(), `DELETE FROM credit_transactions WHERE from_user IN (SELECT id FROM users WHERE email LIKE '%@test.com') OR to_user IN (SELECT id FROM users WHERE email LIKE '%@test.com')`)
+	_, err := pg.Exec(context.Background(),
 		`DELETE FROM users WHERE email LIKE '%@test.com'`)
 	if err != nil {
 		panic(fmt.Sprintf("cleanup: %v", err))
+	}
+
+	// Seed the platform user (id=0) for credit tax transfers
+	pg.Exec(context.Background(),
+		`INSERT INTO users (id, username, email, password_hash, is_admin)
+		 VALUES (0, 'platform', 'platform@local', 'x', true)
+		 ON CONFLICT (id) DO UPDATE SET username = 'platform'`)
+
+	// Migration is handled by handlers_test. Only insert config defaults here.
+	_, err = pg.Exec(context.Background(),
+		`INSERT INTO site_config (id, registration_mode, invite_limit_threshold_0, invite_limit_threshold_1, invite_limit_threshold_2, invite_limit_threshold_3, invite_limit_threshold_4, invite_limit_threshold_5)
+		 VALUES (1, 'open', 5, 5, 5, 5, 10, 20)
+		 ON CONFLICT (id) DO UPDATE SET registration_mode = 'open',
+		 invite_limit_threshold_0 = 5, invite_limit_threshold_1 = 5, invite_limit_threshold_2 = 5,
+		 invite_limit_threshold_3 = 5, invite_limit_threshold_4 = 10, invite_limit_threshold_5 = 20`)
+	if err != nil {
+		panic(fmt.Sprintf("config: %v", err))
 	}
 }
 
@@ -119,8 +128,12 @@ func cleanTables(pg *pgxpool.Pool) {
 	exec("DELETE FROM community_members")
 	exec("DELETE FROM posts")
 	exec("DELETE FROM user_invites")
-	exec("DELETE FROM users")
+	exec("DELETE FROM users WHERE id != 0")
 	exec("DELETE FROM communities")
+	// Ensure platform user (id=0) exists for credit tax transfers
+	exec(`INSERT INTO users (id, username, email, password_hash, is_admin)
+		VALUES (0, 'platform', 'platform@local', 'x', true)
+		ON CONFLICT (id) DO NOTHING`)
 }
 
 func newUser(t *testing.T, pg *pgxpool.Pool, username, email string) *model.User {
@@ -638,6 +651,54 @@ func TestCommunityService_JoinNonExistent(t *testing.T) {
 
 	if err := svc.JoinCommunity(ctx, 99999, user.ID, 1, 1); err == nil {
 		t.Error("expected error joining non-existent community")
+	}
+}
+
+func TestCommunityService_BatchGetBySlugs(t *testing.T) {
+	cleanTables(testPG)
+	ctx := context.Background()
+	svc := services.NewCommunityService(testPG, nil)
+	user := newUser(t, testPG, fmt.Sprintf("batch_%d", time.Now().UnixNano()),
+		fmt.Sprintf("batch_%d@test.com", time.Now().UnixNano()))
+
+	comm1, err := svc.CreateCommunity(ctx, model.Community{
+		Name:        fmt.Sprintf("batch-one-%d", time.Now().UnixNano()),
+		Description: "Batch test one",
+		Slug:        fmt.Sprintf("batch-one-slug-%d", time.Now().UnixNano()),
+		CreatedBy:   user.ID,
+	})
+	if err != nil {
+		t.Fatalf("CreateCommunity 1: %v", err)
+	}
+
+	comm2, err := svc.CreateCommunity(ctx, model.Community{
+		Name:        fmt.Sprintf("batch-two-%d", time.Now().UnixNano()),
+		Description: "Batch test two",
+		Slug:        fmt.Sprintf("batch-two-slug-%d", time.Now().UnixNano()),
+		CreatedBy:   user.ID,
+	})
+	if err != nil {
+		t.Fatalf("CreateCommunity 2: %v", err)
+	}
+
+	// Test batch fetch
+	slugs := []string{comm1.Slug, comm2.Slug, "nonexistent-slug"}
+	found, notFound, err := svc.BatchGetBySlugs(ctx, slugs)
+	if err != nil {
+		t.Fatalf("BatchGetBySlugs: %v", err)
+	}
+
+	if len(found) != 2 {
+		t.Errorf("expected 2 found communities, got %d", len(found))
+	}
+
+	if len(notFound) != 1 || notFound[0] != "nonexistent-slug" {
+		t.Errorf("expected [nonexistent-slug] not found, got %v", notFound)
+	}
+
+	if c, ok := found[comm1.Slug]; !ok || c.Name != comm1.Name {
+		t.Errorf("expected community %s in results", comm1.Slug)
+		_ = c
 	}
 }
 

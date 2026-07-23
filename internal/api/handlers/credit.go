@@ -18,6 +18,16 @@ func NewCreditHandler(creditSvc *services.CreditService, configSvc *services.Con
 	return &CreditHandler{creditSvc: creditSvc, configSvc: configSvc}
 }
 
+// @Summary      Transfer credits
+// @Description  Transfer credits from the authenticated user to another user
+// @Tags         credits
+// @Accept       json
+// @Produce      json
+// @Param        body body object{to_user=int,amount=int,tx_type=int} true "Transfer details"
+// @Success      200 {object} model.CreditTransaction
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /credits/transfer [post]
 func (h *CreditHandler) TransferCredits(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	var req struct {
@@ -37,6 +47,13 @@ func (h *CreditHandler) TransferCredits(c *gin.Context) {
 	c.JSON(http.StatusOK, tx)
 }
 
+// @Summary      Get credit transactions
+// @Description  Get the credit transaction history for the authenticated user
+// @Tags         credits
+// @Produce      json
+// @Success      200 {object} model.Paginated{items=[]model.CreditTransaction}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /credits/transactions [get]
 func (h *CreditHandler) GetTransactions(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	txs, err := h.creditSvc.GetTransactions(c.Request.Context(), userID)
@@ -44,9 +61,21 @@ func (h *CreditHandler) GetTransactions(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, txs)
+	if txs == nil {
+		txs = []model.CreditTransaction{}
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(txs, 1, len(txs), len(txs)))
 }
 
+// @Summary      Claim daily reward
+// @Description  Claim the daily credit reward
+// @Tags         credits
+// @Accept       json
+// @Produce      json
+// @Param        body body object{amount=int} false "Optional reward amount override"
+// @Success      200 {object} model.CreditTransaction
+// @Failure      500 {object} map[string]interface{}
+// @Router       /credits/daily-reward [post]
 func (h *CreditHandler) ClaimDailyReward(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	var req struct {
@@ -63,6 +92,13 @@ func (h *CreditHandler) ClaimDailyReward(c *gin.Context) {
 	c.JSON(http.StatusOK, reward)
 }
 
+// @Summary      Get daily reward status
+// @Description  Get the current daily reward claim status
+// @Tags         credits
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /credits/daily-reward [get]
 func (h *CreditHandler) GetDailyRewardStatus(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	status, err := h.creditSvc.GetDailyRewardStatus(c.Request.Context(), userID)
@@ -73,6 +109,16 @@ func (h *CreditHandler) GetDailyRewardStatus(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": status})
 }
 
+// @Summary      Create a bounty
+// @Description  Create a new bounty
+// @Tags         credits
+// @Accept       json
+// @Produce      json
+// @Param        body body model.Bounty true "Bounty object"
+// @Success      201 {object} model.Bounty
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /credits/bounties [post]
 func (h *CreditHandler) CreateBounty(c *gin.Context) {
 	var req model.Bounty
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -88,6 +134,15 @@ func (h *CreditHandler) CreateBounty(c *gin.Context) {
 	c.JSON(http.StatusCreated, bounty)
 }
 
+// @Summary      Get a bounty
+// @Description  Get a bounty by its ID
+// @Tags         credits
+// @Produce      json
+// @Param        id path int true "Bounty ID"
+// @Success      200 {object} model.Bounty
+// @Failure      400 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /credits/bounties/{id} [get]
 func (h *CreditHandler) GetBounty(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -102,6 +157,18 @@ func (h *CreditHandler) GetBounty(c *gin.Context) {
 	c.JSON(http.StatusOK, bounty)
 }
 
+// @Summary      Award a bounty
+// @Description  Award a bounty to a specific answer
+// @Tags         credits
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "Bounty ID"
+// @Param        body body object{answer_id=int} true "Answer ID to award"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /credits/bounties/{id}/award [post]
 func (h *CreditHandler) AwardBounty(c *gin.Context) {
 	bountyID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -124,7 +191,13 @@ func (h *CreditHandler) AwardBounty(c *gin.Context) {
 
 // ── New Credit Economy Endpoints ──────────────────────────────────────────
 
-// GetBalance returns the user's credit balance, streak, and today's quests.
+// @Summary      Get credit balance
+// @Description  Get the authenticated user's credit balance, streak, and daily quests
+// @Tags         credits
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /credits/balance [get]
 func (h *CreditHandler) GetBalance(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	ctx := c.Request.Context()
@@ -154,7 +227,16 @@ func (h *CreditHandler) GetBalance(c *gin.Context) {
 	})
 }
 
-// CompleteQuest marks a daily quest as completed.
+// @Summary      Complete a daily quest
+// @Description  Mark a daily quest as completed
+// @Tags         credits
+// @Accept       json
+// @Produce      json
+// @Param        body body object{quest_type=int} true "Quest type to complete"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /credits/quest/complete [post]
 func (h *CreditHandler) CompleteQuest(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	var req struct {
@@ -171,7 +253,13 @@ func (h *CreditHandler) CompleteQuest(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "quest completed"})
 }
 
-// GetCosts returns the credit action cost configuration.
+// @Summary      Get credit action costs
+// @Description  Get the credit action cost configuration
+// @Tags         credits
+// @Produce      json
+// @Success      200 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /credits/costs [get]
 func (h *CreditHandler) GetCosts(c *gin.Context) {
 	cfg, err := h.configSvc.Get(c.Request.Context())
 	if err != nil {

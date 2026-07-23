@@ -231,6 +231,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 		communities.Use(authMw.RequireAuth())
 		{
 			communities.POST("", communityHandler.Create)
+			communities.POST("/batch", communityHandler.BatchGetBySlugs)
 			communities.GET("", communityHandler.List)
 			communities.GET("/:slug", communityHandler.GetBySlug)
 			communities.PUT("/:slug", communityHandler.Update)

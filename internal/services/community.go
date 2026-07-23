@@ -350,6 +350,49 @@ func (s *CommunityService) GetUserTrustLevel(ctx context.Context, userID int64, 
 	return s.pg.QueryRow(ctx, `SELECT trust_level FROM users WHERE id = $1`, userID).Scan(level)
 }
 
+// BatchGetBySlugs fetches multiple communities by their slugs, preserving order.
+// Returns a map of slug->community for the found communities and a slice of slugs that weren't found.
+func (s *CommunityService) BatchGetBySlugs(ctx context.Context, slugs []string) (map[string]*model.Community, []string, error) {
+	if len(slugs) == 0 {
+		return map[string]*model.Community{}, nil, nil
+	}
+
+	// Build a query with positional parameters
+	query := `SELECT id, name, description, slug, tags, curator_lock, slow_boot_days,
+		invite_only, min_trust_score, forked_from, created_by, member_count,
+		created_at, updated_at, archived_at
+		FROM communities WHERE slug = ANY($1) AND archived_at IS NULL`
+
+	rows, err := s.pg.Query(ctx, query, slugs)
+	if err != nil {
+		return nil, nil, fmt.Errorf("batch get communities: %w", err)
+	}
+	defer rows.Close()
+
+	found := make(map[string]*model.Community, len(slugs))
+	for rows.Next() {
+		c := &model.Community{}
+		if err := rows.Scan(
+			&c.ID, &c.Name, &c.Description, &c.Slug, &c.Tags, &c.CuratorLock, &c.SlowBootDays,
+			&c.InviteOnly, &c.MinTrustScore, &c.ForkedFrom, &c.CreatedBy, &c.MemberCount,
+			&c.CreatedAt, &c.UpdatedAt, &c.ArchivedAt,
+		); err != nil {
+			return nil, nil, fmt.Errorf("scan community batch: %w", err)
+		}
+		found[c.Slug] = c
+	}
+
+	// Determine which slugs weren't found, preserving original order
+	var notFound []string
+	for _, slug := range slugs {
+		if _, ok := found[slug]; !ok {
+			notFound = append(notFound, slug)
+		}
+	}
+
+	return found, notFound, nil
+}
+
 // ── Community Treasury Methods ─────────────────────────────────────────────
 
 // AwardCommunityCredits adds credits to the community's treasury.

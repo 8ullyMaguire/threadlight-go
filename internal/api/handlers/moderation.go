@@ -54,7 +54,15 @@ func (h *ModerationHandler) ListActions(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, actions)
+	if actions == nil {
+		actions = []model.ModerationAction{}
+	}
+	page := (offset / limit) + 1
+	total := offset + len(actions)
+	if len(actions) >= limit && limit > 0 {
+		total = offset + limit + 1
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(actions, page, limit, total))
 }
 
 func (h *ModerationHandler) AddJuror(c *gin.Context) {

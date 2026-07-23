@@ -76,7 +76,10 @@ func (h *NoteHandler) ListPostNotes(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, notes)
+	if notes == nil {
+		notes = []model.CommunityNote{}
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(notes, 1, len(notes), len(notes)))
 }
 
 func (h *NoteHandler) VoteOnNote(c *gin.Context) {

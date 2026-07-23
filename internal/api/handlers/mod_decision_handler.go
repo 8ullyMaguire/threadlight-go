@@ -129,9 +129,10 @@ func (h *ModDecisionHandler) GetControversial(c *gin.Context) {
 	if decisions == nil {
 		decisions = []model.ControversialDecision{}
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"decisions": decisions,
-		"limit":     limit,
-		"offset":    offset,
-	})
+	page := (offset / limit) + 1
+	total := offset + len(decisions)
+	if len(decisions) >= limit && limit > 0 {
+		total = offset + limit + 1
+	}
+	c.JSON(http.StatusOK, model.NewPaginated(decisions, page, limit, total))
 }

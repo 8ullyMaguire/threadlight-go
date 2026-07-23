@@ -24,6 +24,14 @@ func NewUserListHandler(userlistSvc *services.UserListService, algorithmicSvc *s
 
 // ── CRUD ─────────────────────────────────────────────────────
 
+// @Summary      Create a user list
+// @Description  Create a new user list for the authenticated user
+// @Tags         user-lists
+// @Param        body body model.CreateUserListRequest true "List creation request"
+// @Success      201 {object} model.UserList
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Router       /lists [post]
 func (h *UserListHandler) Create(c *gin.Context) {
 	var req model.CreateUserListRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -44,6 +52,12 @@ func (h *UserListHandler) Create(c *gin.Context) {
 	c.JSON(http.StatusCreated, list)
 }
 
+// @Summary      List user lists
+// @Description  List all user lists belonging to the authenticated user
+// @Tags         user-lists
+// @Success      200 {object} model.Paginated
+// @Failure      401 {object} map[string]interface{}
+// @Router       /lists [get]
 func (h *UserListHandler) List(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	lists, err := h.userlistSvc.ListUserLists(c.Request.Context(), userID)
@@ -54,9 +68,18 @@ func (h *UserListHandler) List(c *gin.Context) {
 	if lists == nil {
 		lists = []model.UserListWithMeta{}
 	}
-	c.JSON(http.StatusOK, lists)
+	c.JSON(http.StatusOK, model.NewPaginated(lists, 1, len(lists), len(lists)))
 }
 
+// @Summary      Get a user list
+// @Description  Get a single user list by ID
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Success      200 {object} model.UserList
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /lists/{id} [get]
 func (h *UserListHandler) Get(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -76,6 +99,17 @@ func (h *UserListHandler) Get(c *gin.Context) {
 	c.JSON(http.StatusOK, list)
 }
 
+// @Summary      Update a user list
+// @Description  Update a user list's name, description, or visibility
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Param        body body model.UpdateUserListRequest true "List update request"
+// @Success      200 {object} model.UserList
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      403 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /lists/{id} [put]
 func (h *UserListHandler) Update(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -106,6 +140,16 @@ func (h *UserListHandler) Update(c *gin.Context) {
 	c.JSON(http.StatusOK, list)
 }
 
+// @Summary      Delete a user list
+// @Description  Delete a user list by ID (owner only)
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      403 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /lists/{id} [delete]
 func (h *UserListHandler) Delete(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -131,6 +175,18 @@ func (h *UserListHandler) Delete(c *gin.Context) {
 
 // ── Members ──────────────────────────────────────────────────
 
+// @Summary      Add member to list
+// @Description  Add a user as a member of a list
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Param        body body object true "Target user ID"
+// @Success      201 {object} model.ListMember
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      403 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Failure      409 {object} map[string]interface{}
+// @Router       /lists/{id}/members [post]
 func (h *UserListHandler) AddMember(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -167,6 +223,17 @@ func (h *UserListHandler) AddMember(c *gin.Context) {
 	c.JSON(http.StatusCreated, member)
 }
 
+// @Summary      Remove member from list
+// @Description  Remove a user from a list's members
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Param        user_id path int true "Target user ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      403 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /lists/{id}/members/{user_id} [delete]
 func (h *UserListHandler) RemoveMember(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -197,6 +264,15 @@ func (h *UserListHandler) RemoveMember(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "member removed"})
 }
 
+// @Summary      List list members
+// @Description  List all members of a user list
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Success      200 {object} model.Paginated
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /lists/{id}/members [get]
 func (h *UserListHandler) ListMembers(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -216,11 +292,22 @@ func (h *UserListHandler) ListMembers(c *gin.Context) {
 	if members == nil {
 		members = []model.ListMember{}
 	}
-	c.JSON(http.StatusOK, members)
+	c.JSON(http.StatusOK, model.NewPaginated(members, 1, len(members), len(members)))
 }
 
 // ── Subscriptions ────────────────────────────────────────────
 
+// @Summary      Subscribe to a list
+// @Description  Subscribe to a user list to follow its members
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Param        body body object false "Optional action preference"
+// @Success      201 {object} model.ListSubscription
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Failure      409 {object} map[string]interface{}
+// @Router       /lists/{id}/subscribe [post]
 func (h *UserListHandler) Subscribe(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -253,6 +340,15 @@ func (h *UserListHandler) Subscribe(c *gin.Context) {
 	c.JSON(http.StatusCreated, sub)
 }
 
+// @Summary      Unsubscribe from a list
+// @Description  Unsubscribe from a user list
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /lists/{id}/unsubscribe [post]
 func (h *UserListHandler) Unsubscribe(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -272,6 +368,15 @@ func (h *UserListHandler) Unsubscribe(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "unsubscribed"})
 }
 
+// @Summary      List list subscribers
+// @Description  List all subscribers of a user list
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Success      200 {object} model.Paginated
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /lists/{id}/subscribers [get]
 func (h *UserListHandler) ListSubscribers(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -291,9 +396,15 @@ func (h *UserListHandler) ListSubscribers(c *gin.Context) {
 	if subscribers == nil {
 		subscribers = []model.ListSubscription{}
 	}
-	c.JSON(http.StatusOK, subscribers)
+	c.JSON(http.StatusOK, model.NewPaginated(subscribers, 1, len(subscribers), len(subscribers)))
 }
 
+// @Summary      Get my subscriptions
+// @Description  Get all user lists the authenticated user is subscribed to
+// @Tags         user-lists
+// @Success      200 {object} model.Paginated
+// @Failure      401 {object} map[string]interface{}
+// @Router       /lists/subscriptions [get]
 func (h *UserListHandler) MySubscriptions(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	subs, err := h.userlistSvc.ListUserSubscriptions(c.Request.Context(), userID)
@@ -304,11 +415,23 @@ func (h *UserListHandler) MySubscriptions(c *gin.Context) {
 	if subs == nil {
 		subs = []model.ListSubscription{}
 	}
-	c.JSON(http.StatusOK, subs)
+	c.JSON(http.StatusOK, model.NewPaginated(subs, 1, len(subs), len(subs)))
 }
 
 // ── Collaborators ────────────────────────────────────────────
 
+// @Summary      Invite a collaborator
+// @Description  Invite a user to collaborate on a list
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Param        body body object true "User ID and role (0=viewer, 1=editor)"
+// @Success      201 {object} model.ListCollaborator
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      403 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Failure      409 {object} map[string]interface{}
+// @Router       /lists/{id}/collaborators [post]
 func (h *UserListHandler) InviteCollaborator(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -346,6 +469,15 @@ func (h *UserListHandler) InviteCollaborator(c *gin.Context) {
 	c.JSON(http.StatusCreated, collab)
 }
 
+// @Summary      Accept a collaborator invite
+// @Description  Accept an invitation to collaborate on a list
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Success      200 {object} model.ListCollaborator
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /lists/{id}/collaborators/accept [post]
 func (h *UserListHandler) AcceptInvite(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -366,6 +498,17 @@ func (h *UserListHandler) AcceptInvite(c *gin.Context) {
 	c.JSON(http.StatusOK, collab)
 }
 
+// @Summary      Remove a collaborator
+// @Description  Remove a collaborator from a list
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Param        user_id path int true "Collaborator user ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      403 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /lists/{id}/collaborators/{user_id} [delete]
 func (h *UserListHandler) RemoveCollaborator(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -395,6 +538,15 @@ func (h *UserListHandler) RemoveCollaborator(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "collaborator removed"})
 }
 
+// @Summary      List collaborators
+// @Description  List all collaborators of a user list
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Success      200 {object} model.Paginated
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /lists/{id}/collaborators [get]
 func (h *UserListHandler) ListCollaborators(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -414,11 +566,19 @@ func (h *UserListHandler) ListCollaborators(c *gin.Context) {
 	if collabs == nil {
 		collabs = []model.ListCollaborator{}
 	}
-	c.JSON(http.StatusOK, collabs)
+	c.JSON(http.StatusOK, model.NewPaginated(collabs, 1, len(collabs), len(collabs)))
 }
 
 // ── Algorithmic Lists ────────────────────────────────────────
 
+// @Summary      Create an algorithmic list
+// @Description  Create a user list based on algorithmic/query criteria
+// @Tags         user-lists
+// @Param        body body model.CreateAlgorithmicListRequest true "Algorithmic list creation request"
+// @Success      201 {object} model.AlgorithmicList
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Router       /lists/algorithmic [post]
 func (h *UserListHandler) CreateAlgorithmic(c *gin.Context) {
 	var req model.CreateAlgorithmicListRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -439,6 +599,16 @@ func (h *UserListHandler) CreateAlgorithmic(c *gin.Context) {
 	c.JSON(http.StatusCreated, list)
 }
 
+// @Summary      Evaluate an algorithmic list
+// @Description  Evaluate an algorithmic list and return matching user IDs
+// @Tags         user-lists
+// @Param        id path int true "List ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      401 {object} map[string]interface{}
+// @Failure      403 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Router       /lists/{id}/evaluate [post]
 func (h *UserListHandler) EvaluateAlgorithmic(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
