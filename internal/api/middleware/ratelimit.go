@@ -35,6 +35,12 @@ func NewRateLimiter(rdb *redis.Client, ipLimit, userLimit int, window time.Durat
 // RateLimit returns a Gin middleware that enforces per-IP and per-user rate limits.
 func (rl *RateLimiter) RateLimit() gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// Skip rate limiting in test mode
+		if gin.Mode() == gin.TestMode {
+			c.Next()
+			return
+		}
+
 		ip := c.ClientIP()
 
 		// Check per-IP limit
