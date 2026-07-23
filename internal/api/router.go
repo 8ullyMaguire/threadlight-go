@@ -15,7 +15,6 @@ import (
 )
 
 func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engine {
-	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
 	r.Use(gin.Recovery(), middleware.CORS("http://localhost:8000"))
 

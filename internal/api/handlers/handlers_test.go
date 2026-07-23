@@ -483,7 +483,7 @@ func TestSearch(t *testing.T) {
 func TestAdvancedSearch(t *testing.T) {
 	token, _ := mustToken(t)
 	w := request("POST", "/api/v1/search/advanced", jsonBody(map[string]interface{}{
-		"q": "test", "type": "posts", "limit": 10,
+		"query": "test", "limit": 10,
 	}), token)
 	if w.Code != http.StatusOK {
 		t.Errorf("expected 200, got %d: %s", w.Code, w.Body.String())

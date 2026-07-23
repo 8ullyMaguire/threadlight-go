@@ -148,7 +148,7 @@ func TestLoggingMultipleMethods(t *testing.T) {
 // ── Rate Limiter Tests ──────────────────────────────────────
 
 func TestRateLimitInMemory(t *testing.T) {
-	gin.SetMode(gin.TestMode)
+	gin.SetMode(gin.ReleaseMode)
 	rl := NewRateLimiter(nil, 3, 5, time.Minute)
 	r := gin.New()
 	r.Use(rl.RateLimit())
@@ -176,7 +176,7 @@ func TestRateLimitInMemory(t *testing.T) {
 }
 
 func TestRateLimitPerUser(t *testing.T) {
-	gin.SetMode(gin.TestMode)
+	gin.SetMode(gin.ReleaseMode)
 	rl := NewRateLimiter(nil, 60, 3, time.Minute) // 3 req/min per user
 	r := gin.New()
 	r.Use(func(c *gin.Context) {
