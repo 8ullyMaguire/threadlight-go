@@ -9,6 +9,9 @@ import (
 	"github.com/opencode-ai/polaris/internal/api/middleware"
 	"github.com/opencode-ai/polaris/internal/services"
 	"github.com/redis/go-redis/v9"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engine {
@@ -95,6 +98,9 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 
 	r.GET("/health", healthHandler.Health)
 	r.GET("/ready", healthHandler.Ready)
+
+	// Swagger API documentation
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// NodeInfo endpoint for client type detection (used by Photon frontend)
 	r.GET("/nodeinfo/2.1", func(c *gin.Context) {
