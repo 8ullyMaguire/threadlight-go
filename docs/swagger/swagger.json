@@ -316,6 +316,30 @@
                 }
             }
         },
+        "/admin/stats": {
+            "get": {
+                "description": "Returns aggregate system statistics for the admin dashboard",
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Get system stats",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.AdminStats"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/affinity": {
             "get": {
                 "description": "Get the authenticated user's computed affinities with other users",
@@ -3861,6 +3885,31 @@
                 }
             }
         },
+        "/health": {
+            "get": {
+                "description": "Check API, database, and Redis connectivity",
+                "tags": [
+                    "system"
+                ],
+                "summary": "Health check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/interactions": {
             "post": {
                 "description": "Create a new interaction on a post (like, repost, follow, etc.)",
@@ -5013,6 +5062,435 @@
                 }
             }
         },
+        "/moderation/actions": {
+            "get": {
+                "description": "Get paginated list of moderation actions",
+                "tags": [
+                    "moderation"
+                ],
+                "summary": "List moderation actions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Number of results per page (default 20)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of results to skip (default 0)",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.PaginatedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create a new moderation action against a post",
+                "tags": [
+                    "moderation"
+                ],
+                "summary": "Create moderation action",
+                "parameters": [
+                    {
+                        "description": "Moderation action details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ModerationAction"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/model.ModerationAction"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/moderation/actions/{id}": {
+            "get": {
+                "description": "Get a moderation action by ID",
+                "tags": [
+                    "moderation"
+                ],
+                "summary": "Get moderation action",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Action ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ModerationAction"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/moderation/actions/{id}/jurors": {
+            "post": {
+                "description": "Add the authenticated user as a juror for a moderation action",
+                "tags": [
+                    "moderation"
+                ],
+                "summary": "Add juror",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Action ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/moderation/actions/{id}/resolve": {
+            "post": {
+                "description": "Resolve/close a jury for a moderation action",
+                "tags": [
+                    "moderation"
+                ],
+                "summary": "Resolve jury",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Action ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/moderation/jurors/{panel_id}/vote": {
+            "post": {
+                "description": "Submit a vote on a jury panel for a moderation action",
+                "tags": [
+                    "moderation"
+                ],
+                "summary": "Vote on jury panel",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Panel ID",
+                        "name": "panel_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Vote details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/modlog/controversial": {
+            "get": {
+                "description": "Get paginated list of controversial moderation decisions",
+                "tags": [
+                    "modlog"
+                ],
+                "summary": "Get controversial decisions",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Number of results per page (default 20)",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of results to skip (default 0)",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.PaginatedResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/modlog/{id}/my-review": {
+            "get": {
+                "description": "Get the authenticated user's review vote for a moderation action",
+                "tags": [
+                    "modlog"
+                ],
+                "summary": "Get my vote",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Action ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/modlog/{id}/review": {
+            "post": {
+                "description": "Vote on whether a moderation action was fair (1) or unfair (-1)",
+                "tags": [
+                    "modlog"
+                ],
+                "summary": "Cast moderation review vote",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Action ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Vote details",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/modlog/{id}/reviews": {
+            "get": {
+                "description": "Get all review votes and counts for a moderation action",
+                "tags": [
+                    "modlog"
+                ],
+                "summary": "Get action reviews",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Action ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
         "/notes/post/{postID}": {
             "get": {
                 "description": "List all community notes for a given post",
@@ -5724,6 +6202,31 @@
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/ready": {
+            "get": {
+                "description": "Check all service dependencies (Postgres, Redis, MinIO, migrations)",
+                "tags": [
+                    "system"
+                ],
+                "summary": "Readiness check",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "503": {
+                        "description": "Service Unavailable",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
@@ -7564,6 +8067,41 @@
                 }
             }
         },
+        "model.AdminStats": {
+            "type": "object",
+            "properties": {
+                "credit_supply": {
+                    "type": "integer"
+                },
+                "daily_active_users": {
+                    "type": "integer"
+                },
+                "disk_usage_bytes": {
+                    "type": "integer"
+                },
+                "monthly_active_users": {
+                    "type": "integer"
+                },
+                "total_communities": {
+                    "type": "integer"
+                },
+                "total_mod_actions": {
+                    "type": "integer"
+                },
+                "total_posts": {
+                    "type": "integer"
+                },
+                "total_reports_pending": {
+                    "type": "integer"
+                },
+                "total_users": {
+                    "type": "integer"
+                },
+                "weekly_active_users": {
+                    "type": "integer"
+                }
+            }
+        },
         "model.AlgorithmicListCriteria": {
             "type": "object",
             "properties": {
@@ -8314,6 +8852,9 @@
                 "post_id": {
                     "type": "integer"
                 },
+                "thumbnail_path": {
+                    "type": "string"
+                },
                 "uploader_id": {
                     "type": "integer"
                 },
@@ -8321,6 +8862,9 @@
                     "type": "integer"
                 }
             }
+        },
+        "model.ModerationAction": {
+            "type": "object"
         },
         "model.Notification": {
             "type": "object",

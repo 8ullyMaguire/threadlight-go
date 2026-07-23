@@ -10,7 +10,7 @@ import (
 )
 
 type ModDecisionHandler struct {
-	svc      *services.ModDecisionReviewsService
+	svc       *services.ModDecisionReviewsService
 	configSvc *services.ConfigService
 }
 
@@ -18,7 +18,17 @@ func NewModDecisionHandler(svc *services.ModDecisionReviewsService, configSvc *s
 	return &ModDecisionHandler{svc: svc, configSvc: configSvc}
 }
 
-// CastVote   POST /api/v1/modlog/:id/review
+// CastVote submits a review vote on a moderation action
+// @Summary      Cast moderation review vote
+// @Description  Vote on whether a moderation action was fair (1) or unfair (-1)
+// @Tags         modlog
+// @Param        id path int true "Action ID"
+// @Param        body body map[string]interface{} true "Vote details"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      403 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /modlog/{id}/review [post]
 func (h *ModDecisionHandler) CastVote(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	actionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -74,7 +84,15 @@ func (h *ModDecisionHandler) CastVote(c *gin.Context) {
 	c.JSON(http.StatusOK, review)
 }
 
-// GetActionReviews   GET /api/v1/modlog/:id/reviews
+// GetActionReviews returns all reviews for a moderation action
+// @Summary      Get action reviews
+// @Description  Get all review votes and counts for a moderation action
+// @Tags         modlog
+// @Param        id path int true "Action ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /modlog/{id}/reviews [get]
 func (h *ModDecisionHandler) GetActionReviews(c *gin.Context) {
 	actionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -97,7 +115,15 @@ func (h *ModDecisionHandler) GetActionReviews(c *gin.Context) {
 	})
 }
 
-// GetMyVote   GET /api/v1/modlog/:id/my-review
+// GetMyVote returns the authenticated user's vote on a moderation action
+// @Summary      Get my vote
+// @Description  Get the authenticated user's review vote for a moderation action
+// @Tags         modlog
+// @Param        id path int true "Action ID"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /modlog/{id}/my-review [get]
 func (h *ModDecisionHandler) GetMyVote(c *gin.Context) {
 	userID := c.GetInt64("user_id")
 	actionID, err := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -113,7 +139,15 @@ func (h *ModDecisionHandler) GetMyVote(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"vote": vote})
 }
 
-// GetControversial   GET /api/v1/modlog/controversial
+// GetControversial returns controversial moderation decisions
+// @Summary      Get controversial decisions
+// @Description  Get paginated list of controversial moderation decisions
+// @Tags         modlog
+// @Param        limit query int false "Number of results per page (default 20)"
+// @Param        offset query int false "Number of results to skip (default 0)"
+// @Success      200 {object} model.PaginatedResponse
+// @Failure      500 {object} map[string]interface{}
+// @Router       /modlog/controversial [get]
 func (h *ModDecisionHandler) GetControversial(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20"))
 	offset, _ := strconv.Atoi(c.DefaultQuery("offset", "0"))

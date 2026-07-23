@@ -129,6 +129,29 @@ definitions:
       sort_order:
         type: integer
     type: object
+  model.AdminStats:
+    properties:
+      credit_supply:
+        type: integer
+      daily_active_users:
+        type: integer
+      disk_usage_bytes:
+        type: integer
+      monthly_active_users:
+        type: integer
+      total_communities:
+        type: integer
+      total_mod_actions:
+        type: integer
+      total_posts:
+        type: integer
+      total_reports_pending:
+        type: integer
+      total_users:
+        type: integer
+      weekly_active_users:
+        type: integer
+    type: object
   model.AlgorithmicListCriteria:
     properties:
       max_freshness_days:
@@ -627,10 +650,14 @@ definitions:
         type: string
       post_id:
         type: integer
+      thumbnail_path:
+        type: string
       uploader_id:
         type: integer
       width:
         type: integer
+    type: object
+  model.ModerationAction:
     type: object
   model.Notification:
     properties:
@@ -1365,6 +1392,22 @@ paths:
       tags:
       - admin
       - invites
+  /admin/stats:
+    get:
+      description: Returns aggregate system statistics for the admin dashboard
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.AdminStats'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get system stats
+      tags:
+      - admin
   /affinity:
     get:
       description: Get the authenticated user's computed affinities with other users
@@ -3775,6 +3818,23 @@ paths:
       summary: Check a content filter
       tags:
       - filters
+  /health:
+    get:
+      description: Check API, database, and Redis connectivity
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Health check
+      tags:
+      - system
   /interactions:
     post:
       consumes:
@@ -4564,6 +4624,297 @@ paths:
       summary: Upload image
       tags:
       - media
+  /moderation/actions:
+    get:
+      description: Get paginated list of moderation actions
+      parameters:
+      - description: Number of results per page (default 20)
+        in: query
+        name: limit
+        type: integer
+      - description: Number of results to skip (default 0)
+        in: query
+        name: offset
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PaginatedResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: List moderation actions
+      tags:
+      - moderation
+    post:
+      description: Create a new moderation action against a post
+      parameters:
+      - description: Moderation action details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ModerationAction'
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.ModerationAction'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create moderation action
+      tags:
+      - moderation
+  /moderation/actions/{id}:
+    get:
+      description: Get a moderation action by ID
+      parameters:
+      - description: Action ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ModerationAction'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get moderation action
+      tags:
+      - moderation
+  /moderation/actions/{id}/jurors:
+    post:
+      description: Add the authenticated user as a juror for a moderation action
+      parameters:
+      - description: Action ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Add juror
+      tags:
+      - moderation
+  /moderation/actions/{id}/resolve:
+    post:
+      description: Resolve/close a jury for a moderation action
+      parameters:
+      - description: Action ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Resolve jury
+      tags:
+      - moderation
+  /moderation/jurors/{panel_id}/vote:
+    post:
+      description: Submit a vote on a jury panel for a moderation action
+      parameters:
+      - description: Panel ID
+        in: path
+        name: panel_id
+        required: true
+        type: integer
+      - description: Vote details
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Vote on jury panel
+      tags:
+      - moderation
+  /modlog/{id}/my-review:
+    get:
+      description: Get the authenticated user's review vote for a moderation action
+      parameters:
+      - description: Action ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get my vote
+      tags:
+      - modlog
+  /modlog/{id}/review:
+    post:
+      description: Vote on whether a moderation action was fair (1) or unfair (-1)
+      parameters:
+      - description: Action ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Vote details
+        in: body
+        name: body
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Cast moderation review vote
+      tags:
+      - modlog
+  /modlog/{id}/reviews:
+    get:
+      description: Get all review votes and counts for a moderation action
+      parameters:
+      - description: Action ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get action reviews
+      tags:
+      - modlog
+  /modlog/controversial:
+    get:
+      description: Get paginated list of controversial moderation decisions
+      parameters:
+      - description: Number of results per page (default 20)
+        in: query
+        name: limit
+        type: integer
+      - description: Number of results to skip (default 0)
+        in: query
+        name: offset
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PaginatedResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get controversial decisions
+      tags:
+      - modlog
   /notes/{id}:
     put:
       consumes:
@@ -5058,6 +5409,23 @@ paths:
       summary: Get post count
       tags:
       - posts
+  /ready:
+    get:
+      description: Check all service dependencies (Postgres, Redis, MinIO, migrations)
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "503":
+          description: Service Unavailable
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Readiness check
+      tags:
+      - system
   /reports:
     get:
       description: List all reports for moderation

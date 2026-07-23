@@ -32,6 +32,13 @@ func (h *HealthHandler) SetMigrationCheck(fn func() bool) {
 	h.migrationCheck = fn
 }
 
+// Health checks the API, database, and Redis status
+// @Summary      Health check
+// @Description  Check API, database, and Redis connectivity
+// @Tags         system
+// @Success      200 {object} map[string]interface{}
+// @Failure      503 {object} map[string]interface{}
+// @Router       /health [get]
 func (h *HealthHandler) Health(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
 	defer cancel()
@@ -59,6 +66,13 @@ func (h *HealthHandler) Health(c *gin.Context) {
 
 // Ready checks all dependencies and returns 503 if any are unhealthy.
 // GET /ready
+// Ready checks all dependencies
+// @Summary      Readiness check
+// @Description  Check all service dependencies (Postgres, Redis, MinIO, migrations)
+// @Tags         system
+// @Success      200 {object} map[string]interface{}
+// @Failure      503 {object} map[string]interface{}
+// @Router       /ready [get]
 func (h *HealthHandler) Ready(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 5*time.Second)
 	defer cancel()
