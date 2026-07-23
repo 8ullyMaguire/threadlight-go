@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog"
@@ -119,5 +120,64 @@ func TestCORSHeaders(t *testing.T) {
 	}
 	if w.Header().Get("Access-Control-Allow-Credentials") == "" {
 		t.Error("expected Allow-Credentials header")
+	}
+}
+
+// ── Rate Limiter Tests ──────────────────────────────────────
+
+func TestRateLimitInMemory(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	rl := NewRateLimiter(nil, 3, 5, time.Minute)
+	r := gin.New()
+	r.Use(rl.RateLimit())
+	r.GET("/test", func(c *gin.Context) { c.Status(http.StatusOK) })
+
+	// First 3 requests from same IP should succeed
+	for i := 0; i < 3; i++ {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "/test", nil)
+		req.Header.Set("X-Forwarded-For", "10.0.0.1")
+		r.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("request %d: expected 200, got %d", i+1, w.Code)
+		}
+	}
+
+	// 4th request from same IP should be rate limited
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/test", nil)
+	req.Header.Set("X-Forwarded-For", "10.0.0.1")
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusTooManyRequests {
+		t.Errorf("expected 429, got %d", w.Code)
+	}
+}
+
+func TestRateLimitPerUser(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	rl := NewRateLimiter(nil, 60, 3, time.Minute) // 3 req/min per user
+	r := gin.New()
+	r.Use(func(c *gin.Context) {
+		c.Set("user_id", int64(42))
+		c.Next()
+	}, rl.RateLimit())
+	r.GET("/test", func(c *gin.Context) { c.Status(http.StatusOK) })
+
+	// 3 requests should succeed
+	for i := 0; i < 3; i++ {
+		w := httptest.NewRecorder()
+		req, _ := http.NewRequest("GET", "/test", nil)
+		r.ServeHTTP(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("request %d: expected 200, got %d", i+1, w.Code)
+		}
+	}
+
+	// 4th should be rate limited (user limit)
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/test", nil)
+	r.ServeHTTP(w, req)
+	if w.Code != http.StatusTooManyRequests {
+		t.Errorf("expected 429, got %d", w.Code)
 	}
 }

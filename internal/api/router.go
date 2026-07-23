@@ -1,6 +1,8 @@
 package api
 
 import (
+	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/opencode-ai/polaris/internal/api/handlers"
@@ -54,6 +56,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	modDecisionSvc := services.NewModDecisionReviewsService(pg)
 
 	authMw := middleware.NewAuthMiddleware(authSvc)
+	rl := middleware.NewRateLimiter(rdb, 60, 200, time.Minute) // 60 req/min per IP, 200 req/min per user
 
 	authHandler := handlers.NewAuthHandler(authSvc)
 	healthHandler := handlers.NewHealthHandler(pg, rdb)
@@ -100,8 +103,8 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	{
 		auth := apiV1.Group("/auth")
 		{
-			auth.POST("/register", authHandler.Register)
-			auth.POST("/login", authHandler.Login)
+			auth.POST("/register", rl.RateLimit(), authHandler.Register)
+			auth.POST("/login", rl.RateLimit(), authHandler.Login)
 			auth.POST("/forgot", authHandler.ForgotPassword)
 			auth.POST("/reset", authHandler.ResetPassword)
 			auth.POST("/logout", authMw.RequireAuth(), authHandler.Logout)
@@ -111,7 +114,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 		posts := apiV1.Group("/posts")
 		posts.Use(authMw.RequireAuth())
 		{
-			posts.POST("", postHandler.Create)
+			posts.POST("", rl.RateLimit(), postHandler.Create)
 			posts.GET("", postHandler.List)
 			posts.GET("/count", postHandler.GetCount)
 			posts.GET("/author/:author_id", postHandler.ListByAuthor)
@@ -124,7 +127,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 
 		// Media/Image upload routes
 		media := apiV1.Group("/media")
-		media.Use(authMw.RequireAuth())
+		media.Use(authMw.RequireAuth(), rl.RateLimit())
 		{
 			media.POST("/upload", postHandler.UploadImage)
 		}
@@ -252,7 +255,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 		credits := apiV1.Group("/credits")
 		credits.Use(authMw.RequireAuth())
 		{
-			credits.POST("/transfer", creditHandler.TransferCredits)
+			credits.POST("/transfer", rl.RateLimit(), creditHandler.TransferCredits)
 			credits.GET("/transactions", creditHandler.GetTransactions)
 			credits.POST("/daily-reward", creditHandler.ClaimDailyReward)
 			credits.GET("/daily-reward", creditHandler.GetDailyRewardStatus)

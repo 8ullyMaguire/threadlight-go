@@ -168,7 +168,7 @@ func (s *SearchService) SearchPosts(ctx context.Context, q model.SearchPostsQuer
 		argIdx++
 	}
 
-	// Community filter
+	// Community filter (single)
 	if community, ok := fieldFilters["community"]; ok && community != "" {
 		conditions = append(conditions,
 			fmt.Sprintf(`p.id IN (SELECT post_id FROM community_posts cp JOIN communities c ON cp.community_id = c.id WHERE c.name ILIKE $%d OR c.slug ILIKE $%d)`, argIdx, argIdx))
@@ -176,11 +176,27 @@ func (s *SearchService) SearchPosts(ctx context.Context, q model.SearchPostsQuer
 		argIdx++
 	}
 
-	// Tag filter
+	// Community filter (array)
+	if len(q.Communities) > 0 {
+		conditions = append(conditions,
+			fmt.Sprintf(`p.id IN (SELECT post_id FROM community_posts cp JOIN communities c ON cp.community_id = c.id WHERE c.slug = ANY($%d))`, argIdx))
+		args = append(args, q.Communities)
+		argIdx++
+	}
+
+	// Tag filter (single)
 	if tag, ok := fieldFilters["tag"]; ok && tag != "" {
 		conditions = append(conditions,
 			fmt.Sprintf(`p.id IN (SELECT post_id FROM post_tags pt JOIN tags t ON pt.tag_id = t.id WHERE t.name ILIKE $%d)`, argIdx))
 		args = append(args, "%"+tag+"%")
+		argIdx++
+	}
+
+	// Tag filter (array)
+	if len(q.Tags) > 0 {
+		conditions = append(conditions,
+			fmt.Sprintf(`p.id IN (SELECT post_id FROM post_tags pt JOIN tags t ON pt.tag_id = t.id WHERE t.name = ANY($%d))`, argIdx))
+		args = append(args, q.Tags)
 		argIdx++
 	}
 
@@ -196,6 +212,14 @@ func (s *SearchService) SearchPosts(ctx context.Context, q model.SearchPostsQuer
 		conditions = append(conditions, fmt.Sprintf(`p.content_type = $%d`, argIdx))
 		args = append(args, q.ContentType)
 		argIdx++
+	}
+
+	// Content type label filter
+	switch q.ContentTypeLabel {
+	case "post":
+		conditions = append(conditions, "p.content_type = 0")
+	case "comment":
+		conditions = append(conditions, "p.content_type = 1")
 	}
 
 	// Educational filter
@@ -238,6 +262,8 @@ func (s *SearchService) SearchPosts(ctx context.Context, q model.SearchPostsQuer
 			orderClause = " ORDER BY p.created_at DESC"
 		case "oldest":
 			orderClause = " ORDER BY p.created_at ASC"
+		case "popular":
+			orderClause = " ORDER BY p.interaction_count DESC"
 		default:
 			orderClause = fmt.Sprintf(` ORDER BY ts_rank_cd(p.search_vector, to_tsquery('english', $1)) DESC`)
 		}
@@ -246,6 +272,8 @@ func (s *SearchService) SearchPosts(ctx context.Context, q model.SearchPostsQuer
 		switch q.Sort {
 		case "oldest":
 			orderClause = " ORDER BY p.created_at ASC"
+		case "popular":
+			orderClause = " ORDER BY p.interaction_count DESC"
 		default:
 			orderClause = " ORDER BY p.created_at DESC"
 		}

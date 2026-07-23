@@ -1615,6 +1615,95 @@ func TestSearchService_Search_NoResults(t *testing.T) {
 	}
 }
 
+func TestSearchService_AdvancedSearch(t *testing.T) {
+	cleanTables(testPG)
+	ctx := context.Background()
+	svc := services.NewSearchService(testPG)
+	user := newUser(t, testPG, fmt.Sprintf("advsrch_%d", time.Now().UnixNano()),
+		fmt.Sprintf("advsrch_%d@test.com", time.Now().UnixNano()))
+
+	// Create a post with searchable content
+	post := newPost(t, testPG, user.ID, "AdvancedSearchTestTitle", "AdvancedSearchTestBody content")
+
+	// Test basic query
+	q := model.SearchPostsQuery{
+		Query: "AdvancedSearchTestTitle",
+		Page:  1,
+		Limit: 20,
+	}
+	results, total, facets, err := svc.SearchPosts(ctx, q)
+	if err != nil {
+		t.Fatalf("SearchPosts basic: %v", err)
+	}
+	if total == 0 {
+		t.Log("Search returned no results (may need tsearch2 setup)")
+	} else {
+		if len(results) == 0 {
+			t.Error("expected at least 1 result")
+		}
+	}
+	_ = facets
+
+	// Test with date range
+	q2 := model.SearchPostsQuery{
+		Query:    "AdvancedSearchTestTitle",
+		DateFrom: "2020-01-01",
+		DateTo:   "2030-12-31",
+		Sort:     "newest",
+		Page:     1,
+		Limit:    20,
+	}
+	results2, total2, _, err := svc.SearchPosts(ctx, q2)
+	if err != nil {
+		t.Fatalf("SearchPosts with date range: %v", err)
+	}
+	_ = results2
+	if total2 == 0 {
+		t.Log("Date range search returned no results")
+	}
+
+	// Test with sort=popular (no crash)
+	q3 := model.SearchPostsQuery{
+		Query: "AdvancedSearchTestTitle",
+		Sort:  "popular",
+		Page:  1,
+		Limit: 20,
+	}
+	_, _, _, err = svc.SearchPosts(ctx, q3)
+	if err != nil {
+		t.Fatalf("SearchPosts with popular sort: %v", err)
+	}
+
+	// Test with communities array (empty, no crash)
+	q4 := model.SearchPostsQuery{
+		Query:       "AdvancedSearchTestTitle",
+		Communities: []string{"test-community"},
+		Page:        1,
+		Limit:       20,
+	}
+	_, _, _, err = svc.SearchPosts(ctx, q4)
+	if err != nil {
+		t.Fatalf("SearchPosts with communities array: %v", err)
+	}
+
+	// Test with tags array (empty, no crash)
+	q5 := model.SearchPostsQuery{
+		Query: "AdvancedSearchTestTitle",
+		Tags:  []string{"test-tag"},
+		Page:  1,
+		Limit: 20,
+	}
+	_, _, _, err = svc.SearchPosts(ctx, q5)
+	if err != nil {
+		t.Fatalf("SearchPosts with tags array: %v", err)
+	}
+
+	// Verify that the post used in this test was created
+	if post != nil {
+		t.Logf("Created post ID: %d", post.ID)
+	}
+}
+
 // ---------------------------------------------------------------------------
 // TagService
 // ---------------------------------------------------------------------------

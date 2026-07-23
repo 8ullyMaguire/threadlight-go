@@ -1,9 +1,4 @@
 // Package handlers contains all HTTP handler implementations for the API.
-// @title           Polaris API
-// @version         0.1
-// @description     Threadlight social platform API
-// @host            localhost:8080
-// @BasePath        /api/v1
 package handlers
 
 import (

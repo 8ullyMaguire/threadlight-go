@@ -59,30 +59,59 @@ func (h *SearchHandler) Search(c *gin.Context) {
 // @Failure      400 {object} map[string]interface{}
 // @Router       /search/advanced [post]
 func (h *SearchHandler) AdvancedSearch(c *gin.Context) {
-	var req struct {
-		Query string `json:"q" binding:"required"`
-		Limit int    `json:"limit"`
-		Offset int   `json:"offset"`
-	}
+	var req model.AdvancedSearchRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	results, err := h.searchSvc.Search(c.Request.Context(), req.Query, "advanced", req.Limit, req.Offset)
+	if req.Query == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "query is required"})
+		return
+	}
+
+	// Convert structured request to SearchPostsQuery
+	q := model.SearchPostsQuery{
+		Query: req.Query,
+		Page:  req.Page,
+		Limit: req.Limit,
+	}
+
+	if req.Filters != nil {
+		q.Tags = req.Filters.Tags
+		q.Communities = req.Filters.Communities
+		q.DateFrom = req.Filters.DateFrom
+		q.DateTo = req.Filters.DateTo
+		q.ContentTypeLabel = req.Filters.ContentType
+
+		switch req.Filters.Sort {
+		case "newest", "oldest", "popular", "relevance":
+			q.Sort = req.Filters.Sort
+		default:
+			q.Sort = "relevance"
+		}
+	}
+
+	if q.Page <= 0 {
+		q.Page = 1
+	}
+	if q.Limit <= 0 || q.Limit > 100 {
+		q.Limit = 20
+	}
+
+	results, total, facets, err := h.searchSvc.SearchPosts(c.Request.Context(), q)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	if results == nil {
-		results = []*model.Post{}
-	}
-	page := (req.Offset / req.Limit) + 1
-	total := req.Offset + len(results)
-	if len(results) >= req.Limit {
-		total = req.Offset + req.Limit + 1
-	}
-	c.JSON(http.StatusOK, model.NewPaginated(results, page, req.Limit, total))
+
+	c.JSON(http.StatusOK, gin.H{
+		"results": results,
+		"total":   total,
+		"page":    q.Page,
+		"limit":   q.Limit,
+		"facets":  facets,
+	})
 }
 
 // @Summary      Search posts

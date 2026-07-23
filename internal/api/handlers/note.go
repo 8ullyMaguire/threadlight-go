@@ -46,6 +46,18 @@ func (h *NoteHandler) GetNote(c *gin.Context) {
 	c.JSON(http.StatusOK, note)
 }
 
+// @Summary      Update a community note
+// @Description  Update an existing community note
+// @Tags         notes
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "Note ID"
+// @Param        body body model.CommunityNote true "Updated community note object"
+// @Success      200 {object} model.CommunityNote
+// @Failure      400 {object} map[string]interface{}
+// @Failure      404 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /notes/{id} [put]
 func (h *NoteHandler) UpdateNote(c *gin.Context) {
 	id, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {
@@ -65,6 +77,15 @@ func (h *NoteHandler) UpdateNote(c *gin.Context) {
 	c.JSON(http.StatusOK, note)
 }
 
+// @Summary      List notes for a post
+// @Description  List all community notes for a given post
+// @Tags         notes
+// @Produce      json
+// @Param        postID path int true "Post ID"
+// @Success      200 {object} model.Paginated{items=[]model.CommunityNote}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /notes/post/{postID} [get]
 func (h *NoteHandler) ListPostNotes(c *gin.Context) {
 	postID, err := strconv.ParseInt(c.Param("postID"), 10, 64)
 	if err != nil {
@@ -82,6 +103,17 @@ func (h *NoteHandler) ListPostNotes(c *gin.Context) {
 	c.JSON(http.StatusOK, model.NewPaginated(notes, 1, len(notes), len(notes)))
 }
 
+// @Summary      Vote on a community note
+// @Description  Vote on a community note (helpful/not helpful) with a trust score
+// @Tags         notes
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "Note ID"
+// @Param        body body object{vote=bool,trust_score=float} true "Vote details"
+// @Success      200 {object} map[string]interface{}
+// @Failure      400 {object} map[string]interface{}
+// @Failure      500 {object} map[string]interface{}
+// @Router       /notes/{id}/vote [post]
 func (h *NoteHandler) VoteOnNote(c *gin.Context) {
 	noteID, err := strconv.ParseInt(c.Param("id"), 10, 64)
 	if err != nil {

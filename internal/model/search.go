@@ -2,19 +2,40 @@ package model
 
 // SearchPostsQuery holds all search parameters for post search.
 type SearchPostsQuery struct {
-	Query         string `json:"query"`
-	Author        string `json:"author"`
-	Tag           string `json:"tag"`
-	Community     string `json:"community"`
-	Mood          int16  `json:"mood"`
-	ContentType   int16  `json:"content_type"`
-	IsEducational *bool  `json:"is_educational,omitempty"`
-	IsNSFW        *bool  `json:"is_nsfw,omitempty"`
-	DateFrom      string `json:"date_from"`
-	DateTo        string `json:"date_to"`
-	Sort          string `json:"sort"` // "relevance", "newest", "oldest"
-	Page          int    `json:"page"`
-	Limit         int    `json:"limit"`
+	Query         string   `json:"query"`
+	Author        string   `json:"author"`
+	Tag           string   `json:"tag"`
+	Tags          []string `json:"tags,omitempty"`
+	Community     string   `json:"community"`
+	Communities   []string `json:"communities,omitempty"`
+	Mood          int16    `json:"mood"`
+	ContentType   int16    `json:"content_type"`
+	ContentTypeLabel string `json:"content_type_label,omitempty"` // "post", "comment", "all"
+	IsEducational *bool    `json:"is_educational,omitempty"`
+	IsNSFW        *bool    `json:"is_nsfw,omitempty"`
+	DateFrom      string   `json:"date_from"`
+	DateTo        string   `json:"date_to"`
+	Sort          string   `json:"sort"` // "relevance", "newest", "oldest", "popular"
+	Page          int      `json:"page"`
+	Limit         int      `json:"limit"`
+}
+
+// AdvancedSearchRequest is the request body for POST /api/v1/search/advanced.
+type AdvancedSearchRequest struct {
+	Query   string              `json:"query"`
+	Filters *AdvancedFilters    `json:"filters,omitempty"`
+	Page    int                 `json:"page"`
+	Limit   int                 `json:"limit"`
+}
+
+// AdvancedFilters holds the structured filter criteria for advanced search.
+type AdvancedFilters struct {
+	Tags        []string `json:"tags,omitempty"`
+	Communities []string `json:"communities,omitempty"`
+	DateFrom    string   `json:"date_from,omitempty"`
+	DateTo      string   `json:"date_to,omitempty"`
+	Sort        string   `json:"sort,omitempty"`
+	ContentType string   `json:"content_type,omitempty"` // "post", "comment", "all"
 }
 
 // PostWithHeadline embeds a Post and adds a headline snippet from ts_headline,
