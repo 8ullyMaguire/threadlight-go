@@ -62,7 +62,7 @@ func TestMain(m *testing.M) {
 }
 
 func migrate(pg *pgxpool.Pool) {
-	sql, err := os.ReadFile("../../db/migrations/001_initial.sql")
+	sql, err := os.ReadFile("../../db/migrations/000001_initial.up.sql")
 	if err != nil {
 		panic(fmt.Sprintf("read migration: %v", err))
 	}

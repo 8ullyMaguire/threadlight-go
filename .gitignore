@@ -10,7 +10,7 @@ dist/
 *.log
 node_modules/
 *.out
-polaris
+/polaris
 *.swo
 *.swp
 *.test

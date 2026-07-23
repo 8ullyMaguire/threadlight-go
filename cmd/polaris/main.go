@@ -7,9 +7,14 @@ package main
 
 import (
 	"context"
+	"embed"
+	"flag"
+	"io"
+	"io/fs"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -23,7 +28,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+//go:embed frontend/index.html frontend/_app frontend/robots.txt frontend/_app/immutable frontend/_app/immutable/chunks frontend/_app/immutable/entry frontend/_app/immutable/nodes frontend/_app/version.json
+var embeddedFrontend embed.FS
+
 func main() {
+	noMigrate := flag.Bool("no-migrate", false, "skip database migrations on startup")
+	flag.Parse()
+
 	// Structured logging
 	logger := zerolog.New(zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}).
 		Level(zerolog.DebugLevel).
@@ -65,10 +76,14 @@ func main() {
 	defer pg.Close()
 	logger.Info().Msg("postgres connected")
 
-	if err := db.RunMigrations(pg, "internal/db/migrations"); err != nil {
-		logger.Fatal().Err(err).Msg("failed to run migrations")
+	if !*noMigrate {
+		if err := db.RunMigrations(pg, "internal/db/migrations"); err != nil {
+			logger.Fatal().Err(err).Msg("failed to run migrations")
+		}
+		logger.Info().Msg("migrations complete")
+	} else {
+		logger.Info().Msg("migrations skipped (--no-migrate)")
 	}
-	logger.Info().Msg("migrations complete")
 
 	logger.Info().Str("addr", redisAddr).Msg("connecting to redis")
 	rdb, err := db.NewRedis(redisAddr)
@@ -104,6 +119,44 @@ func main() {
 		logger.Info().Str("dir", docsDir).Msg("serving docs at /docs")
 	} else {
 		logger.Warn().Str("dir", docsDir).Msg("docs directory not found, /docs not served")
+	}
+
+	// Serve embedded SPA frontend
+	frontendFS, _ := fs.Sub(embeddedFrontend, "frontend")
+	if frontendFS != nil {
+		// Serve _app static files from embedded frontend
+		appFS, _ := fs.Sub(frontendFS, "_app")
+		if appFS != nil {
+			router.StaticFS("/_app", http.FS(appFS))
+		}
+
+		// SPA fallback: serve index.html for all non-API routes
+		router.NoRoute(func(c *gin.Context) {
+			path := c.Request.URL.Path
+			// Skip API routes and already-served static paths
+			if strings.HasPrefix(path, "/api/") ||
+				strings.HasPrefix(path, "/swagger") ||
+				strings.HasPrefix(path, "/health") ||
+				strings.HasPrefix(path, "/ready") ||
+				strings.HasPrefix(path, "/nodeinfo") ||
+				strings.HasPrefix(path, "/_app") {
+				c.JSON(http.StatusNotFound, gin.H{"error": "not found"})
+				return
+			}
+			// Serve index.html for SPA routing
+			indexData, err := frontendFS.Open("index.html")
+			if err != nil {
+				c.Status(http.StatusNotFound)
+				return
+			}
+			defer indexData.Close()
+			if seeker, ok := indexData.(io.ReadSeeker); ok {
+				http.ServeContent(c.Writer, c.Request, "index.html", time.Now(), seeker)
+			}
+		})
+		logger.Info().Msg("serving embedded SPA frontend")
+	} else {
+		logger.Warn().Msg("embedded frontend not found")
 	}
 
 	srv := &http.Server{
