@@ -54,6 +54,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	affinitySvc := services.NewUserAffinityService(pg)
 	feedPluginSvc := services.NewFeedPluginService(pg)
 	modDecisionSvc := services.NewModDecisionReviewsService(pg)
+	statsSvc := services.NewStatsService(pg)
 
 	authMw := middleware.NewAuthMiddleware(authSvc)
 	rl := middleware.NewRateLimiter(rdb, 60, 200, time.Minute) // 60 req/min per IP, 200 req/min per user
@@ -78,6 +79,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	creditHandler := handlers.NewCreditHandler(creditSvc, configSvc)
 	filterHandler := handlers.NewFilterHandler(filterSvc)
 	configHandler := handlers.NewConfigHandler(configSvc)
+	configHandler.SetStatsService(statsSvc)
 	moderationHandler := handlers.NewModerationHandler(moderationSvc)
 	noteHandler := handlers.NewNoteHandler(noteSvc)
 	searchHandler := handlers.NewSearchHandler(searchSvc)
@@ -425,6 +427,7 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 		{
 			config.GET("/config", configHandler.GetConfig)
 			config.PUT("/config", configHandler.UpdateConfig)
+			config.GET("/stats", configHandler.GetStats)
 			config.POST("/invites", configHandler.GenerateInvite)
 			config.GET("/invites", configHandler.ListInvites)
 			config.GET("/invites/limit", configHandler.GetInviteLimit)

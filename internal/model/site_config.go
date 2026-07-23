@@ -103,3 +103,17 @@ type AboutResponse struct {
 	DonateText            string   `json:"donate_text"`
 	AdminUsers            []string `json:"admin_users"`
 }
+
+// AdminStats holds aggregate system statistics for the admin panel.
+type AdminStats struct {
+	TotalUsers          int   `json:"total_users"`
+	TotalPosts          int   `json:"total_posts"`
+	TotalCommunities    int   `json:"total_communities"`
+	DailyActiveUsers    int   `json:"daily_active_users"`
+	WeeklyActiveUsers   int   `json:"weekly_active_users"`
+	MonthlyActiveUsers  int   `json:"monthly_active_users"`
+	TotalReportsPending int   `json:"total_reports_pending"`
+	TotalModActions     int   `json:"total_mod_actions"`
+	DiskUsageBytes      int64 `json:"disk_usage_bytes,omitempty"`
+	CreditSupply        int64 `json:"credit_supply"`
+}

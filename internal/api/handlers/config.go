@@ -11,10 +11,16 @@ import (
 
 type ConfigHandler struct {
 	configSvc *services.ConfigService
+	statsSvc  *services.StatsService
 }
 
 func NewConfigHandler(configSvc *services.ConfigService) *ConfigHandler {
 	return &ConfigHandler{configSvc: configSvc}
+}
+
+// SetStatsService sets the stats service for admin stats endpoints.
+func (h *ConfigHandler) SetStatsService(statsSvc *services.StatsService) {
+	h.statsSvc = statsSvc
 }
 
 // GetConfig returns the current site configuration
@@ -132,4 +138,24 @@ func (h *ConfigHandler) GetInviteLimit(c *gin.Context) {
 		"limit": limit,
 		"used":  count,
 	})
+}
+
+// GetStats returns aggregate system statistics for the admin panel.
+// @Summary      Get system stats
+// @Description  Returns aggregate system statistics for the admin dashboard
+// @Tags         admin
+// @Success      200 {object} model.AdminStats
+// @Failure      500 {object} map[string]interface{}
+// @Router       /admin/stats [get]
+func (h *ConfigHandler) GetStats(c *gin.Context) {
+	if h.statsSvc == nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "stats service not initialized"})
+		return
+	}
+	stats, err := h.statsSvc.GetStats(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusOK, stats)
 }

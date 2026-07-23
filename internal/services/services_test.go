@@ -2295,3 +2295,33 @@ func TestEvaluateUnfairPenalty_Cooldown(t *testing.T) {
 		t.Errorf("expected cooldown to block second penalty, got: %q", reason2)
 	}
 }
+
+// ---------------------------------------------------------------------------
+// StatsService
+// ---------------------------------------------------------------------------
+
+func TestStatsService_GetStats(t *testing.T) {
+	cleanTables(testPG)
+	ctx := context.Background()
+	svc := services.NewStatsService(testPG)
+
+	stats, err := svc.GetStats(ctx)
+	if err != nil {
+		t.Fatalf("GetStats: %v", err)
+	}
+
+	if stats.TotalUsers < 0 {
+		t.Errorf("expected non-negative TotalUsers, got %d", stats.TotalUsers)
+	}
+	if stats.TotalPosts < 0 {
+		t.Errorf("expected non-negative TotalPosts, got %d", stats.TotalPosts)
+	}
+	if stats.TotalCommunities < 0 {
+		t.Errorf("expected non-negative TotalCommunities, got %d", stats.TotalCommunities)
+	}
+
+	t.Logf("Stats: users=%d posts=%d communities=%d daus=%d waus=%d maus=%d reports=%d mod=%d credits=%d",
+		stats.TotalUsers, stats.TotalPosts, stats.TotalCommunities,
+		stats.DailyActiveUsers, stats.WeeklyActiveUsers, stats.MonthlyActiveUsers,
+		stats.TotalReportsPending, stats.TotalModActions, stats.CreditSupply)
+}
