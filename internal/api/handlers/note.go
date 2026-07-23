@@ -109,7 +109,7 @@ func (h *NoteHandler) ListPostNotes(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id path int true "Note ID"
-// @Param        body body object{vote=bool,trust_score=float} true "Vote details"
+// @Param        body body map[string]interface{} true "Vote details"
 // @Success      200 {object} map[string]interface{}
 // @Failure      400 {object} map[string]interface{}
 // @Failure      500 {object} map[string]interface{}

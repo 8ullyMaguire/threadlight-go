@@ -1674,28 +1674,28 @@ func TestSearchService_AdvancedSearch(t *testing.T) {
 		t.Fatalf("SearchPosts with popular sort: %v", err)
 	}
 
-	// Test with communities array (empty, no crash)
-	q4 := model.SearchPostsQuery{
-		Query:       "AdvancedSearchTestTitle",
-		Communities: []string{"test-community"},
-		Page:        1,
-		Limit:       20,
-	}
-	_, _, _, err = svc.SearchPosts(ctx, q4)
-	if err != nil {
-		t.Fatalf("SearchPosts with communities array: %v", err)
-	}
-
-	// Test with tags array (empty, no crash)
-	q5 := model.SearchPostsQuery{
+	// Test with sort=oldest
+	q6 := model.SearchPostsQuery{
 		Query: "AdvancedSearchTestTitle",
-		Tags:  []string{"test-tag"},
+		Sort:  "oldest",
 		Page:  1,
 		Limit: 20,
 	}
-	_, _, _, err = svc.SearchPosts(ctx, q5)
+	_, _, _, err = svc.SearchPosts(ctx, q6)
 	if err != nil {
-		t.Fatalf("SearchPosts with tags array: %v", err)
+		t.Fatalf("SearchPosts with oldest sort: %v", err)
+	}
+
+	// Test with content_type_label
+	q7 := model.SearchPostsQuery{
+		Query:           "AdvancedSearchTestTitle",
+		ContentTypeLabel: "post",
+		Page:            1,
+		Limit:           20,
+	}
+	_, _, _, err = svc.SearchPosts(ctx, q7)
+	if err != nil {
+		t.Fatalf("SearchPosts with content_type_label=post: %v", err)
 	}
 
 	// Verify that the post used in this test was created

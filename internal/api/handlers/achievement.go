@@ -65,7 +65,7 @@ func (h *AchievementHandler) GetUserAchievements(c *gin.Context) {
 // @Tags         achievements
 // @Accept       json
 // @Produce      json
-// @Param        unlock body struct{ AchievementID int; Progress float64 } true "Achievement unlock request"
+// @Param        unlock body map[string]interface{} true "Achievement unlock request"
 // @Success      201 {object} model.UserAchievement
 // @Failure      400 {object} map[string]interface{}
 // @Failure      500 {object} map[string]interface{}

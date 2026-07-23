@@ -14,7 +14,7 @@ import (
 func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engine {
 	gin.SetMode(gin.ReleaseMode)
 	r := gin.New()
-	r.Use(gin.Recovery(), middleware.CORS("*"))
+	r.Use(gin.Recovery(), middleware.CORS("http://localhost:8000"))
 
 	authSvc := services.NewAuthService(pg, rdb, jwtSecret)
 	affAcc := services.NewAffinityAccumulator(pg, rdb)

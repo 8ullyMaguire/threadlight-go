@@ -26,7 +26,7 @@ type blockRequest struct {
 // @Description  Create a block to prevent interactions with another user
 // @Tags         blocks
 // @Param        body body blockRequest true "Block request"
-// @Success      201 {object} model.Block
+// @Success      201 {object} map[string]interface{}
 // @Failure      400 {object} map[string]interface{}
 // @Failure      401 {object} map[string]interface{}
 // @Failure      404 {object} map[string]interface{}
@@ -82,7 +82,7 @@ func (h *BlockHandler) Delete(c *gin.Context) {
 // @Summary      List blocked users
 // @Description  List all users blocked by the authenticated user
 // @Tags         blocks
-// @Success      200 {object} []model.Block
+// @Success      200 {object} []map[string]interface{}
 // @Failure      401 {object} map[string]interface{}
 // @Router       /blocks [get]
 func (h *BlockHandler) List(c *gin.Context) {

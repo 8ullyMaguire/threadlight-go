@@ -342,7 +342,7 @@ func (h *CommunityHandler) RemoveCurator(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        slug path string true "Community slug"
-// @Param        body body object{reason=string} true "Reason for forking"
+// @Param        body body map[string]interface{} true "Reason for forking"
 // @Success      201 {object} model.Community
 // @Failure      400 {object} map[string]interface{}
 // @Failure      404 {object} map[string]interface{}
@@ -379,7 +379,7 @@ func (h *CommunityHandler) Fork(c *gin.Context) {
 // @Tags         communities
 // @Accept       json
 // @Produce      json
-// @Param        body body object{slugs=[]string} true "List of slugs to fetch"
+// @Param        body body map[string]interface{} true "List of slugs to fetch"
 // @Success      200 {object} map[string]interface{}
 // @Failure      400 {object} map[string]interface{}
 // @Failure      500 {object} map[string]interface{}
@@ -452,7 +452,7 @@ func (h *CommunityHandler) GetTrustGraph(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        slug path string true "Community slug"
-// @Param        body body object{trustee_id=int,weight=int} true "Trust connection details"
+// @Param        body body map[string]interface{} true "Trust connection details"
 // @Success      201 {object} map[string]interface{}
 // @Failure      400 {object} map[string]interface{}
 // @Failure      404 {object} map[string]interface{}

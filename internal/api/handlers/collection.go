@@ -149,7 +149,7 @@ func (h *CollectionHandler) ListByUser(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id path int true "Collection ID"
-// @Param        body body object{post_id=int} true "Post ID to add"
+// @Param        body body map[string]interface{} true "Post ID to add"
 // @Success      200 {object} map[string]interface{}
 // @Failure      400 {object} map[string]interface{}
 // @Failure      500 {object} map[string]interface{}

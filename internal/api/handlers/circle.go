@@ -182,7 +182,7 @@ func (h *CircleHandler) LeaveCircle(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id path int true "Circle ID"
-// @Param        suggestion body struct{ UserID int64 } true "Member suggestion"
+// @Param        suggestion body map[string]interface{} true "Member suggestion"
 // @Success      200 {object} map[string]interface{}
 // @Failure      400 {object} map[string]interface{}
 // @Failure      500 {object} map[string]interface{}

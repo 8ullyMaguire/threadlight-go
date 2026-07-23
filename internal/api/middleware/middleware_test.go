@@ -13,31 +13,31 @@ import (
 func TestCORS(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
-	r.Use(CORS("*"))
+	r.Use(CORS("http://localhost:8000"))
 	r.GET("/test", func(c *gin.Context) { c.Status(http.StatusOK) })
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("OPTIONS", "/test", nil)
-	req.Header.Set("Origin", "http://example.com")
+	req.Header.Set("Origin", "http://localhost:8000")
 	r.ServeHTTP(w, req)
 
 	if w.Code != http.StatusNoContent && w.Code != http.StatusOK {
 		t.Errorf("expected 204 or 200, got %d", w.Code)
 	}
-	if v := w.Header().Get("Access-Control-Allow-Origin"); v != "http://example.com" {
-		t.Errorf("expected http://example.com, got %s", v)
+	if v := w.Header().Get("Access-Control-Allow-Origin"); v != "http://localhost:8000" {
+		t.Errorf("expected http://localhost:8000, got %s", v)
 	}
 }
 
 func TestCORSSpecificOrigin(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
-	r.Use(CORS("http://example.com"))
+	r.Use(CORS("http://localhost:8000"))
 	r.GET("/test", func(c *gin.Context) { c.Status(http.StatusOK) })
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/test", nil)
-	req.Header.Set("Origin", "http://example.com")
+	req.Header.Set("Origin", "http://localhost:8000")
 	r.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {
@@ -48,19 +48,60 @@ func TestCORSSpecificOrigin(t *testing.T) {
 func TestCORSGET(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
-	r.Use(CORS("*"))
+	r.Use(CORS("http://localhost:8000"))
 	r.GET("/test", func(c *gin.Context) { c.JSON(http.StatusOK, gin.H{"ok": true}) })
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/test", nil)
-	req.Header.Set("Origin", "http://example.com")
+	req.Header.Set("Origin", "http://localhost:8000")
 	r.ServeHTTP(w, req)
 
 	if w.Code != http.StatusOK {
 		t.Errorf("expected 200, got %d", w.Code)
 	}
-	if v := w.Header().Get("Access-Control-Allow-Origin"); v != "http://example.com" {
-		t.Errorf("expected http://example.com, got %s", v)
+	if v := w.Header().Get("Access-Control-Allow-Origin"); v != "http://localhost:8000" {
+		t.Errorf("expected http://localhost:8000, got %s", v)
+	}
+}
+
+func TestCORSHeaders(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	r.Use(CORS("http://localhost:8000"))
+	r.GET("/test", func(c *gin.Context) {
+		c.Header("X-Custom", "value")
+		c.Status(http.StatusOK)
+	})
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/test", nil)
+	req.Header.Set("Origin", "http://localhost:8000")
+	r.ServeHTTP(w, req)
+
+	if w.Header().Get("Access-Control-Allow-Origin") == "" {
+		t.Error("expected Allow-Origin header")
+	}
+	if w.Header().Get("Access-Control-Allow-Credentials") == "" {
+		t.Error("expected Allow-Credentials header")
+	}
+}
+
+func TestCORSBlockedOrigin(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	r.Use(CORS("http://localhost:8000"))
+	r.GET("/test", func(c *gin.Context) { c.Status(http.StatusOK) })
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/test", nil)
+	req.Header.Set("Origin", "https://evil.com")
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", w.Code)
+	}
+	if v := w.Header().Get("Access-Control-Allow-Origin"); v != "" {
+		t.Errorf("expected no Allow-Origin header for disallowed origin, got %s", v)
 	}
 }
 
@@ -98,28 +139,6 @@ func TestLoggingMultipleMethods(t *testing.T) {
 		if w.Code != tt.expected {
 			t.Errorf("%s %s: expected %d, got %d", tt.method, tt.path, tt.expected, w.Code)
 		}
-	}
-}
-
-func TestCORSHeaders(t *testing.T) {
-	gin.SetMode(gin.TestMode)
-	r := gin.New()
-	r.Use(CORS("*"))
-	r.GET("/test", func(c *gin.Context) {
-		c.Header("X-Custom", "value")
-		c.Status(http.StatusOK)
-	})
-
-	w := httptest.NewRecorder()
-	req, _ := http.NewRequest("GET", "/test", nil)
-	req.Header.Set("Origin", "http://example.com")
-	r.ServeHTTP(w, req)
-
-	if w.Header().Get("Access-Control-Allow-Origin") == "" {
-		t.Error("expected Allow-Origin header")
-	}
-	if w.Header().Get("Access-Control-Allow-Credentials") == "" {
-		t.Error("expected Allow-Credentials header")
 	}
 }
 

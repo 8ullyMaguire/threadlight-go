@@ -23,7 +23,7 @@ func NewCreditHandler(creditSvc *services.CreditService, configSvc *services.Con
 // @Tags         credits
 // @Accept       json
 // @Produce      json
-// @Param        body body object{to_user=int,amount=int,tx_type=int} true "Transfer details"
+// @Param        body body map[string]interface{} true "Transfer details"
 // @Success      200 {object} model.CreditTransaction
 // @Failure      400 {object} map[string]interface{}
 // @Failure      500 {object} map[string]interface{}
@@ -72,7 +72,7 @@ func (h *CreditHandler) GetTransactions(c *gin.Context) {
 // @Tags         credits
 // @Accept       json
 // @Produce      json
-// @Param        body body object{amount=int} false "Optional reward amount override"
+// @Param        body body map[string]interface{} false "Optional reward amount override"
 // @Success      200 {object} model.CreditTransaction
 // @Failure      500 {object} map[string]interface{}
 // @Router       /credits/daily-reward [post]
@@ -163,7 +163,7 @@ func (h *CreditHandler) GetBounty(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id path int true "Bounty ID"
-// @Param        body body object{answer_id=int} true "Answer ID to award"
+// @Param        body body map[string]interface{} true "Answer ID to award"
 // @Success      200 {object} map[string]interface{}
 // @Failure      400 {object} map[string]interface{}
 // @Failure      404 {object} map[string]interface{}
@@ -232,7 +232,7 @@ func (h *CreditHandler) GetBalance(c *gin.Context) {
 // @Tags         credits
 // @Accept       json
 // @Produce      json
-// @Param        body body object{quest_type=int} true "Quest type to complete"
+// @Param        body body map[string]interface{} true "Quest type to complete"
 // @Success      200 {object} map[string]interface{}
 // @Failure      400 {object} map[string]interface{}
 // @Failure      500 {object} map[string]interface{}
