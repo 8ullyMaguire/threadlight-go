@@ -11,7 +11,7 @@ export default defineConfig({
     __VERSION__: JSON.stringify(process.env.npm_package_version),
   },
   server: {
-    port: 8000,
+    port: 5173,
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8080',
