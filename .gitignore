@@ -1,18 +1,46 @@
-*~
-bin/
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+target/
+build/
 dist/
-.DS_Store
+*.egg-info/
+Cargo.lock
+
+# Environment and secrets
 .env
 .env.*
-*.exe
-.idea/
-*.kate-swp
-*.log
-node_modules/
-*.out
-/polaris
-*.swo
-*.swp
-*.test
-tmp/
+!.env.example
+!.env.sample
+credentials
+secrets.*
+*.key
+*.pem
+*.cert
+*.p12
+
+# IDE and editor
 .vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup dirs
+*.bak/
+*.old/
+*.bak.*/

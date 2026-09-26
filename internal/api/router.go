@@ -58,6 +58,11 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	modDecisionSvc := services.NewModDecisionReviewsService(pg)
 	statsSvc := services.NewStatsService(pg)
 
+	// NEW: Comment, voting, and site services
+	commentSvc := services.NewCommentService(pg)
+	voteSvc := services.NewPostVoteService(pg)
+	siteSvc := services.NewSiteService(pg)
+
 	authMw := middleware.NewAuthMiddleware(authSvc)
 	rl := middleware.NewRateLimiter(rdb, 60, 200, time.Minute) // 60 req/min per IP, 200 req/min per user
 
@@ -95,6 +100,11 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 	aboutHandler := handlers.NewAboutHandler(configSvc)
 	modDecisionHandler := handlers.NewModDecisionHandler(modDecisionSvc, configSvc)
 
+	// NEW: Comment, voting, and site handlers
+	commentHandler := handlers.NewCommentHandler(commentSvc)
+	voteHandler := handlers.NewPostVoteHandler(voteSvc)
+	siteHandler := handlers.NewSiteHandler(siteSvc)
+
 	r.GET("/health", healthHandler.Health)
 	r.GET("/ready", healthHandler.Ready)
 
@@ -110,6 +120,10 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			},
 		})
 	})
+
+	// Site info endpoint (no auth required, but enriched when authenticated)
+	r.GET("/api/v1/site", authMw.OptionalAuth(), siteHandler.GetSite)
+	r.GET("/api/v1/about", aboutHandler.GetAbout)
 
 	apiV1 := r.Group("/api/v1")
 	{
@@ -135,6 +149,9 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			posts.DELETE("/:id", postHandler.Delete)
 			posts.POST("/:id/archive", postHandler.Archive)
 			posts.POST("/:id/remove", postHandler.ModRemove)
+			// Post voting
+			posts.POST("/:id/like", voteHandler.LikePost)
+			posts.GET("/:id/likes", voteHandler.ListLikes)
 		}
 
 		// Media/Image upload routes
@@ -242,6 +259,17 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			collections.DELETE("/:id/posts/:post_id", collectionHandler.RemovePost)
 		}
 
+		// Comments routes
+		comments := apiV1.Group("/comments")
+		comments.Use(authMw.RequireAuth())
+		{
+			comments.POST("", commentHandler.Create)
+			comments.GET("/by-post/:post_id", commentHandler.ListByPost)
+			comments.GET("/:id", commentHandler.GetByID)
+			comments.PUT("/:id", commentHandler.Update)
+			comments.DELETE("/:id", commentHandler.Delete)
+		}
+
 		communities := apiV1.Group("/communities")
 		communities.Use(authMw.RequireAuth())
 		{
@@ -322,7 +350,8 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 
 		users := apiV1.Group("/users")
 		{
-			users.GET("/:username", userHandler.GetProfileByUsername)
+			// Enriched user profile endpoint (public) — uses SiteHandler for enriched response
+			users.GET("/:username", siteHandler.GetPersonDetails)
 
 			authed := users.Group("")
 			authed.Use(authMw.RequireAuth())
@@ -446,8 +475,6 @@ func NewRouter(pg *pgxpool.Pool, rdb *redis.Client, jwtSecret string) *gin.Engin
 			invites.GET("/limit", configHandler.GetInviteLimit)
 		}
 	}
-
-	r.GET("/api/v1/about", aboutHandler.GetAbout)
 
 	return r
 }

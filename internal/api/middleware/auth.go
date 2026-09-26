@@ -40,3 +40,28 @@ func (m *AuthMiddleware) RequireAuth() gin.HandlerFunc {
 		c.Next()
 	}
 }
+
+// OptionalAuth attempts to parse the JWT but does not fail if it's missing.
+// Sets user_id in context if valid token is provided.
+func (m *AuthMiddleware) OptionalAuth() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.Next()
+			return
+		}
+
+		parts := strings.SplitN(authHeader, " ", 2)
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			c.Next()
+			return
+		}
+
+		userID, err := m.authSvc.ValidateToken(parts[1])
+		if err == nil {
+			c.Set("user_id", userID)
+		}
+
+		c.Next()
+	}
+}
