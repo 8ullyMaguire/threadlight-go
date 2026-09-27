@@ -10,7 +10,24 @@ target/
 build/
 dist/
 *.egg-info/
-Cargo.lock
+
+# Build output
+# bin/ is where `cargo build --release --out-dir bin` lands; without this a
+# compiled binary gets committed.
+/bin/
+*.exe
+*.out
+*.test
+tmp/
+/polaris
+
+# Editor and swap files
+*~
+*.swp
+*.swo
+*.kate-swp
+.idea/
+.vscode/
 
 # Environment and secrets
 .env
@@ -24,23 +41,9 @@ secrets.*
 *.cert
 *.p12
 
-# IDE and editor
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-Thumbs.db
-
 # Logs
 *.log
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Backup dirs
-*.bak/
-*.old/
-*.bak.*/
